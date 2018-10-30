@@ -1,0 +1,69 @@
+﻿using UnityEngine;
+using DG.Tweening;
+
+namespace Koala
+{
+	public class ChangeTransformOccurrence : DOTweenOccurrence<ChangeTransformOccurrence, Director.ChangeTransformConfig>
+	{
+		private Transform _transform = null;
+		
+
+		public ChangeTransformOccurrence() { }
+
+		protected override Director.ChangeTransformConfig CreateOldConfig()
+		{
+			Transform transform = GetTransform();
+
+			var currentConfig = new Director.ChangeTransformConfig();
+
+			if (_newConfig.Position != null)
+				currentConfig.Position = transform.position.ToChangeVector3Config();
+			if (_newConfig.Rotation != null)
+				currentConfig.Rotation = transform.eulerAngles.ToChangeVector3Config();
+			if (_newConfig.Scale != null)
+				currentConfig.Scale = transform.localScale.ToChangeVector3Config();
+
+			return currentConfig;
+		}
+
+		protected override void ManageTweens(Director.ChangeTransformConfig config, bool isForward)
+		{
+			Transform transform = GetTransform();
+
+			if (config.Position != null)
+			{
+				Debug.Log("Position");
+				DOTween.To(
+					() => transform.position,
+					x => transform.position = x,
+					transform.position.ApplyChangeVector3Config(config.Position),
+					_duration).RegisterChronosTimeline(isForward);
+			}
+
+			if (config.Rotation != null)
+			{
+				DOTween.To(
+					() => transform.eulerAngles,
+					x => transform.eulerAngles = x,
+					transform.eulerAngles.ApplyChangeVector3Config(config.Rotation),
+					_duration).RegisterChronosTimeline(isForward);
+			}
+
+			if (config.Scale != null)
+			{
+				DOTween.To(
+					() => transform.localScale,
+					x => transform.localScale = x,
+					transform.localScale.ApplyChangeVector3Config(config.Scale),
+					_duration).RegisterChronosTimeline(isForward);
+			}
+		}
+
+		private Transform GetTransform()
+		{
+			if (_transform == null)
+				_transform = References.Instance.GetGameObject(_reference).transform;
+			return _transform;
+		}
+	}
+}

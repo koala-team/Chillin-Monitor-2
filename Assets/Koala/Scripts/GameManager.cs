@@ -1,0 +1,256 @@
+﻿using UnityEngine;
+using Chronos;
+using System.Collections;
+using UnityEngine.Networking;
+using TMPro;
+using DG.Tweening;
+using System;
+
+namespace Koala
+{
+
+	public class GameManager : MonoBehaviour
+	{
+		private Director _director;
+		private float _timeScale = 0;
+		private float _timeScaleDelta = 0.25f;
+		private float _cycleDuration = 0.25f;
+		
+		public Timeline timeline;
+		public Clock rootClock;
+		public GameObject rootGameObject;
+		public GameObject userCanvasGameObject;
+		public TextMeshProUGUI timeText;
+
+		void Awake()
+		{
+			// Pause the game at start
+			// rootClock = Timekeeper.instance.Clock("Root");
+			rootClock.localTimeScale = 0;
+
+			// Reset references map
+			References.Instance.ResetMaps();
+
+			// set Helpers value
+			Helper.CycleDuration = _cycleDuration;
+			Helper.RootTimeline = timeline;
+			Helper.RootClock = rootClock;
+			Helper.RootGameObject = rootGameObject;
+			Helper.UserCanvasGameObject = userCanvasGameObject;
+
+			// Config dotween
+			DOTween.Init();
+			DOTween.defaultEaseType = Ease.Linear;
+			DOTween.defaultUpdateType = UpdateType.Manual;
+		}
+
+		void Start()
+		{
+			StartCoroutine(DownloadBundle());
+		}
+
+		void Update()
+		{
+			if (_timeScale != 0)
+				DOTween.ManualUpdate(Math.Abs(timeline.deltaTime), 0);
+
+			// Control Time
+			if (Input.GetKeyDown(KeyCode.P))
+			{
+				ChangeTimeScale(-_timeScale); // Pause
+				Debug.Log("Pause");
+			}
+			else if (Input.GetKeyDown(KeyCode.LeftBracket))
+			{
+				ChangeTimeScale(-_timeScaleDelta); // Rewind
+				Debug.Log("Rewind: " + _timeScale.ToString());
+			}
+			else if (Input.GetKeyDown(KeyCode.RightBracket))
+			{
+				ChangeTimeScale(_timeScaleDelta); // Forward
+				Debug.Log("Play: " + _timeScale.ToString());
+			}
+		}
+
+		private void ChangeTimeScale(float amount)
+		{
+			_timeScale += amount;
+			rootClock.localTimeScale = _timeScale;
+
+			Helper.SetAnimatorsTimeScale(_timeScale, rootGameObject);
+			Helper.SetAudioSourcesTimeScale(_timeScale, rootGameObject);
+		}
+
+		void FixedUpdate()
+		{
+			// Check time don't go behind zero
+			if (rootClock.time <= 0 && _timeScale < 0)
+			{
+				_timeScale = 0;
+				rootClock.localTimeScale = 0;
+				Debug.Log("Force Pause");
+			}
+
+			// Update Time Text
+			timeText.text = "Time: " + rootClock.time.ToString("0.0000000") +
+							"\nCycle: " + (rootClock.time / _cycleDuration).TruncateDecimal(1).ToString("0.0") +
+							"\nSpeed: " + _timeScale.ToString() +
+							"\nCycle Duration: " + _cycleDuration.ToString();
+		}
+
+		private IEnumerator DownloadBundle()
+		{
+			string uri = "http://127.0.0.1:8081/asset1";
+			var request = UnityWebRequest.Get(uri);
+			yield return request.SendWebRequest();
+			var bytes = request.downloadHandler.data;
+			AssetBundle bundle = AssetBundle.LoadFromMemory(bytes);
+			BundleManager.Instance.AddBundle("main", bundle);
+
+			foreach (var name in bundle.GetAllAssetNames())
+			{
+				Debug.Log(name);
+			}
+
+			_director = new Director();
+			Debug.Log("Bundle Loaded");
+
+			// Scenarios
+			//_director.CreateUIElement(1, "Text", null, EUIElementType.Text, new Director.ChangeUIElementConfig
+			//{
+			//	Position = new Director.ChangeVector3Config { X = 100, Y = -200 },
+			//	Size = new Director.ChangeVector2Config { X = 600 },
+			//	AnchorMin = new Director.ChangeVector2Config { X = 0.1f },
+			//	//Scale = new Director.ChangeVector3Config { X = 10, Y = 5 },
+			//	//Rotation = new Director.ChangeVector3Config { Z = 45 },
+			//});
+			//_director.ChangeUIElement(2, "Text", 2, new Director.ChangeUIElementConfig
+			//{
+			//	//Position = new Director.ChangeVector3Config { X = 100, Y = 200 },
+			//	Size = new Director.ChangeVector2Config { X = 800 },
+			//	//AnchorMin = new Director.ChangeVector2Config { X = 0.1f },
+			//	////Scale = new Director.ChangeVector3Config { X = 10, Y = 5 },
+			//	//Rotation = new Director.ChangeVector3Config { Z = 45 },
+			//});
+			//_director.ChangeText(2, "Text", new Director.ChangeTextConfig
+			//{
+			//	Text = "WTF",
+			//});
+			//_director.ChangeText(2, "Text", new Director.ChangeTextConfig
+			//{
+			//	Alignment = TextAlignmentOptions.Left,
+			//});
+
+			_director.CreateUIElement(1, "Slider", null, EUIElementType.Slider, new Director.ChangeUIElementConfig
+			{
+				Position = new Director.ChangeVector3Config { X = 300, Y = -200 },
+				Size = new Director.ChangeVector2Config { X = 600 },
+			});
+			_director.ChangeSlider(2, "Slider", 2, new Director.ChangeSliderConfig
+			{
+				Value = 0.5f,
+				FillColor = new Director.ChangeVector4Config { X = 0, Y = 255, Z = 128 }
+			});
+			_director.ChangeSlider(2, "Slider", 2, new Director.ChangeSliderConfig
+			{
+				BackgroundColor = new Director.ChangeVector4Config { Y = 0 }
+			});
+			_director.ChangeSlider(4, "Slider", 0, new Director.ChangeSliderConfig
+			{
+				Direction = UnityEngine.UI.Slider.Direction.TopToBottom,
+			});
+
+			_director.CreateUIElement(1, "RawImage", null, EUIElementType.RawImage, new Director.ChangeUIElementConfig
+			{
+				Position = new Director.ChangeVector3Config { X = 500, Y = -200 },
+				Size = new Director.ChangeVector2Config { X = 600 },
+			});
+
+			_director.ChangeRawImage(2, "RawImage", 2, new Director.ChangeRawImageConfig
+			{
+				BundleName = "main",
+				AssetName = "pacman_move",
+				Color = new Director.ChangeVector4Config { X = 0 },
+				UVRect = new Director.ChangeVector4Config { Z = 10 },
+			});
+
+
+			//_director.InstantiateBundleAsset(2, "Cube", "main", "cube", new Director.InstantiateConfig
+			//{
+			//	Position = new Vector3(0, 10, 0),
+			//	Rotation = new Vector3(45, 45, 45),
+			//	Scale = new Vector3(2, 1, 1),
+			//});
+			//_director.ChangeTransform(2, "Cube", 2, new Director.ChangeTransformConfig
+			//{
+			//	Position = new Director.ChangeVector3Config
+			//	{
+			//		X = -10,
+			//		Y = 0,
+			//	}
+			//});
+			//_director.ChangeTransform(4, "Cube", 6, new Director.ChangeTransformConfig
+			//{
+			//	Position = new Director.ChangeVector3Config
+			//	{
+			//		X = 5,
+			//		Y = 5,
+			//	}
+			//});
+			//_director.ChangeTransform(2, "Cube", 1, new Director.ChangeTransformConfig
+			//{
+			//	Rotation = new Director.ChangeVector3Config
+			//	{
+			//		Z = 0,
+			//	}
+			//});
+			//_director.ChangeTransform(2, "Cube", 3, new Director.ChangeTransformConfig
+			//{
+			//	Scale = new Director.ChangeVector3Config
+			//	{
+			//		Z = 5,
+			//	}
+			//});
+			//_director.Destroy(15, "Cube");
+
+			//_director.InstantiateBundleAsset(1, "Sprite", "main", "sprite", new Director.InstantiateConfig
+			//{
+			//	Position = new Vector3(),
+			//	Rotation = new Vector3(),
+			//	Scale = Vector3.one,
+			//});
+			//_director.ChangeAnimatorState(2, "Sprite", new Director.ChangeAnimatorStateConfig
+			//{
+			//	NewStateName = "Explosion"
+			//});
+			//_director.ChangeAnimatorState(10, "Sprite", new Director.ChangeAnimatorStateConfig
+			//{
+			//	NewStateName = "Pacman",
+			//});
+			//_director.ChangeAnimatorVariable(1, "Sprite", new Director.ChangeAnimatorVariableConfig
+			//{
+			//	VarName = "monitorTimeScale",
+			//	VarType = (EAnimatorVariableType)1,
+			//	NewValue = "1",
+			//});
+
+			//_director.DebugLog(1, "1");
+			//_director.DebugLog(1.01f, "2");
+			//_director.DebugLog(1.02f, "3");
+
+			//_director.InstantiateBundleAsset(1, "Audio", "main", "testaudio", new Director.InstantiateConfig
+			//{
+			//	Position = new Vector3(),
+			//	Rotation = new Vector3(),
+			//	Scale = new Vector3(),
+			//});
+			//_director.ChangeAudioSource(2, "Audio", new Director.AudioSourceConfig
+			//{
+			//	bundleName = "main",
+			//	AudioClipName = "carengine",
+			//	Play = true,
+			//});
+			//_director.ChangeAudioSource(20, "Audio", new Director.AudioSourceConfig());
+		}
+	}
+}
