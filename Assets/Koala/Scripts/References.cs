@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using UnityEngine;
 
 namespace Koala
@@ -28,6 +29,7 @@ namespace Koala
 		#endregion
 
 		private Dictionary<string, GameObject> _gameObjectsMap = new Dictionary<string, GameObject>();
+		private char[] referenceSeparator = "/".ToCharArray();
 
 		public void ResetMaps()
 		{
@@ -56,6 +58,12 @@ namespace Koala
 
 		public GameObject GetGameObject(string reference)
 		{
+			if (reference.Contains("/"))
+			{
+				var parts = reference.Split(referenceSeparator, 2);
+				return _gameObjectsMap[parts[0]].transform.Find(parts[1]).gameObject;
+			}
+
 			return _gameObjectsMap[reference];
 		}
 	}

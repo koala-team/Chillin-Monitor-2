@@ -123,6 +123,7 @@ namespace Koala
 			//	Alignment = TextAlignmentOptions.Left,
 			//});
 
+
 			//_director.CreateUIElement(1, "Slider", null, EUIElementType.Slider, new Director.ChangeRectTransformConfig
 			//{
 			//	Position = new Director.ChangeVector3Config { X = 300, Y = -200 },
@@ -141,6 +142,7 @@ namespace Koala
 			//{
 			//	Direction = UnityEngine.UI.Slider.Direction.TopToBottom,
 			//});
+
 
 			//_director.CreateUIElement(1, "RawImage", null, EUIElementType.RawImage, new Director.ChangeRectTransformConfig
 			//{
@@ -201,11 +203,13 @@ namespace Koala
 			{
 				Position = new Director.ChangeVector3Config { X = 100, Y = -100 },
 			});
-			_director.ChangeSlider(3, "CubeSlider", 1, new Director.ChangeSliderConfig
+			_director.ChangeSlider(3, "Canvas/CubeSlider", 1, new Director.ChangeSliderConfig
 			{
 				Value = 0.5f,
 			});
+			_director.SetActive(3, "Canvas/CubeSlider/Background", false);
 			_director.Destroy(15, "Cube");
+
 
 			//_director.InstantiateBundleAsset(1, "Sprite", "main", "sprite", new Director.InstantiateConfig
 			//{
@@ -228,9 +232,6 @@ namespace Koala
 			//	NewValue = "1",
 			//});
 
-			//_director.DebugLog(1, "1");
-			//_director.DebugLog(1.01f, "2");
-			//_director.DebugLog(1.02f, "3");
 
 			//_director.InstantiateBundleAsset(1, "Audio", "main", "testaudio", new Director.InstantiateConfig
 			//{

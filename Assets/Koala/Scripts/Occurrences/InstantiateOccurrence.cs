@@ -29,6 +29,8 @@ namespace Koala
 
 			_createdGO = GameObject.Instantiate(_baseGO, parent.transform);
 
+			_createdGO.name = _reference;
+
 			_createdGO.transform.localPosition = _config.Position;
 			if (_config.Rotation.HasValue)
 				_createdGO.transform.localEulerAngles = _config.Rotation.Value;
