@@ -34,18 +34,18 @@ namespace Koala
 			{
 				Debug.Log("Position");
 				DOTween.To(
-					() => transform.position,
-					x => transform.position = x,
-					transform.position.ApplyChangeVector3Config(config.Position),
+					() => transform.localPosition,
+					x => transform.localPosition = x,
+					transform.localPosition.ApplyChangeVector3Config(config.Position),
 					_duration).RegisterChronosTimeline(isForward);
 			}
 
 			if (config.Rotation != null)
 			{
 				DOTween.To(
-					() => transform.eulerAngles,
-					x => transform.eulerAngles = x,
-					transform.eulerAngles.ApplyChangeVector3Config(config.Rotation),
+					() => transform.localRotation.eulerAngles,
+					x => transform.localEulerAngles = x,
+					transform.localEulerAngles.ApplyChangeVector3Config(config.Rotation),
 					_duration).RegisterChronosTimeline(isForward);
 			}
 

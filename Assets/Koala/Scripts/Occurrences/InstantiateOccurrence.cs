@@ -24,15 +24,18 @@ namespace Koala
 
 		public override void Forward()
 		{
-			GameObject parent;
-			if (_config.ParentReference == null)
-				parent = _defaultParent;
-			else
+			GameObject parent = _defaultParent;
+			if (_config.ParentReference != null)
 				parent = References.Instance.GetGameObject(_config.ParentReference);
 
-			_createdGO = GameObject.Instantiate(_baseGO, 
-				_config.Position, new Quaternion { eulerAngles = _config.Rotation }, parent.transform);
-			_createdGO.transform.localScale = _config.Scale;
+			_createdGO = GameObject.Instantiate(_baseGO, parent.transform);
+
+			_createdGO.transform.localPosition = _config.Position;
+			if (_config.Rotation.HasValue)
+				_createdGO.transform.localEulerAngles = _config.Rotation.Value;
+			if (_config.Scale.HasValue)
+				_createdGO.transform.localScale = _config.Scale.Value;
+
 			References.Instance.AddGameObject(_reference, _createdGO);
 
 			Helper.SetAnimatorsTimeScale(Helper.RootTimeline.timeScale, _createdGO);

@@ -141,77 +141,89 @@ namespace Koala
 			//	Alignment = TextAlignmentOptions.Left,
 			//});
 
-			_director.CreateUIElement(1, "Slider", null, EUIElementType.Slider, new Director.ChangeUIElementConfig
+			//_director.CreateUIElement(1, "Slider", null, EUIElementType.Slider, new Director.ChangeRectTransformConfig
+			//{
+			//	Position = new Director.ChangeVector3Config { X = 300, Y = -200 },
+			//	Size = new Director.ChangeVector2Config { X = 600 },
+			//});
+			//_director.ChangeSlider(2, "Slider", 2, new Director.ChangeSliderConfig
+			//{
+			//	Value = 0.5f,
+			//	FillColor = new Director.ChangeVector4Config { X = 0, Y = 255, Z = 128 }
+			//});
+			//_director.ChangeSlider(2, "Slider", 2, new Director.ChangeSliderConfig
+			//{
+			//	BackgroundColor = new Director.ChangeVector4Config { Y = 0 }
+			//});
+			//_director.ChangeSlider(4, "Slider", 0, new Director.ChangeSliderConfig
+			//{
+			//	Direction = UnityEngine.UI.Slider.Direction.TopToBottom,
+			//});
+
+			//_director.CreateUIElement(1, "RawImage", null, EUIElementType.RawImage, new Director.ChangeRectTransformConfig
+			//{
+			//	Position = new Director.ChangeVector3Config { X = 500, Y = -200 },
+			//	Size = new Director.ChangeVector2Config { X = 600 },
+			//});
+
+			//_director.ChangeRawImage(2, "RawImage", 2, new Director.ChangeRawImageConfig
+			//{
+			//	BundleName = "main",
+			//	AssetName = "pacman_move",
+			//	Color = new Director.ChangeVector4Config { X = 0 },
+			//	UVRect = new Director.ChangeVector4Config { Z = 10 },
+			//});
+
+
+			_director.InstantiateBundleAsset(2, "Cube", "main", "cube", new Director.InstantiateConfig
 			{
-				Position = new Director.ChangeVector3Config { X = 300, Y = -200 },
-				Size = new Director.ChangeVector2Config { X = 600 },
+				Position = new Vector3(0, 10, 0),
+				Rotation = new Vector3(45, 45, 45),
+				Scale = new Vector3(2, 1, 1),
 			});
-			_director.ChangeSlider(2, "Slider", 2, new Director.ChangeSliderConfig
+			_director.ChangeTransform(2, "Cube", 2, new Director.ChangeTransformConfig
+			{
+				Position = new Director.ChangeVector3Config
+				{
+					X = -10,
+					Y = 0,
+				}
+			});
+			_director.ChangeTransform(4, "Cube", 6, new Director.ChangeTransformConfig
+			{
+				Position = new Director.ChangeVector3Config
+				{
+					X = 5,
+					Y = 5,
+				}
+			});
+			_director.ChangeTransform(2, "Cube", 1, new Director.ChangeTransformConfig
+			{
+				Rotation = new Director.ChangeVector3Config
+				{
+					Z = 0,
+				}
+			});
+			_director.ChangeTransform(2, "Cube", 3, new Director.ChangeTransformConfig
+			{
+				Scale = new Director.ChangeVector3Config
+				{
+					Z = 5,
+				}
+			});
+			_director.CreateUIElement(3, "Canvas", "Cube", EUIElementType.Canvas, new Director.ChangeRectTransformConfig
+			{
+				Position = new Director.ChangeVector3Config { Z = -0.6f },
+			});
+			_director.CreateUIElement(4, "CubeSlider", "Canvas", EUIElementType.Slider, new Director.ChangeRectTransformConfig
+			{
+				Position = new Director.ChangeVector3Config { X = 100, Y = -100 },
+			});
+			_director.ChangeSlider(4.1f, "CubeSlider", 1, new Director.ChangeSliderConfig
 			{
 				Value = 0.5f,
-				FillColor = new Director.ChangeVector4Config { X = 0, Y = 255, Z = 128 }
 			});
-			_director.ChangeSlider(2, "Slider", 2, new Director.ChangeSliderConfig
-			{
-				BackgroundColor = new Director.ChangeVector4Config { Y = 0 }
-			});
-			_director.ChangeSlider(4, "Slider", 0, new Director.ChangeSliderConfig
-			{
-				Direction = UnityEngine.UI.Slider.Direction.TopToBottom,
-			});
-
-			_director.CreateUIElement(1, "RawImage", null, EUIElementType.RawImage, new Director.ChangeUIElementConfig
-			{
-				Position = new Director.ChangeVector3Config { X = 500, Y = -200 },
-				Size = new Director.ChangeVector2Config { X = 600 },
-			});
-
-			_director.ChangeRawImage(2, "RawImage", 2, new Director.ChangeRawImageConfig
-			{
-				BundleName = "main",
-				AssetName = "pacman_move",
-				Color = new Director.ChangeVector4Config { X = 0 },
-				UVRect = new Director.ChangeVector4Config { Z = 10 },
-			});
-
-
-			//_director.InstantiateBundleAsset(2, "Cube", "main", "cube", new Director.InstantiateConfig
-			//{
-			//	Position = new Vector3(0, 10, 0),
-			//	Rotation = new Vector3(45, 45, 45),
-			//	Scale = new Vector3(2, 1, 1),
-			//});
-			//_director.ChangeTransform(2, "Cube", 2, new Director.ChangeTransformConfig
-			//{
-			//	Position = new Director.ChangeVector3Config
-			//	{
-			//		X = -10,
-			//		Y = 0,
-			//	}
-			//});
-			//_director.ChangeTransform(4, "Cube", 6, new Director.ChangeTransformConfig
-			//{
-			//	Position = new Director.ChangeVector3Config
-			//	{
-			//		X = 5,
-			//		Y = 5,
-			//	}
-			//});
-			//_director.ChangeTransform(2, "Cube", 1, new Director.ChangeTransformConfig
-			//{
-			//	Rotation = new Director.ChangeVector3Config
-			//	{
-			//		Z = 0,
-			//	}
-			//});
-			//_director.ChangeTransform(2, "Cube", 3, new Director.ChangeTransformConfig
-			//{
-			//	Scale = new Director.ChangeVector3Config
-			//	{
-			//		Z = 5,
-			//	}
-			//});
-			//_director.Destroy(15, "Cube");
+			_director.Destroy(15, "Cube");
 
 			//_director.InstantiateBundleAsset(1, "Sprite", "main", "sprite", new Director.InstantiateConfig
 			//{

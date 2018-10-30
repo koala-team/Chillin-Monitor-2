@@ -10,6 +10,7 @@
 
 	public enum EUIElementType
 	{
+		Canvas,
 		Text,
 		Slider,
 		RawImage,

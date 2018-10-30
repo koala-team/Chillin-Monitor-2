@@ -3,18 +3,18 @@ using DG.Tweening;
 
 namespace Koala
 {
-	public class ChangeUIElementOccurrence : DOTweenOccurrence<ChangeUIElementOccurrence, Director.ChangeUIElementConfig>
+	public class ChangeUIElementOccurrence : DOTweenOccurrence<ChangeUIElementOccurrence, Director.ChangeRectTransformConfig>
 	{
 		private RectTransform _rect = null;
 
 
 		public ChangeUIElementOccurrence() { }
 
-		protected override Director.ChangeUIElementConfig CreateOldConfig()
+		protected override Director.ChangeRectTransformConfig CreateOldConfig()
 		{
 			RectTransform rect = GetRect();
 
-			var currentConfig = new Director.ChangeUIElementConfig();
+			var currentConfig = new Director.ChangeRectTransformConfig();
 
 			if (_newConfig.Position != null)
 				currentConfig.Position = rect.anchoredPosition3D.ToChangeVector3Config();
@@ -40,7 +40,7 @@ namespace Koala
 			return currentConfig;
 		}
 
-		protected override void ManageTweens(Director.ChangeUIElementConfig config, bool isForward)
+		protected override void ManageTweens(Director.ChangeRectTransformConfig config, bool isForward)
 		{
 			RectTransform rect = GetRect();
 
@@ -56,9 +56,9 @@ namespace Koala
 			if (config.Rotation != null)
 			{
 				DOTween.To(
-					() => rect.eulerAngles,
-					x => rect.eulerAngles = x,
-					rect.eulerAngles.ApplyChangeVector3Config(config.Rotation),
+					() => rect.localEulerAngles,
+					x => rect.localEulerAngles = x,
+					rect.localEulerAngles.ApplyChangeVector3Config(config.Rotation),
 					_duration).RegisterChronosTimeline(isForward);
 			}
 

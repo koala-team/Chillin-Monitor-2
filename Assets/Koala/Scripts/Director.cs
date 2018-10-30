@@ -82,11 +82,14 @@ namespace Koala
 		}
 
 		public void CreateUIElement(float cycle, string reference,
-			string parentReference, EUIElementType type, ChangeUIElementConfig config)
+			string parentReference, EUIElementType type, ChangeRectTransformConfig config)
 		{
 			GameObject go;
 			switch (type)
 			{
+				case EUIElementType.Canvas:
+					go = Resources.Load("UIElements/Canvas") as GameObject;
+					break;
 				case EUIElementType.Text:
 					go =  Resources.Load("UIElements/Text") as GameObject;
 					break;
@@ -104,18 +107,16 @@ namespace Koala
 				new InstantiateOccurrence(reference, go, new InstantiateConfig
 				{
 					Position = new Vector3(),
-					Rotation = new Vector3(),
-					Scale = Vector3.one,
 					ParentReference = parentReference,
 				}, Helper.UserCanvasGameObject));
 
-			ChangeUIElement(cycle, reference, 0, config);
+			ChangeRectTransform(cycle, reference, 0, config);
 		}
 
-		public void ChangeUIElement(float cycle, string reference,
-			float durationCycles, ChangeUIElementConfig config)
+		public void ChangeRectTransform(float cycle, string reference,
+			float durationCycles, ChangeRectTransformConfig config)
 		{
-			DOTweenAction<ChangeUIElementOccurrence, ChangeUIElementConfig>(cycle, reference, durationCycles, config);
+			DOTweenAction<ChangeUIElementOccurrence, ChangeRectTransformConfig>(cycle, reference, durationCycles, config);
 		}
 
 		public void ChangeText(float cycle, string reference,
@@ -163,8 +164,8 @@ namespace Koala
 		public class InstantiateConfig
 		{
 			public Vector3 Position { get; set; }
-			public Vector3 Rotation { get; set; }
-			public Vector3 Scale { get; set; }
+			public Vector3? Rotation { get; set; }
+			public Vector3? Scale { get; set; }
 			public string ParentReference { get; set; }
 		}
 
@@ -210,7 +211,7 @@ namespace Koala
 			public bool? Stop { get; set; }
 		}
 
-		public class ChangeUIElementConfig
+		public class ChangeRectTransformConfig
 		{
 			public ChangeVector3Config Position { get; set; }
 			public ChangeVector3Config Rotation { get; set; }
