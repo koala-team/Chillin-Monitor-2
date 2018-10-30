@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using Chronos;
 using TMPro;
 using UnityEngine.UI;
 
@@ -26,8 +25,8 @@ namespace Koala
 			forwardOccurrence.Init(reference, duration, config, true, null);
 			backwardOccurrence.Init(reference, duration, null, false, forwardOccurrence);
 
-			Helper.RootTimeline.Schedule(startTime, true, forwardOccurrence);
-			Helper.RootTimeline.Schedule(endTime, true, backwardOccurrence);
+			Timeline.Instance.Schedule(startTime, forwardOccurrence);
+			Timeline.Instance.Schedule(endTime, backwardOccurrence);
 		}
 
 		public void InstantiateBundleAsset(
@@ -36,19 +35,19 @@ namespace Koala
 		{
 			GameObject go = BundleManager.Instance.GetBundle(bundleName).LoadAsset<GameObject>(assetName);
 
-			Helper.RootTimeline.Schedule(Helper.GetCycleTime(cycle, true, false), true,
+			Timeline.Instance.Schedule(Helper.GetCycleTime(cycle),
 				new InstantiateOccurrence(reference, go, config, Helper.RootGameObject));
 		}
 
 		public void Destroy(float cycle, string reference)
 		{
-			Helper.RootTimeline.Schedule(Helper.GetCycleTime(cycle, true, true), true,
+			Timeline.Instance.Schedule(Helper.GetCycleTime(cycle),
 				new DestroyOccurrence(reference));
 		}
 
 		public void SetActive(float cycle, string reference, bool isActive)
 		{
-			Helper.RootTimeline.Schedule(Helper.GetCycleTime(cycle, true, !isActive), true,
+			Timeline.Instance.Schedule(Helper.GetCycleTime(cycle),
 				new SetActiveOccurrence(reference, isActive));
 		}
 
@@ -59,26 +58,20 @@ namespace Koala
 
 		public void ChangeAnimatorVariable(float cycle, string reference, ChangeAnimatorVariableConfig config)
 		{
-			Helper.RootTimeline.Schedule(Helper.GetCycleTime(cycle), true,
+			Timeline.Instance.Schedule(Helper.GetCycleTime(cycle),
 				new ChangeAnimatorVarOccurrence(reference, config));
 		}
 
 		public void ChangeAnimatorState(float cycle, string reference, ChangeAnimatorStateConfig config)
 		{
-			Helper.RootTimeline.Schedule(Helper.GetCycleTime(cycle), true,
+			Timeline.Instance.Schedule(Helper.GetCycleTime(cycle),
 				new ChangeAnimatorStateOccurrence(reference, config));
 		}
 
 		public void ChangeAudioSource(float cycle, string reference, AudioSourceConfig config)
 		{
-			Helper.RootTimeline.Schedule(Helper.GetCycleTime(cycle), true,
+			Timeline.Instance.Schedule(Helper.GetCycleTime(cycle),
 				new ChangeAudioSourceOccurrence(reference, config));
-		}
-
-		public void DebugLog(float cycle, string message)
-		{
-			Helper.RootTimeline.Schedule(Helper.GetCycleTime(cycle), true,
-				() => Debug.Log("Forward: " + message), () => Debug.Log("Backward: " + message));
 		}
 
 		public void CreateUIElement(float cycle, string reference,
@@ -103,7 +96,7 @@ namespace Koala
 					throw new System.NotSupportedException("type is not supported");
 			}
 
-			Helper.RootTimeline.Schedule(Helper.GetCycleTime(cycle, true, false), true,
+			Timeline.Instance.Schedule(Helper.GetCycleTime(cycle),
 				new InstantiateOccurrence(reference, go, new InstantiateConfig
 				{
 					Position = new Vector3(),
@@ -122,7 +115,7 @@ namespace Koala
 		public void ChangeText(float cycle, string reference,
 			ChangeTextConfig config)
 		{
-			Helper.RootTimeline.Schedule(Helper.GetCycleTime(cycle), true,
+			Timeline.Instance.Schedule(Helper.GetCycleTime(cycle),
 				new ChangeTextOccurrence(reference, config));
 		}
 

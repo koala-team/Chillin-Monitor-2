@@ -32,7 +32,6 @@ namespace Koala
 
 			if (config.Position != null)
 			{
-				Debug.Log("Position");
 				DOTween.To(
 					() => transform.localPosition,
 					x => transform.localPosition = x,

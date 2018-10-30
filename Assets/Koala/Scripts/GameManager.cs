@@ -11,30 +11,25 @@ namespace Koala
 
 	public class GameManager : MonoBehaviour
 	{
+		public static readonly float TIME_SCALE_DELTA = 0.25f;
+
 		private Director _director;
-		private float _timeScale = 0;
-		private float _timeScaleDelta = 0.25f;
-		private float _cycleDuration = 0.25f;
+		private float _cycleDuration = 0.25f; // TODO: get from server
 		
-		public Timeline timeline;
-		public Clock rootClock;
 		public GameObject rootGameObject;
 		public GameObject userCanvasGameObject;
 		public TextMeshProUGUI timeText;
 
 		void Awake()
 		{
-			// Pause the game at start
-			// rootClock = Timekeeper.instance.Clock("Root");
-			rootClock.localTimeScale = 0;
+			// Setup timeline
+			Timeline.Instance.Reset();
 
 			// Reset references map
 			References.Instance.ResetMaps();
 
 			// set Helpers value
 			Helper.CycleDuration = _cycleDuration;
-			Helper.RootTimeline = timeline;
-			Helper.RootClock = rootClock;
 			Helper.RootGameObject = rootGameObject;
 			Helper.UserCanvasGameObject = userCanvasGameObject;
 
@@ -51,51 +46,38 @@ namespace Koala
 
 		void Update()
 		{
-			if (_timeScale != 0)
-				DOTween.ManualUpdate(Math.Abs(timeline.deltaTime), 0);
+			Timeline.Instance.Update(Time.deltaTime);
+
+			// Update Time Text
+			timeText.text = "Time: " + Timeline.Instance.Time.ToString("0.0000000") +
+							"\nCycle: " + (Timeline.Instance.Time / _cycleDuration).TruncateDecimal(1).ToString("0.0") +
+							"\nSpeed: " + Timeline.Instance.TimeScale.ToString() +
+							"\nCycle Duration: " + _cycleDuration.ToString();
 
 			// Control Time
-			if (Input.GetKeyDown(KeyCode.P))
+			if (Input.GetKeyDown(KeyCode.P) && Timeline.Instance.TimeScale != 0)
 			{
-				ChangeTimeScale(-_timeScale); // Pause
-				Debug.Log("Pause");
+				ChangeTimeScale(-Timeline.Instance.TimeScale); // Pause
+				//Debug.Log("Pause");
 			}
-			else if (Input.GetKeyDown(KeyCode.LeftBracket))
+			else if (Input.GetKeyDown(KeyCode.LeftBracket) && Timeline.Instance.Time > 0)
 			{
-				ChangeTimeScale(-_timeScaleDelta); // Rewind
-				Debug.Log("Rewind: " + _timeScale.ToString());
+				ChangeTimeScale(-TIME_SCALE_DELTA); // Rewind
+				//Debug.Log("Rewind: " + Timeline.Instance.TimeScale.ToString());
 			}
 			else if (Input.GetKeyDown(KeyCode.RightBracket))
 			{
-				ChangeTimeScale(_timeScaleDelta); // Forward
-				Debug.Log("Play: " + _timeScale.ToString());
+				ChangeTimeScale(TIME_SCALE_DELTA); // Forward
+				//Debug.Log("Play: " + Timeline.Instance.TimeScale.ToString());
 			}
 		}
 
 		private void ChangeTimeScale(float amount)
 		{
-			_timeScale += amount;
-			rootClock.localTimeScale = _timeScale;
+			Timeline.Instance.TimeScale += amount;
 
-			Helper.SetAnimatorsTimeScale(_timeScale, rootGameObject);
-			Helper.SetAudioSourcesTimeScale(_timeScale, rootGameObject);
-		}
-
-		void FixedUpdate()
-		{
-			// Check time don't go behind zero
-			if (rootClock.time <= 0 && _timeScale < 0)
-			{
-				_timeScale = 0;
-				rootClock.localTimeScale = 0;
-				Debug.Log("Force Pause");
-			}
-
-			// Update Time Text
-			timeText.text = "Time: " + rootClock.time.ToString("0.0000000") +
-							"\nCycle: " + (rootClock.time / _cycleDuration).TruncateDecimal(1).ToString("0.0") +
-							"\nSpeed: " + _timeScale.ToString() +
-							"\nCycle Duration: " + _cycleDuration.ToString();
+			Helper.SetAnimatorsTimeScale(rootGameObject);
+			Helper.SetAudioSourcesTimeScale(rootGameObject);
 		}
 
 		private IEnumerator DownloadBundle()
@@ -215,11 +197,11 @@ namespace Koala
 			{
 				Position = new Director.ChangeVector3Config { Z = -0.6f },
 			});
-			_director.CreateUIElement(4, "CubeSlider", "Canvas", EUIElementType.Slider, new Director.ChangeRectTransformConfig
+			_director.CreateUIElement(3, "CubeSlider", "Canvas", EUIElementType.Slider, new Director.ChangeRectTransformConfig
 			{
 				Position = new Director.ChangeVector3Config { X = 100, Y = -100 },
 			});
-			_director.ChangeSlider(4.1f, "CubeSlider", 1, new Director.ChangeSliderConfig
+			_director.ChangeSlider(3, "CubeSlider", 1, new Director.ChangeSliderConfig
 			{
 				Value = 0.5f,
 			});

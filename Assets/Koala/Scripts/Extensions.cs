@@ -19,13 +19,13 @@ namespace Koala
 			float sign = forward ? 1 : -1;
 			tween.OnUpdate(() =>
 			{
-				float timeScale = sign * Helper.RootTimeline.timeScale;
+				float timeScaleSign = System.Math.Sign(sign * Timeline.Instance.TimeScale);
 
 				if (tween.IsActive())
 				{
-					if (timeScale < 0 && !tween.IsBackwards())
+					if (timeScaleSign < 0 && !tween.IsBackwards())
 						tween.PlayBackwards();
-					else if (timeScale > 0 && tween.IsBackwards())
+					else if (timeScaleSign > 0 && tween.IsBackwards())
 						tween.PlayForward();
 				}
 			});

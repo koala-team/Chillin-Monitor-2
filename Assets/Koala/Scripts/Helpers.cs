@@ -6,14 +6,12 @@ namespace Koala
 	public static class Helper
 	{
 		public static float CycleDuration { get; set; }
-		public static Timeline RootTimeline { get; set; }
-		public static Clock RootClock { get; set; }
 		public static GameObject RootGameObject { get; set; }
 		public static GameObject UserCanvasGameObject { get; set; }
 
 		public static float GetCycleTime(float cycle, bool addOffset = false, bool bitForward = true)
 		{
-			float time = cycle.TruncateDecimal(3) * CycleDuration;
+			float time = cycle * CycleDuration;
 			if (addOffset)
 			{
 				time += (bitForward ? +1.0f : -1.0f) * Constants.OCCURRENCE_DELAY;
@@ -30,8 +28,9 @@ namespace Koala
 			duration =  endTime - startTime;
 		}
 
-		public static void SetAnimatorsTimeScale(float timeScale, GameObject root)
+		public static void SetAnimatorsTimeScale(GameObject root)
 		{
+			float timeScale = Timeline.Instance.TimeScale;
 			foreach (var animator in root.GetComponentsInChildren<Animator>())
 			{
 				try
@@ -44,8 +43,9 @@ namespace Koala
 			}
 		}
 
-		public static void SetAudioSourcesTimeScale(float timeScale, GameObject root)
+		public static void SetAudioSourcesTimeScale(GameObject root)
 		{
+			float timeScale = Timeline.Instance.TimeScale;
 			foreach (var audioSource in root.GetComponentsInChildren<AudioSource>())
 			{
 				try

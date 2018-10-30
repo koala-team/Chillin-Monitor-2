@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using Chronos;
 
 namespace Koala
 {
@@ -38,8 +37,8 @@ namespace Koala
 
 			References.Instance.AddGameObject(_reference, _createdGO);
 
-			Helper.SetAnimatorsTimeScale(Helper.RootTimeline.timeScale, _createdGO);
-			Helper.SetAudioSourcesTimeScale(Helper.RootTimeline.timeScale, _createdGO);
+			Helper.SetAnimatorsTimeScale(_createdGO);
+			Helper.SetAudioSourcesTimeScale(_createdGO);
 		}
 
 		public override void Backward()

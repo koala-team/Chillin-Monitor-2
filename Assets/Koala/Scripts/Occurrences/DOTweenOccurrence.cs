@@ -1,7 +1,4 @@
-﻿using Chronos;
-using DG.Tweening;
-
-namespace Koala
+﻿namespace Koala
 {
 	public interface IDOTweenOccurrence<T, C>
 	{
