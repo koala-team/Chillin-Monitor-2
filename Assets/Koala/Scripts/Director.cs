@@ -133,10 +133,8 @@ namespace Koala
 
 		public void CreateEmptyGameObject(float cycle, string reference, InstantiateConfig config)
 		{
-			GameObject go = new GameObject();
-
 			Timeline.Instance.Schedule(Helper.GetCycleTime(cycle),
-				new InstantiateOccurrence(reference, go, config, Helper.RootGameObject));
+				new InstantiateOccurrence(reference, null, config, Helper.RootGameObject));
 		}
 		#endregion
 

@@ -27,9 +27,17 @@ namespace Koala
 			if (_config.ParentReference != null)
 				parent = References.Instance.GetGameObject(_config.ParentReference);
 
-			_createdGO = GameObject.Instantiate(_baseGO, parent.transform);
+			if (_baseGO == null)
+			{
+				_createdGO = new GameObject(_reference);
+				_createdGO.transform.parent = parent.transform;
+			}
+			else
+			{
+				_createdGO = GameObject.Instantiate(_baseGO, parent.transform);
+				_createdGO.name = _reference;
+			}
 
-			_createdGO.name = _reference;
 
 			_createdGO.transform.localPosition = _config.Position;
 			if (_config.Rotation.HasValue)

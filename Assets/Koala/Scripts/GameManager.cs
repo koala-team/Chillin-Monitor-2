@@ -210,7 +210,17 @@ namespace Koala
 			_director.CreateEmptyGameObject(3, "Child", new Director.InstantiateConfig
 			{
 				Position = Vector3.one,
-				ParentReference = "Canvas/CubeSlider/Background",
+				ParentReference = "Cube",
+			});
+			_director.CreateEmptyGameObject(3, "Child", new Director.InstantiateConfig
+			{
+				Position = Vector3.one,
+				ParentReference = "Cube",
+			});
+			_director.CreateEmptyGameObject(3, "Child", new Director.InstantiateConfig
+			{
+				Position = Vector3.one,
+				ParentReference = "Cube",
 			});
 			_director.Destroy(15, "Cube");
 
