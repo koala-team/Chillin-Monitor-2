@@ -130,6 +130,14 @@ namespace Koala
 		{
 			DOTweenAction<ChangeRawImageOccurrence, ChangeRawImageConfig>(cycle, reference, durationCycles, config);
 		}
+
+		public void CreateEmptyGameObject(float cycle, string reference, InstantiateConfig config)
+		{
+			GameObject go = new GameObject();
+
+			Timeline.Instance.Schedule(Helper.GetCycleTime(cycle),
+				new InstantiateOccurrence(reference, go, config, Helper.RootGameObject));
+		}
 		#endregion
 
 		#region Configs

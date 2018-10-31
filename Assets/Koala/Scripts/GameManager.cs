@@ -207,7 +207,11 @@ namespace Koala
 			{
 				Value = 0.5f,
 			});
-			_director.SetActive(3, "Canvas/CubeSlider/Background", false);
+			_director.CreateEmptyGameObject(3, "Child", new Director.InstantiateConfig
+			{
+				Position = Vector3.one,
+				ParentReference = "Canvas/CubeSlider/Background",
+			});
 			_director.Destroy(15, "Cube");
 
 
