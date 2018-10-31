@@ -12,7 +12,7 @@ namespace Koala
 		}
 
 		#region Functions
-		private void BaseAction<T, C>(float cycle, string reference, float durationCycles, C config)
+		private void BaseAction<T, C>(float cycle, string reference, float durationCycles, C config, bool onlySuddenChanges = false)
 			where T : Occurrence, IBaseOccurrence<T, C>, new()
 			where C : class
 		{
@@ -26,7 +26,8 @@ namespace Koala
 			backwardOccurrence.Init(reference, duration, null, false, forwardOccurrence);
 
 			Timeline.Instance.Schedule(startTime, forwardOccurrence);
-			Timeline.Instance.Schedule(endTime, backwardOccurrence);
+			if (!onlySuddenChanges)
+				Timeline.Instance.Schedule(endTime, backwardOccurrence);
 		}
 
 		public void InstantiateBundleAsset(
@@ -140,7 +141,7 @@ namespace Koala
 		public void ChangeSiblingOrder(float cycle, string reference,
 			ChangeSiblingOrderConfig config)
 		{
-			BaseAction<ChangeSiblingOrderOccurrence, ChangeSiblingOrderConfig>(cycle, reference, 0, config);
+			BaseAction<ChangeSiblingOrderOccurrence, ChangeSiblingOrderConfig>(cycle, reference, 0, config, true);
 		}
 		#endregion
 
