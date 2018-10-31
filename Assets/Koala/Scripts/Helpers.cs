@@ -9,22 +9,16 @@ namespace Koala
 		public static GameObject RootGameObject { get; set; }
 		public static GameObject UserCanvasGameObject { get; set; }
 
-		public static float GetCycleTime(float cycle, bool addOffset = false, bool bitForward = true)
+		public static float GetCycleTime(float cycle)
 		{
-			float time = cycle * CycleDuration;
-			if (addOffset)
-			{
-				time += (bitForward ? +1.0f : -1.0f) * Constants.OCCURRENCE_DELAY;
-			}
-			return time;
+			return cycle * CycleDuration;
 		}
 
 		public static void GetCyclesDurationTime(float startCycle, float durationCycles,
 			out float startTime, out float endTime, out float duration)
 		{
-			bool addTimeOffset = false; // durationCycles > 0;
-			startTime = GetCycleTime(startCycle, addTimeOffset, true);
-			endTime = GetCycleTime(startCycle + durationCycles, addTimeOffset, false);
+			startTime = GetCycleTime(startCycle);
+			endTime = GetCycleTime(startCycle + durationCycles);
 			duration =  endTime - startTime;
 		}
 

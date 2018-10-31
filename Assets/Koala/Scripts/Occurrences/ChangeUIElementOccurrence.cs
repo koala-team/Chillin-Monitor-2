@@ -3,7 +3,7 @@ using DG.Tweening;
 
 namespace Koala
 {
-	public class ChangeUIElementOccurrence : DOTweenOccurrence<ChangeUIElementOccurrence, Director.ChangeRectTransformConfig>
+	public class ChangeUIElementOccurrence : BaseOccurrence<ChangeUIElementOccurrence, Director.ChangeRectTransformConfig>
 	{
 		private RectTransform _rect = null;
 

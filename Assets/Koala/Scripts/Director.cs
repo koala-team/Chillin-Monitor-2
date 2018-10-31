@@ -12,8 +12,8 @@ namespace Koala
 		}
 
 		#region Functions
-		private void DOTweenAction<T, C>(float cycle, string reference, float durationCycles, C config)
-			where T : Occurrence, IDOTweenOccurrence<T, C>, new()
+		private void BaseAction<T, C>(float cycle, string reference, float durationCycles, C config)
+			where T : Occurrence, IBaseOccurrence<T, C>, new()
 			where C : class
 		{
 			float startTime, endTime, duration;
@@ -53,7 +53,7 @@ namespace Koala
 
 		public void ChangeTransform(float cycle, string reference, float durationCycles, ChangeTransformConfig config)
 		{
-			DOTweenAction<ChangeTransformOccurrence, ChangeTransformConfig>(cycle, reference, durationCycles, config);
+			BaseAction<ChangeTransformOccurrence, ChangeTransformConfig>(cycle, reference, durationCycles, config);
 		}
 
 		public void ChangeAnimatorVariable(float cycle, string reference, ChangeAnimatorVariableConfig config)
@@ -109,7 +109,7 @@ namespace Koala
 		public void ChangeRectTransform(float cycle, string reference,
 			float durationCycles, ChangeRectTransformConfig config)
 		{
-			DOTweenAction<ChangeUIElementOccurrence, ChangeRectTransformConfig>(cycle, reference, durationCycles, config);
+			BaseAction<ChangeUIElementOccurrence, ChangeRectTransformConfig>(cycle, reference, durationCycles, config);
 		}
 
 		public void ChangeText(float cycle, string reference,
@@ -122,19 +122,25 @@ namespace Koala
 		public void ChangeSlider(float cycle, string reference,
 			float durationCycles, ChangeSliderConfig config)
 		{
-			DOTweenAction<ChangeSliderOccurrence, ChangeSliderConfig>(cycle, reference, durationCycles, config);
+			BaseAction<ChangeSliderOccurrence, ChangeSliderConfig>(cycle, reference, durationCycles, config);
 		}
 
 		public void ChangeRawImage(float cycle, string reference,
 			float durationCycles, ChangeRawImageConfig config)
 		{
-			DOTweenAction<ChangeRawImageOccurrence, ChangeRawImageConfig>(cycle, reference, durationCycles, config);
+			BaseAction<ChangeRawImageOccurrence, ChangeRawImageConfig>(cycle, reference, durationCycles, config);
 		}
 
 		public void CreateEmptyGameObject(float cycle, string reference, InstantiateConfig config)
 		{
 			Timeline.Instance.Schedule(Helper.GetCycleTime(cycle),
 				new InstantiateOccurrence(reference, null, config, Helper.RootGameObject));
+		}
+
+		public void ChangeSiblingOrder(float cycle, string reference,
+			ChangeSiblingOrderConfig config)
+		{
+			BaseAction<ChangeSiblingOrderOccurrence, ChangeSiblingOrderConfig>(cycle, reference, 0, config);
 		}
 		#endregion
 
@@ -245,6 +251,15 @@ namespace Koala
 			public string AssetName { get; set; }
 			public ChangeVector4Config Color { get; set; }
 			public ChangeVector4Config UVRect { get; set; }
+		}
+
+		public class ChangeSiblingOrderConfig
+		{
+			public int? NewIndex { get; set; }
+			public bool? GotoFirst { get; set; }
+			public bool? GotoLast { get; set; }
+			public int? ChangeIndex { get; set; }
+			public string SiblingReferenceAsBaseIndex { get; set; }
 		}
 		#endregion
 	}

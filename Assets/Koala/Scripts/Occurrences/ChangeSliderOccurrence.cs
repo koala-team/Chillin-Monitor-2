@@ -3,7 +3,7 @@ using DG.Tweening;
 
 namespace Koala
 {
-	public class ChangeSliderOccurrence : DOTweenOccurrence<ChangeSliderOccurrence, Director.ChangeSliderConfig>
+	public class ChangeSliderOccurrence : BaseOccurrence<ChangeSliderOccurrence, Director.ChangeSliderConfig>
 	{
 		private SliderParts _sliderParts;
 

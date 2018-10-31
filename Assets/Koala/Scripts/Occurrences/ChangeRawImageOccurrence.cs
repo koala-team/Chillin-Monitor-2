@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 namespace Koala
 {
-	public class ChangeRawImageOccurrence : DOTweenOccurrence<ChangeRawImageOccurrence, Director.ChangeRawImageConfig>
+	public class ChangeRawImageOccurrence : BaseOccurrence<ChangeRawImageOccurrence, Director.ChangeRawImageConfig>
 	{
 		private RawImage _image;
 		private Texture _oldTexture;

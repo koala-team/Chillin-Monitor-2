@@ -3,7 +3,7 @@ using DG.Tweening;
 
 namespace Koala
 {
-	public class ChangeTransformOccurrence : DOTweenOccurrence<ChangeTransformOccurrence, Director.ChangeTransformConfig>
+	public class ChangeTransformOccurrence : BaseOccurrence<ChangeTransformOccurrence, Director.ChangeTransformConfig>
 	{
 		private Transform _transform = null;
 		

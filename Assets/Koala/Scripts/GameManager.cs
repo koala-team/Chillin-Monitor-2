@@ -207,20 +207,55 @@ namespace Koala
 			{
 				Value = 0.5f,
 			});
-			_director.CreateEmptyGameObject(3, "Child", new Director.InstantiateConfig
+			_director.CreateEmptyGameObject(2, "Child1", new Director.InstantiateConfig
 			{
 				Position = Vector3.one,
 				ParentReference = "Cube",
 			});
-			_director.CreateEmptyGameObject(3, "Child", new Director.InstantiateConfig
+			_director.CreateEmptyGameObject(2, "Child2", new Director.InstantiateConfig
 			{
 				Position = Vector3.one,
 				ParentReference = "Cube",
 			});
-			_director.CreateEmptyGameObject(3, "Child", new Director.InstantiateConfig
+			_director.CreateEmptyGameObject(2, "Child3", new Director.InstantiateConfig
 			{
 				Position = Vector3.one,
 				ParentReference = "Cube",
+			});
+			_director.ChangeSiblingOrder(3, "Child2", new Director.ChangeSiblingOrderConfig
+			{
+				GotoLast = true,
+			});
+			_director.ChangeSiblingOrder(3.5f, "Child2", new Director.ChangeSiblingOrderConfig
+			{
+				GotoFirst = true,
+			});
+			_director.ChangeSiblingOrder(4, "Child2", new Director.ChangeSiblingOrderConfig
+			{
+				SiblingReferenceAsBaseIndex = "Child1",
+				ChangeIndex = 2,
+			});
+			_director.ChangeSiblingOrder(4.5f, "Child2", new Director.ChangeSiblingOrderConfig
+			{
+				ChangeIndex = -2,
+			});
+			_director.ChangeSiblingOrder(5, "Child2", new Director.ChangeSiblingOrderConfig
+			{
+				NewIndex = 1000,
+			});
+			_director.ChangeSiblingOrder(5.5f, "Child2", new Director.ChangeSiblingOrderConfig
+			{
+				NewIndex = 0,
+			});
+			_director.ChangeSiblingOrder(6, "Child2", new Director.ChangeSiblingOrderConfig
+			{
+				SiblingReferenceAsBaseIndex = "Child1",
+				ChangeIndex = 0,
+			});
+			_director.ChangeSiblingOrder(6.5f, "Child2", new Director.ChangeSiblingOrderConfig
+			{
+				SiblingReferenceAsBaseIndex = "Child1",
+				ChangeIndex = -1,
 			});
 			_director.Destroy(15, "Cube");
 
