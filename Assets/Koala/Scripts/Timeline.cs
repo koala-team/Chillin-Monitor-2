@@ -79,8 +79,8 @@ namespace Koala
 				comparator comparator = (a, b, c) =>
 				{
 					return TimeScale > 0 ?
-							a < b && b <= c :
-							a > b && b >= c;
+							a <= b && b <= c :
+							a >= b && b >= c;
 				};
 				int step = TimeScale > 0 ? 1 : -1;
 				int convertedPrevTime = ConvertTime(prevTime);

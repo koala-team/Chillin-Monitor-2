@@ -143,6 +143,12 @@ namespace Koala
 		{
 			BaseAction<ChangeSiblingOrderOccurrence, ChangeSiblingOrderConfig>(cycle, reference, 0, config, true);
 		}
+
+		public void ManageComponents(float cycle, string reference,
+			ManageComponentsConfig config)
+		{
+			BaseAction<ManageComponentsOccurrence, ManageComponentsConfig>(cycle, reference, 0, config, true);
+		}
 		#endregion
 
 		#region Configs
@@ -261,6 +267,13 @@ namespace Koala
 			public bool? GotoLast { get; set; }
 			public int? ChangeIndex { get; set; }
 			public string SiblingReferenceAsBaseIndex { get; set; }
+		}
+
+		public class ManageComponentsConfig
+		{
+			public EComponentType Type { get; set; }
+			public bool? Add { get; set; }
+			public bool? IsActive { get; set; }
 		}
 		#endregion
 	}
