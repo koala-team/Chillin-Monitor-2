@@ -66,8 +66,6 @@ namespace Koala
 
 			if (deltaTime != 0)
 			{
-				// UnityEngine.Debug.Log("DeltaTime: " + deltaTime.ToString());
-
 				// Update Time
 				float prevTime = Time;
 				Time += deltaTime;

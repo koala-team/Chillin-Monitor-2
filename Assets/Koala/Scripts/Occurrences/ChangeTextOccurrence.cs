@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-using Chronos;
-using TMPro;
+﻿using TMPro;
 
 namespace Koala
 {
