@@ -6,6 +6,7 @@ namespace Koala
 	{
 		public static float CycleDuration { get; set; }
 		public static GameObject RootGameObject { get; set; }
+		public static GameObject RootDestroyedGameObject { get; set; }
 		public static GameObject UserCanvasGameObject { get; set; }
 
 		public static float GetCycleTime(float cycle)
