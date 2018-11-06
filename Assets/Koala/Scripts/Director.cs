@@ -173,6 +173,14 @@ namespace Koala
 			Timeline.Instance.Schedule(Helper.GetCycleTime(cycle),
 				new InstantiateOccurrence(reference, go, config, Helper.RootGameObject));
 		}
+
+		public void ChangeSprite(float cycle, string reference,
+			float durationCycles, ChangeSpriteConfig config)
+		{
+			config.Sprite = BundleManager.Instance.LoadAsset<Sprite>(config.BundleName, config.AssetName);
+
+			BaseAction<ChangeSpriteOccurrence, ChangeSpriteConfig>(cycle, reference, durationCycles, config);
+		}
 		#endregion
 
 		#region Configs
@@ -301,6 +309,17 @@ namespace Koala
 			public EComponentType Type { get; set; }
 			public bool? Add { get; set; }
 			public bool? IsActive { get; set; }
+		}
+
+		public class ChangeSpriteConfig
+		{
+			public string BundleName { get; set; }
+			public string AssetName { get; set; }
+			public Sprite Sprite { get; set; }
+			public ChangeVector4Config Color { get; set; }
+			public bool? FlipX { get; set; }
+			public bool? FlipY { get; set; }
+			public int? Order { get; set; }
 		}
 		#endregion
 	}

@@ -310,13 +310,30 @@ namespace Koala
 			//});
 
 
-			_director.CreateBasicObject(1, "BasicObject1", null, EBasicObjectType.Sprite, new Director.InstantiateConfig
+			//_director.CreateBasicObject(1, "BasicObject1", null, EBasicObjectType.Sprite, new Director.InstantiateConfig
+			//{
+			//	Position = Vector3.zero,
+			//});
+			//_director.CreateBasicObject(1, "BasicObject2", null, EBasicObjectType.AudioSource, new Director.InstantiateConfig
+			//{
+			//	Position = Vector3.zero,
+			//});
+
+
+			_director.CreateBasicObject(1, "Sprite", null, EBasicObjectType.Sprite, new Director.InstantiateConfig
 			{
 				Position = Vector3.zero,
 			});
-			_director.CreateBasicObject(1, "BasicObject2", null, EBasicObjectType.AudioSource, new Director.InstantiateConfig
+			_director.ChangeSprite(1, "Sprite", 0, new Director.ChangeSpriteConfig
 			{
-				Position = Vector3.zero,
+				BundleName = "main",
+				AssetName = "finger_icon square",
+			});
+			_director.ChangeSprite(2, "Sprite", 0, new Director.ChangeSpriteConfig
+			{
+				FlipX = true,
+				FlipY = true,
+				Order = 10,
 			});
 		}
 	}
