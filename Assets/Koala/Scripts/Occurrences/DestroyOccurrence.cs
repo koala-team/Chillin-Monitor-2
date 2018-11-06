@@ -23,13 +23,13 @@ namespace Koala
 			}
 
 			_go.SetActive(false);
-			_go.transform.parent = Helper.RootDestroyedGameObject.transform;
+			_go.transform.SetParent(Helper.RootDestroyedGameObject.transform, true);
 			References.Instance.RemoveGameObject(_reference);
 		}
 
 		public override void Backward()
 		{
-			_go.transform.parent = _parent;
+			_go.transform.SetParent(_parent, true);
 			_go.SetActive(true);
 			References.Instance.AddGameObject(_reference, _go);
 		}
