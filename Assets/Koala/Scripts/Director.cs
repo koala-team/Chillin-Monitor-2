@@ -11,7 +11,7 @@ namespace Koala
 		{
 		}
 
-		#region Functions
+		#region Actions
 		private void BaseAction<T, C>(float cycle, string reference, float durationCycles, C config, bool onlySuddenChanges = false)
 			where T : Occurrence, IBaseOccurrence<T, C>, new()
 			where C : class
@@ -34,7 +34,7 @@ namespace Koala
 			float cycle, string reference,
 			string bundleName, string assetName, InstantiateConfig config)
 		{
-			GameObject go = BundleManager.Instance.GetBundle(bundleName).LoadAsset<GameObject>(assetName);
+			GameObject go = BundleManager.Instance.LoadAsset<GameObject>(bundleName, assetName);
 
 			Timeline.Instance.Schedule(Helper.GetCycleTime(cycle),
 				new InstantiateOccurrence(reference, go, config, Helper.RootGameObject));
@@ -71,6 +71,8 @@ namespace Koala
 
 		public void ChangeAudioSource(float cycle, string reference, AudioSourceConfig config)
 		{
+			config.AudioClip = BundleManager.Instance.LoadAsset<AudioClip>(config.BundleName, config.AssetName);
+
 			Timeline.Instance.Schedule(Helper.GetCycleTime(cycle),
 				new ChangeAudioSourceOccurrence(reference, config));
 		}
@@ -129,6 +131,8 @@ namespace Koala
 		public void ChangeRawImage(float cycle, string reference,
 			float durationCycles, ChangeRawImageConfig config)
 		{
+			config.Texture = BundleManager.Instance.LoadAsset<Texture>(config.BundleName, config.AssetName);
+
 			BaseAction<ChangeRawImageOccurrence, ChangeRawImageConfig>(cycle, reference, durationCycles, config);
 		}
 
@@ -213,7 +217,9 @@ namespace Koala
 		public class AudioSourceConfig
 		{
 			public string BundleName { get; set; }
-			public string AudioClipName { get; set; }
+			public string AssetName { get; set; }
+			public AudioClip AudioClip { get; set; }
+			public float? Time { get; set; }
 			public bool? Mute { get; set; }
 			public bool? Loop { get; set; }
 			public int? Priority { get; set; }
@@ -256,6 +262,7 @@ namespace Koala
 		{
 			public string BundleName { get; set; }
 			public string AssetName { get; set; }
+			public Texture Texture { get; set; }
 			public ChangeVector4Config Color { get; set; }
 			public ChangeVector4Config UVRect { get; set; }
 		}

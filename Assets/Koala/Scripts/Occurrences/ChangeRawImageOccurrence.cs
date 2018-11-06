@@ -7,7 +7,6 @@ namespace Koala
 	public class ChangeRawImageOccurrence : BaseOccurrence<ChangeRawImageOccurrence, Director.ChangeRawImageConfig>
 	{
 		private RawImage _image;
-		private Texture _oldTexture;
 
 
 		public ChangeRawImageOccurrence() { }
@@ -16,10 +15,10 @@ namespace Koala
 		{
 			var image = GetImage();
 
-			var oldConfig = new Director.ChangeRawImageConfig();
-
-			if (_newConfig.BundleName != null && _newConfig.AssetName != null)
-				_oldTexture = image.texture;
+			var oldConfig = new Director.ChangeRawImageConfig
+			{
+				Texture = image.texture,
+			};
 
 			if (_newConfig.Color != null)
 				oldConfig.Color = image.color.ToChangeVector4Config();
@@ -58,12 +57,7 @@ namespace Koala
 			var image = GetImage();
 
 			if (_newConfig.BundleName != null && _newConfig.AssetName != null)
-			{
-				if (isForward)
-					image.texture = BundleManager.Instance.GetBundle(config.BundleName).LoadAsset<Texture>(config.AssetName);
-				else
-					image.texture = _oldTexture;
-			}
+				image.texture = config.Texture;
 		}
 
 		private RawImage GetImage()

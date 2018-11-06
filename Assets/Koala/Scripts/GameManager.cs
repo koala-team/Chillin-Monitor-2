@@ -3,7 +3,6 @@ using System.Collections;
 using UnityEngine.Networking;
 using TMPro;
 using DG.Tweening;
-using System;
 
 namespace Koala
 {
@@ -143,19 +142,18 @@ namespace Koala
 			//});
 
 
-			//_director.CreateUIElement(1, "RawImage", null, EUIElementType.RawImage, new Director.ChangeRectTransformConfig
-			//{
-			//	Position = new Director.ChangeVector3Config { X = 500, Y = -200 },
-			//	Size = new Director.ChangeVector2Config { X = 600 },
-			//});
-
-			//_director.ChangeRawImage(2, "RawImage", 2, new Director.ChangeRawImageConfig
-			//{
-			//	BundleName = "main",
-			//	AssetName = "pacman_move",
-			//	Color = new Director.ChangeVector4Config { X = 0 },
-			//	UVRect = new Director.ChangeVector4Config { Z = 10 },
-			//});
+			_director.CreateUIElement(1, "RawImage", null, EUIElementType.RawImage, new Director.ChangeRectTransformConfig
+			{
+				Position = new Director.ChangeVector3Config { X = 500, Y = -200 },
+				Size = new Director.ChangeVector2Config { X = 600 },
+			});
+			_director.ChangeRawImage(2, "RawImage", 2, new Director.ChangeRawImageConfig
+			{
+				BundleName = "main",
+				AssetName = "pacman_move",
+				Color = new Director.ChangeVector4Config { X = 0 },
+				UVRect = new Director.ChangeVector4Config { Z = 10 },
+			});
 
 
 			//_director.InstantiateBundleAsset(2, "Cube", "main", "cube", new Director.InstantiateConfig
@@ -259,15 +257,15 @@ namespace Koala
 			//_director.Destroy(15, "Cube");
 
 
-			_director.InstantiateBundleAsset(0, "Particle", "main", "particle", new Director.InstantiateConfig
-			{
-				Position = Vector3.one,
-			});
-			_director.ManageComponents(0, "Particle", new Director.ManageComponentsConfig
-			{
-				Type = EComponentType.ParticleSystemManager,
-				Add = true,
-			});
+			//_director.InstantiateBundleAsset(0, "Particle", "main", "particle", new Director.InstantiateConfig
+			//{
+			//	Position = Vector3.one,
+			//});
+			//_director.ManageComponents(0, "Particle", new Director.ManageComponentsConfig
+			//{
+			//	Type = EComponentType.ParticleSystemManager,
+			//	Add = true,
+			//});
 
 
 			//_director.InstantiateBundleAsset(1, "Sprite", "main", "sprite", new Director.InstantiateConfig
@@ -292,19 +290,22 @@ namespace Koala
 			//});
 
 
-			//_director.InstantiateBundleAsset(1, "Audio", "main", "testaudio", new Director.InstantiateConfig
-			//{
-			//	Position = new Vector3(),
-			//	Rotation = new Vector3(),
-			//	Scale = new Vector3(),
-			//});
-			//_director.ChangeAudioSource(2, "Audio", new Director.AudioSourceConfig
-			//{
-			//	bundleName = "main",
-			//	AudioClipName = "carengine",
-			//	Play = true,
-			//});
-			//_director.ChangeAudioSource(20, "Audio", new Director.AudioSourceConfig());
+			_director.InstantiateBundleAsset(1, "Audio", "main", "testaudio", new Director.InstantiateConfig
+			{
+				Position = new Vector3(),
+				Rotation = new Vector3(),
+				Scale = new Vector3(),
+			});
+			_director.ChangeAudioSource(2, "Audio", new Director.AudioSourceConfig
+			{
+				BundleName = "main",
+				AssetName = "carengine",
+				Play = true,
+			});
+			_director.ChangeAudioSource(20, "Audio", new Director.AudioSourceConfig
+			{
+				Play = false,
+			});
 		}
 	}
 }

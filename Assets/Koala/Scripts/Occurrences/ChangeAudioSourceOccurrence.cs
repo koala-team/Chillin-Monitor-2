@@ -5,8 +5,6 @@ namespace Koala
 	public class ChangeAudioSourceOccurrence : Occurrence
 	{
 		private Director.AudioSourceConfig _oldConfig = null;
-		private AudioClip _oldAudioClip = null;
-		private float _oldAudioClipTime;
 
 		private string _reference;
 		private Director.AudioSourceConfig _newConfig;
@@ -22,16 +20,15 @@ namespace Koala
 			AudioSource audioSource = References.Instance.GetGameObject(_reference).GetComponent<AudioSource>();
 			_oldConfig = new Director.AudioSourceConfig()
 			{
+				AudioClip = audioSource.clip,
+				Time = audioSource.time,
 				Mute = audioSource.mute,
 				Loop = audioSource.loop,
 				Priority = audioSource.priority,
 				Volume = audioSource.volume,
 				SpatialBlend = audioSource.spatialBlend,
 				Play = audioSource.isPlaying,
-				Stop = audioSource.time == 0,
 			};
-			_oldAudioClip = audioSource.clip;
-			_oldAudioClipTime = audioSource.time;
 
 			ApplyConfig(_newConfig, false);
 		}
@@ -45,18 +42,11 @@ namespace Koala
 		{
 			AudioSource audioSource = References.Instance.GetGameObject(_reference).GetComponent<AudioSource>();
 
-			if (isBackward)
-			{
-				audioSource.clip = _oldAudioClip;
-				audioSource.time = _oldAudioClipTime;
-			}
-			else
-			{
-				if (config.AudioClipName == null || config.BundleName == null)
-					audioSource.clip = null;
-				else
-					audioSource.clip = BundleManager.Instance.GetBundle(config.BundleName).LoadAsset<AudioClip>(config.AudioClipName);
-			}
+			if (_newConfig.BundleName != null && _newConfig.AssetName != null)
+				audioSource.clip = config.AudioClip;
+
+			if (config.Time.HasValue)
+				audioSource.time = config.Time.Value;
 
 			if (config.Mute.HasValue)
 				audioSource.mute = config.Mute.Value;
