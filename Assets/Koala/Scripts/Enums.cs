@@ -20,4 +20,10 @@
 	{
 		ParticleSystemManager,
 	}
+
+	public enum EBasicObjectType
+	{
+		Sprite,
+		AudioSource,
+	}
 }

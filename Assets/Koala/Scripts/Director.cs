@@ -153,6 +153,26 @@ namespace Koala
 		{
 			BaseAction<ManageComponentsOccurrence, ManageComponentsConfig>(cycle, reference, 0, config, true);
 		}
+
+		public void CreateBasicObject(float cycle, string reference,
+			string parentReference, EBasicObjectType type, InstantiateConfig config)
+		{
+			GameObject go;
+			switch (type)
+			{
+				case EBasicObjectType.Sprite:
+					go = Resources.Load("BasicObjects/Sprite") as GameObject;
+					break;
+				case EBasicObjectType.AudioSource:
+					go = Resources.Load("BasicObjects/Audio Source") as GameObject;
+					break;
+				default:
+					throw new System.NotSupportedException("type is not supported");
+			}
+
+			Timeline.Instance.Schedule(Helper.GetCycleTime(cycle),
+				new InstantiateOccurrence(reference, go, config, Helper.RootGameObject));
+		}
 		#endregion
 
 		#region Configs
