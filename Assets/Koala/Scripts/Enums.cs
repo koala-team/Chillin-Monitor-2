@@ -14,6 +14,7 @@
 		Text,
 		Slider,
 		RawImage,
+		Panel,
 	}
 
 	public enum EComponentType

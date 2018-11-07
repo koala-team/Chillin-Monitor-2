@@ -337,15 +337,22 @@ namespace Koala
 			//});
 
 
-			_director.InstantiateBundleAsset(1, "Cube", "main", "cube", new Director.InstantiateConfig
+			//_director.InstantiateBundleAsset(1, "Cube", "main", "cube", new Director.InstantiateConfig
+			//{
+			//	Position = Vector3.zero,
+			//});
+			//_director.ChangeMaterial(2, "Cube", new Director.ChangeMaterialConfig
+			//{
+			//	BundleName = "main",
+			//	AssetName = "material",
+			//	Index = 0,
+			//});
+
+
+			_director.CreateUIElement(1, "Panel", null, EUIElementType.Panel, new Director.ChangeRectTransformConfig { });
+			_director.ChangeRawImage(1, "Panel", 0, new Director.ChangeRawImageConfig
 			{
-				Position = Vector3.zero,
-			});
-			_director.ChangeMaterial(2, "Cube", new Director.ChangeMaterialConfig
-			{
-				BundleName = "main",
-				AssetName = "material",
-				Index = 0,
+				Color = new Director.ChangeVector4Config { X = 255, Y = 0, Z = 0, W = 0.5f },
 			});
 		}
 	}

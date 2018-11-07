@@ -95,6 +95,9 @@ namespace Koala
 				case EUIElementType.RawImage:
 					go = Resources.Load("UIElements/RawImage") as GameObject;
 					break;
+				case EUIElementType.Panel:
+					go = Resources.Load("UIElements/Panel") as GameObject;
+					break;
 				default:
 					throw new System.NotSupportedException("type is not supported");
 			}
