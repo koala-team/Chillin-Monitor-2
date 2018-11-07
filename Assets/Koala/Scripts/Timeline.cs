@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DG.Tweening;
+using System;
 using System.Collections.Generic;
 
 namespace Koala
@@ -69,9 +70,10 @@ namespace Koala
 				// Update Time
 				float prevTime = Time;
 				Time += deltaTime;
-				
+
 				// Update Tweens
-				DG.Tweening.DOTween.ManualUpdate(Math.Abs(deltaTime), 0);
+				TweensManager.Instance.UpdateTweensIsBackward(deltaTime);
+				DOTween.ManualUpdate(Math.Abs(deltaTime), 0);
 
 				// Execute Occurrences
 				comparator comparator = (a, b, c) =>

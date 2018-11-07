@@ -3,7 +3,7 @@
 	public interface IBaseOccurrence<T, C>
 	{
 		void Init(string reference,
-			float duration, C newConfig,
+			float startTime, float endTime, C newConfig,
 			bool isForward, T forwardOccurrence);
 	}
 
@@ -11,9 +11,11 @@
 		where T : BaseOccurrence<T, C>
 		where C : class
 	{
+		protected float _duration;
 
 		protected string _reference;
-		protected float _duration;
+		protected float _startTime;
+		protected float _endTime;
 		protected C _oldConfig;
 		protected C _newConfig;
 		private bool _isForward;
@@ -23,14 +25,17 @@
 		public BaseOccurrence() { }
 
 		public void Init(string reference,
-			float duration, C newConfig,
+			float startTime, float endTime, C newConfig,
 			bool isForward, T forwardOccurrence)
 		{
 			_reference = reference;
-			_duration = duration;
+			_startTime = startTime;
+			_endTime = endTime;
 			_newConfig = newConfig;
 			_isForward = isForward;
 			_forwardOccurrence = forwardOccurrence;
+
+			_duration = System.Math.Abs(_endTime - _startTime);
 		}
 
 		public override void Forward()

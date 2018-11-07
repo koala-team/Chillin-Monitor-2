@@ -22,8 +22,8 @@ namespace Koala
 			T forwardOccurrence = new T();
 			T backwardOccurrence = new T();
 
-			forwardOccurrence.Init(reference, duration, config, true, null);
-			backwardOccurrence.Init(reference, duration, null, false, forwardOccurrence);
+			forwardOccurrence.Init(reference, startTime, endTime, config, true, null);
+			backwardOccurrence.Init(reference, endTime, startTime, null, false, forwardOccurrence);
 
 			Timeline.Instance.Schedule(startTime, forwardOccurrence);
 			if (!onlySuddenChanges)

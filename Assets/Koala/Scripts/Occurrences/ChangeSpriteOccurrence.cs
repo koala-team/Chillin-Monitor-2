@@ -44,7 +44,7 @@ namespace Koala
 					() => spriteRenderer.color,
 					x => spriteRenderer.color = x,
 					spriteRenderer.color.ApplyChangeVector4Config(config.Color),
-					_duration).RegisterChronosTimeline(isForward);
+					_duration).RegisterChronosTimeline(_startTime, isForward);
 			}
 		}
 

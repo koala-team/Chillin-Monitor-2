@@ -6,29 +6,20 @@ namespace Koala
 {
 	public static class Extensions
 	{
-		public static Tween RegisterChronosTimeline(this Tween tween, bool forward = false)
+		public static Tween RegisterChronosTimeline(this Tween tween, float startTime, bool isForward)
 		{
+			TweensManager.Instance.AddTween(tween, isForward);
+
 			TweenCallback endCallback = () =>
 			{
+				TweensManager.Instance.RemoveTween(tween, isForward);
 				tween = null;
 			};
 
 			tween.OnKill(endCallback);
 			tween.OnComplete(endCallback);
 
-			float sign = forward ? 1 : -1;
-			tween.OnUpdate(() =>
-			{
-				float timeScaleSign = System.Math.Sign(sign * Timeline.Instance.TimeScale);
-
-				if (tween.IsActive())
-				{
-					if (timeScaleSign < 0 && !tween.IsBackwards())
-						tween.PlayBackwards();
-					else if (timeScaleSign > 0 && tween.IsBackwards())
-						tween.PlayForward();
-				}
-			});
+			tween.fullPosition = Math.Abs(Timeline.Instance.Time - startTime);
 
 			return tween;
 		}

@@ -50,7 +50,7 @@ namespace Koala
 					() => rect.anchoredPosition3D,
 					x => rect.anchoredPosition3D = x,
 					rect.anchoredPosition3D.ApplyChangeVector3Config(config.Position),
-					_duration).RegisterChronosTimeline(isForward);
+					_duration).RegisterChronosTimeline(_startTime, isForward);
 			}
 
 			if (config.Rotation != null)
@@ -59,7 +59,7 @@ namespace Koala
 					() => rect.localEulerAngles,
 					x => rect.localEulerAngles = x,
 					rect.localEulerAngles.ApplyChangeVector3Config(config.Rotation),
-					_duration).RegisterChronosTimeline(isForward);
+					_duration).RegisterChronosTimeline(_startTime, isForward);
 			}
 
 			if (config.Scale != null)
@@ -68,7 +68,7 @@ namespace Koala
 					() => rect.localScale,
 					x => rect.localScale = x,
 					rect.localScale.ApplyChangeVector3Config(config.Scale),
-					_duration).RegisterChronosTimeline(isForward);
+					_duration).RegisterChronosTimeline(_startTime, isForward);
 			}
 
 			if (config.Pivot != null)
@@ -77,7 +77,7 @@ namespace Koala
 					() => rect.pivot,
 					x => rect.pivot = x,
 					rect.pivot.ApplyChangeVector2Config(config.Pivot),
-					_duration).RegisterChronosTimeline(isForward);
+					_duration).RegisterChronosTimeline(_startTime, isForward);
 			}
 
 			if (config.AnchorMin != null)
@@ -86,7 +86,7 @@ namespace Koala
 					() => rect.anchorMin,
 					x => rect.anchorMin = x,
 					rect.anchorMin.ApplyChangeVector2Config(config.AnchorMin),
-					_duration).RegisterChronosTimeline(isForward);
+					_duration).RegisterChronosTimeline(_startTime, isForward);
 			}
 
 			if (config.AnchorMax != null)
@@ -95,7 +95,7 @@ namespace Koala
 					() => rect.anchorMax,
 					x => rect.anchorMax = x,
 					rect.anchorMax.ApplyChangeVector2Config(config.AnchorMax),
-					_duration).RegisterChronosTimeline(isForward);
+					_duration).RegisterChronosTimeline(_startTime, isForward);
 			}
 
 			if (config.Size != null)
@@ -104,7 +104,7 @@ namespace Koala
 					() => rect.sizeDelta,
 					x => rect.sizeDelta = x,
 					rect.sizeDelta.ApplyChangeVector2Config(config.Size),
-					_duration).RegisterChronosTimeline(isForward);
+					_duration).RegisterChronosTimeline(_startTime, isForward);
 			}
 		}
 

@@ -33,10 +33,12 @@ namespace Koala
 			Helper.RootDestroyedGameObject = rootDestroyedGameObject;
 			Helper.UserCanvasGameObject = userCanvasGameObject;
 
-			// Config dotween
+			// Config Tweens
+			TweensManager.Instance.Reset();
 			DOTween.Init();
 			DOTween.defaultEaseType = Ease.Linear;
 			DOTween.defaultUpdateType = UpdateType.Manual;
+			DOTween.useSafeMode = false;
 		}
 
 		void Start()
@@ -349,10 +351,24 @@ namespace Koala
 			//});
 
 
-			_director.CreateUIElement(1, "Panel", null, EUIElementType.Panel, new Director.ChangeRectTransformConfig { });
-			_director.ChangeRawImage(1, "Panel", 0, new Director.ChangeRawImageConfig
+			//_director.CreateUIElement(1, "Panel", null, EUIElementType.Panel, new Director.ChangeRectTransformConfig { });
+			//_director.ChangeRawImage(1, "Panel", 0, new Director.ChangeRawImageConfig
+			//{
+			//	Color = new Director.ChangeVector4Config { X = 255, Y = 0, Z = 0, W = 0.5f },
+			//});
+
+
+			_director.InstantiateBundleAsset(1, "Cube", "main", "cube", new Director.InstantiateConfig
 			{
-				Color = new Director.ChangeVector4Config { X = 255, Y = 0, Z = 0, W = 0.5f },
+				Position = new Vector3(0, 10, 0),
+			});
+			_director.ChangeTransform(2, "Cube", 8, new Director.ChangeTransformConfig
+			{
+				Position = new Director.ChangeVector3Config { Y = -10 },
+			});
+			_director.ChangeTransform(2, "Cube", 5, new Director.ChangeTransformConfig
+			{
+				Rotation = new Director.ChangeVector3Config { X = 45, Y = 45 },
 			});
 		}
 	}

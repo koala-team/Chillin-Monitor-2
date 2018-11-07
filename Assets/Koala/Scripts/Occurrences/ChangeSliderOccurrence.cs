@@ -47,7 +47,7 @@ namespace Koala
 					() => sliderParts.Slider.value,
 					x => sliderParts.Slider.value = x,
 					config.Value.Value,
-					_duration).RegisterChronosTimeline(isForward);
+					_duration).RegisterChronosTimeline(_startTime, isForward);
 			}
 
 			if (config.MaxValue.HasValue)
@@ -56,7 +56,7 @@ namespace Koala
 					() => sliderParts.Slider.maxValue,
 					x => sliderParts.Slider.maxValue = x,
 					config.MaxValue.Value,
-					_duration).RegisterChronosTimeline(isForward);
+					_duration).RegisterChronosTimeline(_startTime, isForward);
 			}
 
 			if (config.MinValue.HasValue)
@@ -65,7 +65,7 @@ namespace Koala
 					() => sliderParts.Slider.minValue,
 					x => sliderParts.Slider.minValue = x,
 					config.MinValue.Value,
-					_duration).RegisterChronosTimeline(isForward);
+					_duration).RegisterChronosTimeline(_startTime, isForward);
 			}
 
 			if (config.BackgroundColor != null)
@@ -74,7 +74,7 @@ namespace Koala
 					() => sliderParts.BackgroundImage.color,
 					x => sliderParts.BackgroundImage.color = x,
 					sliderParts.BackgroundImage.color.ApplyChangeVector4Config(config.BackgroundColor),
-					_duration).RegisterChronosTimeline(isForward);
+					_duration).RegisterChronosTimeline(_startTime, isForward);
 			}
 
 			if (config.FillColor != null)
@@ -83,7 +83,7 @@ namespace Koala
 					() => sliderParts.FillImage.color,
 					x => sliderParts.FillImage.color = x,
 					sliderParts.FillImage.color.ApplyChangeVector4Config(config.FillColor),
-					_duration).RegisterChronosTimeline(isForward);
+					_duration).RegisterChronosTimeline(_startTime, isForward);
 			}
 		}
 
