@@ -181,6 +181,14 @@ namespace Koala
 
 			BaseAction<ChangeSpriteOccurrence, ChangeSpriteConfig>(cycle, reference, durationCycles, config);
 		}
+
+		public void ChangeMaterial(float cycle, string reference,
+			ChangeMaterialConfig config)
+		{
+			config.Material = BundleManager.Instance.LoadAsset<Material>(config.BundleName, config.AssetName);
+
+			BaseAction<ChangeMaterialOccurrence, ChangeMaterialConfig>(cycle, reference, 0, config);
+		}
 		#endregion
 
 		#region Configs
@@ -320,6 +328,14 @@ namespace Koala
 			public bool? FlipX { get; set; }
 			public bool? FlipY { get; set; }
 			public int? Order { get; set; }
+		}
+
+		public class ChangeMaterialConfig
+		{
+			public string BundleName { get; set; }
+			public string AssetName { get; set; }
+			public Material Material { get; set; }
+			public int Index { get; set; }
 		}
 		#endregion
 	}

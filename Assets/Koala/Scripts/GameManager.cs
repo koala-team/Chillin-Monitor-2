@@ -320,20 +320,32 @@ namespace Koala
 			//});
 
 
-			_director.CreateBasicObject(1, "Sprite", null, EBasicObjectType.Sprite, new Director.InstantiateConfig
+			//_director.CreateBasicObject(1, "Sprite", null, EBasicObjectType.Sprite, new Director.InstantiateConfig
+			//{
+			//	Position = Vector3.zero,
+			//});
+			//_director.ChangeSprite(1, "Sprite", 0, new Director.ChangeSpriteConfig
+			//{
+			//	BundleName = "main",
+			//	AssetName = "finger_icon square",
+			//});
+			//_director.ChangeSprite(2, "Sprite", 0, new Director.ChangeSpriteConfig
+			//{
+			//	FlipX = true,
+			//	FlipY = true,
+			//	Order = 10,
+			//});
+
+
+			_director.InstantiateBundleAsset(1, "Cube", "main", "cube", new Director.InstantiateConfig
 			{
 				Position = Vector3.zero,
 			});
-			_director.ChangeSprite(1, "Sprite", 0, new Director.ChangeSpriteConfig
+			_director.ChangeMaterial(2, "Cube", new Director.ChangeMaterialConfig
 			{
 				BundleName = "main",
-				AssetName = "finger_icon square",
-			});
-			_director.ChangeSprite(2, "Sprite", 0, new Director.ChangeSpriteConfig
-			{
-				FlipX = true,
-				FlipY = true,
-				Order = 10,
+				AssetName = "material",
+				Index = 0,
 			});
 		}
 	}
