@@ -358,17 +358,103 @@ namespace Koala
 			//});
 
 
-			_director.InstantiateBundleAsset(1, "Cube", "main", "cube", new Director.InstantiateConfig
+			//_director.InstantiateBundleAsset(1, "Cube", "main", "cube", new Director.InstantiateConfig
+			//{
+			//	Position = new Vector3(0, 10, 0),
+			//});
+			//_director.ChangeTransform(2, "Cube", 8, new Director.ChangeTransformConfig
+			//{
+			//	Position = new Director.ChangeVector3Config { Y = -10 },
+			//});
+			//_director.ChangeTransform(2, "Cube", 5, new Director.ChangeTransformConfig
+			//{
+			//	Rotation = new Director.ChangeVector3Config { X = 45, Y = 45 },
+			//});
+
+
+			_director.CreateBasicObject(0, "Ellipse", null, EBasicObjectType.Ellipse2D, new Director.InstantiateConfig
 			{
-				Position = new Vector3(0, 10, 0),
+				Position = -Vector3.one,
 			});
-			_director.ChangeTransform(2, "Cube", 8, new Director.ChangeTransformConfig
+			_director.ChangeEllipse2D(1, "Ellipse", 5, new Director.ChangeEllipse2DConfig
 			{
-				Position = new Director.ChangeVector3Config { Y = -10 },
+				FillColor = new Director.ChangeVector4Config { X = 0, Y = 0 },
+				XRadius = 2,
+				YRadius = 1,
 			});
-			_director.ChangeTransform(2, "Cube", 5, new Director.ChangeTransformConfig
+
+			_director.CreateBasicObject(0, "Polygon", null, EBasicObjectType.Polygon2D, new Director.InstantiateConfig
 			{
-				Rotation = new Director.ChangeVector3Config { X = 45, Y = 45 },
+				Position = Vector3.one,
+			});
+			_director.ChangePolygon2D(1, "Polygon", 0, new Director.ChangePolygon2DConfig
+			{
+				FillColor = new Director.ChangeVector4Config { X = 0, Z = 0 },
+				Vertices = new System.Collections.Generic.List<Director.ChangeVector2Config>
+				{
+					new Director.ChangeVector2Config{ X = 0, Y = 0 },
+					new Director.ChangeVector2Config{ X = 1, Y = 0 },
+					new Director.ChangeVector2Config{ X = 1, Y = 1 },
+				},
+			});
+			_director.ChangePolygon2D(1, "Polygon", 4, new Director.ChangePolygon2DConfig
+			{
+				Vertices = new System.Collections.Generic.List<Director.ChangeVector2Config>
+				{
+					new Director.ChangeVector2Config{ X = 1, Y = 0 },
+					new Director.ChangeVector2Config{ X = 1, Y = 1 },
+					new Director.ChangeVector2Config{ X = 0, Y = 0 },
+				},
+			});
+			_director.ChangePolygon2D(5, "Polygon", 1, new Director.ChangePolygon2DConfig
+			{
+				FillColor = new Director.ChangeVector4Config { X = 255, Y = 0 },
+				Vertices = new System.Collections.Generic.List<Director.ChangeVector2Config>
+				{
+					new Director.ChangeVector2Config{ X = 1, Y = 0 },
+					new Director.ChangeVector2Config{ X = 1, Y = 1 },
+					new Director.ChangeVector2Config{ X = 0, Y = 1 },
+					new Director.ChangeVector2Config{ X = 0, Y = 0 },
+				},
+			});
+			_director.ChangePolygon2D(5, "Polygon", 5, new Director.ChangePolygon2DConfig
+			{
+				Vertices = new System.Collections.Generic.List<Director.ChangeVector2Config>
+				{
+					new Director.ChangeVector2Config{ X = 5, Y = 0 },
+					new Director.ChangeVector2Config{ X = 5, Y = 5 },
+					null,
+					null,
+				},
+			});
+
+			_director.CreateBasicObject(0, "Line", null, EBasicObjectType.Line, new Director.InstantiateConfig
+			{
+				Position = new Vector3(-5, 5),
+			});
+			_director.ChangeLine(0, "Line", 0, new Director.ChangeLineConfig
+			{
+				FillColor = new Director.ChangeVector4Config { X = 0, Y = 0 },
+				Width = 0,
+				Vertices = new System.Collections.Generic.List<Director.ChangeVector3Config>
+				{
+					new Director.ChangeVector3Config{ X = 0, Y = 0, Z = 2 },
+					new Director.ChangeVector3Config{ X = 1, Y = 0, Z = 0 },
+					new Director.ChangeVector3Config{ X = 1, Y = 1, Z = -2 },
+				},
+			});
+			_director.ChangeLine(0, "Line", 4, new Director.ChangeLineConfig
+			{
+				Width = 1,
+				CornerVertices = 90,
+				EndCapVertices = 90,
+				Loop = true,
+				Vertices = new System.Collections.Generic.List<Director.ChangeVector3Config>
+				{
+					new Director.ChangeVector3Config{ X = 5, Y = 5, Z = 2 },
+					new Director.ChangeVector3Config{ X = -5, Y = 2, Z = 0 },
+					new Director.ChangeVector3Config{ X = -3, Y = -3, Z = -2 },
+				},
 			});
 		}
 	}

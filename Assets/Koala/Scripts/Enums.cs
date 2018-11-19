@@ -26,5 +26,8 @@
 	{
 		Sprite,
 		AudioSource,
+		Ellipse2D,
+		Polygon2D,
+		Line,
 	}
 }

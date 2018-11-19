@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
 namespace Koala
 {
@@ -84,19 +85,11 @@ namespace Koala
 			switch (type)
 			{
 				case EUIElementType.Canvas:
-					go = Resources.Load("UIElements/Canvas") as GameObject;
-					break;
 				case EUIElementType.Text:
-					go =  Resources.Load("UIElements/Text") as GameObject;
-					break;
 				case EUIElementType.Slider:
-					go = Resources.Load("UIElements/Slider") as GameObject;
-					break;
 				case EUIElementType.RawImage:
-					go = Resources.Load("UIElements/RawImage") as GameObject;
-					break;
 				case EUIElementType.Panel:
-					go = Resources.Load("UIElements/Panel") as GameObject;
+					go = Resources.Load("UIElements/" + type.ToString()) as GameObject;
 					break;
 				default:
 					throw new System.NotSupportedException("type is not supported");
@@ -164,10 +157,11 @@ namespace Koala
 			switch (type)
 			{
 				case EBasicObjectType.Sprite:
-					go = Resources.Load("BasicObjects/Sprite") as GameObject;
-					break;
 				case EBasicObjectType.AudioSource:
-					go = Resources.Load("BasicObjects/Audio Source") as GameObject;
+				case EBasicObjectType.Ellipse2D:
+				case EBasicObjectType.Polygon2D:
+				case EBasicObjectType.Line:
+					go = Resources.Load("BasicObjects/" + type.ToString()) as GameObject;
 					break;
 				default:
 					throw new System.NotSupportedException("type is not supported");
@@ -190,7 +184,25 @@ namespace Koala
 		{
 			config.Material = BundleManager.Instance.LoadAsset<Material>(config.BundleName, config.AssetName);
 
-			BaseAction<ChangeMaterialOccurrence, ChangeMaterialConfig>(cycle, reference, 0, config);
+			BaseAction<ChangeMaterialOccurrence, ChangeMaterialConfig>(cycle, reference, 0, config, true);
+		}
+
+		public void ChangeEllipse2D(float cycle, string reference,
+			float durationCycles, ChangeEllipse2DConfig config)
+		{
+			BaseAction<ChangeEllipse2DOccurrence, ChangeEllipse2DConfig>(cycle, reference, durationCycles, config);
+		}
+
+		public void ChangePolygon2D(float cycle, string reference,
+			float durationCycles, ChangePolygon2DConfig config)
+		{
+			BaseAction<ChangePolygon2DOccurrence, ChangePolygon2DConfig>(cycle, reference, durationCycles, config);
+		}
+
+		public void ChangeLine(float cycle, string reference,
+			float durationCycles, ChangeLineConfig config)
+		{
+			BaseAction<ChangeLineOccurrence, ChangeLineConfig>(cycle, reference, durationCycles, config);
 		}
 		#endregion
 
@@ -339,6 +351,41 @@ namespace Koala
 			public string AssetName { get; set; }
 			public Material Material { get; set; }
 			public int Index { get; set; }
+		}
+
+		public class ChangeEllipse2DConfig
+		{
+			public ChangeVector4Config FillColor { get; set; }
+			public float? XRadius { get; set; }
+			public float? YRadius { get; set; }
+		}
+
+		public class ChangePolygon2DConfig
+		{
+			public ChangeVector4Config FillColor { get; set; }
+			public List<ChangeVector2Config> Vertices { get; set; }
+			public bool SuddenChange { get; set; }
+
+			public ChangePolygon2DConfig()
+			{
+				SuddenChange = false;
+			}
+		}
+
+		public class ChangeLineConfig
+		{
+			public ChangeVector4Config FillColor { get; set; }
+			public List<ChangeVector3Config> Vertices { get; set; }
+			public float? Width { get; set; }
+			public int? CornerVertices { get; set; }
+			public int? EndCapVertices { get; set; }
+			public bool? Loop { get; set; }
+			public bool SuddenChange { get; set; }
+
+			public ChangeLineConfig()
+			{
+				SuddenChange = false;
+			}
 		}
 		#endregion
 	}

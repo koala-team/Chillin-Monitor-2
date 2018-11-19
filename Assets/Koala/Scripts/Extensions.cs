@@ -1,5 +1,7 @@
 ﻿using DG.Tweening;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Koala
@@ -161,6 +163,14 @@ namespace Koala
 		{
 			float multiplier = Mathf.Pow(10, decimals);
 			return (float)Math.Truncate(number * multiplier) / multiplier;
+		}
+
+		/// <summary>
+		/// Extension that converts an array of Vector2 to an array of Vector3
+		/// </summary>
+		public static Vector3[] ToVector3(this Vector2[] vectors)
+		{
+			return Array.ConvertAll<Vector2, Vector3>(vectors, v => v);
 		}
 	}
 }
