@@ -31,26 +31,28 @@ namespace Koala
 				Timeline.Instance.Schedule(endTime, backwardOccurrence);
 		}
 
-		public void InstantiateBundleAsset(
-			float cycle, string reference,
-			string bundleName, string assetName, InstantiateConfig config)
+		private void Instantiate(float cycle, string reference, InstantiateConfig config)
 		{
-			GameObject go = BundleManager.Instance.LoadAsset<GameObject>(bundleName, assetName);
+			if (config.DefaultParent == null)
+				config.DefaultParent = Helper.RootGameObject;
 
-			Timeline.Instance.Schedule(Helper.GetCycleTime(cycle),
-				new InstantiateOccurrence(reference, go, config, Helper.RootGameObject));
+			BaseAction<InstantiateOccurrence, InstantiateConfig>(cycle, reference, 0, config, true);
+		}
+
+		public void InstantiateBundleAsset(float cycle, string reference, InstantiateBundleAssetConfig config)
+		{
+			config.GameObject = BundleManager.Instance.LoadAsset<GameObject>(config.BundleName, config.AssetName);
+			Instantiate(cycle, reference, config);
 		}
 
 		public void Destroy(float cycle, string reference)
 		{
-			Timeline.Instance.Schedule(Helper.GetCycleTime(cycle),
-				new DestroyOccurrence(reference));
+			BaseAction<DestroyOccurrence, DestroyConfig>(cycle, reference, 0, new DestroyConfig(), true);
 		}
 
-		public void SetActive(float cycle, string reference, bool isActive)
+		public void ChangeIsActive(float cycle, string reference, ChangeIsActiveConfig config)
 		{
-			Timeline.Instance.Schedule(Helper.GetCycleTime(cycle),
-				new SetActiveOccurrence(reference, isActive));
+			BaseAction<ChangeIsActiveOccurrence, ChangeIsActiveConfig>(cycle, reference, 0, config, true);
 		}
 
 		public void ChangeTransform(float cycle, string reference, float durationCycles, ChangeTransformConfig config)
@@ -60,22 +62,44 @@ namespace Koala
 
 		public void ChangeAnimatorVariable(float cycle, string reference, ChangeAnimatorVariableConfig config)
 		{
-			Timeline.Instance.Schedule(Helper.GetCycleTime(cycle),
-				new ChangeAnimatorVarOccurrence(reference, config));
+			switch (config.VarType)
+			{
+				case EAnimatorVariableType.Int:
+					int tempInt;
+					int.TryParse(config.Value, out tempInt);
+					config.ValueObject = tempInt;
+					break;
+				case EAnimatorVariableType.Float:
+					float tempFloat;
+					float.TryParse(config.Value, out tempFloat);
+					config.ValueObject = tempFloat;
+					break;
+				case EAnimatorVariableType.Bool:
+					bool tempBool;
+					bool.TryParse(config.Value.ToLower(), out tempBool);
+					config.ValueObject = tempBool;
+					break;
+				case EAnimatorVariableType.Trigger:
+					config.ValueObject = null;
+					break;
+				default:
+					throw new System.NotSupportedException("varType value not supported!");
+			}
+
+			BaseAction<ChangeAnimatorVariableOccurrence, ChangeAnimatorVariableConfig>(cycle, reference, 0, config, true);
 		}
 
 		public void ChangeAnimatorState(float cycle, string reference, ChangeAnimatorStateConfig config)
 		{
-			Timeline.Instance.Schedule(Helper.GetCycleTime(cycle),
-				new ChangeAnimatorStateOccurrence(reference, config));
+			BaseAction<ChangeAnimatorStateOccurrence, ChangeAnimatorStateConfig>(cycle, reference, 0, config, true);
 		}
 
-		public void ChangeAudioSource(float cycle, string reference, AudioSourceConfig config)
+		public void ChangeAudioSource(float cycle, string reference,
+			float durationCycles, ChangeAudioSourceConfig config)
 		{
 			config.AudioClip = BundleManager.Instance.LoadAsset<AudioClip>(config.BundleName, config.AssetName);
 
-			Timeline.Instance.Schedule(Helper.GetCycleTime(cycle),
-				new ChangeAudioSourceOccurrence(reference, config));
+			BaseAction<ChangeAudioSourceOccurrence, ChangeAudioSourceConfig>(cycle, reference, durationCycles, config);
 		}
 
 		public void CreateUIElement(float cycle, string reference,
@@ -95,12 +119,13 @@ namespace Koala
 					throw new System.NotSupportedException("type is not supported");
 			}
 
-			Timeline.Instance.Schedule(Helper.GetCycleTime(cycle),
-				new InstantiateOccurrence(reference, go, new InstantiateConfig
-				{
-					Position = new Vector3(),
-					ParentReference = parentReference,
-				}, Helper.UserCanvasGameObject));
+			Instantiate(cycle, reference, new InstantiateConfig
+			{
+				GameObject = go,
+				Position = new Vector3(),
+				ParentReference = parentReference,
+				DefaultParent = Helper.UserCanvasGameObject,
+			});
 
 			ChangeRectTransform(cycle, reference, 0, config);
 		}
@@ -112,10 +137,9 @@ namespace Koala
 		}
 
 		public void ChangeText(float cycle, string reference,
-			ChangeTextConfig config)
+			float durationCycles, ChangeTextConfig config)
 		{
-			Timeline.Instance.Schedule(Helper.GetCycleTime(cycle),
-				new ChangeTextOccurrence(reference, config));
+			BaseAction<ChangeTextOccurrence, ChangeTextConfig>(cycle, reference, durationCycles, config);
 		}
 
 		public void ChangeSlider(float cycle, string reference,
@@ -134,8 +158,7 @@ namespace Koala
 
 		public void CreateEmptyGameObject(float cycle, string reference, InstantiateConfig config)
 		{
-			Timeline.Instance.Schedule(Helper.GetCycleTime(cycle),
-				new InstantiateOccurrence(reference, null, config, Helper.RootGameObject));
+			Instantiate(cycle, reference, config);
 		}
 
 		public void ChangeSiblingOrder(float cycle, string reference,
@@ -153,7 +176,6 @@ namespace Koala
 		public void CreateBasicObject(float cycle, string reference,
 			string parentReference, EBasicObjectType type, InstantiateConfig config)
 		{
-			GameObject go;
 			switch (type)
 			{
 				case EBasicObjectType.Sprite:
@@ -161,14 +183,13 @@ namespace Koala
 				case EBasicObjectType.Ellipse2D:
 				case EBasicObjectType.Polygon2D:
 				case EBasicObjectType.Line:
-					go = Resources.Load("BasicObjects/" + type.ToString()) as GameObject;
+					config.GameObject = Resources.Load("BasicObjects/" + type.ToString()) as GameObject;
 					break;
 				default:
 					throw new System.NotSupportedException("type is not supported");
 			}
-
-			Timeline.Instance.Schedule(Helper.GetCycleTime(cycle),
-				new InstantiateOccurrence(reference, go, config, Helper.RootGameObject));
+			
+			Instantiate(cycle, reference, config);
 		}
 
 		public void ChangeSprite(float cycle, string reference,
@@ -234,6 +255,27 @@ namespace Koala
 			public Vector3? Rotation { get; set; }
 			public Vector3? Scale { get; set; }
 			public string ParentReference { get; set; }
+
+			// Don't fill these, occurrence handles them
+			public GameObject GameObject { get; set; }
+			public GameObject DefaultParent { get; set; }
+		}
+
+		public class InstantiateBundleAssetConfig : InstantiateConfig
+		{
+			public string BundleName { get; set; }
+			public string AssetName { get; set; }
+		}
+
+		public class DestroyConfig
+		{
+			// Don't fill these, occurrence handles them
+			public Transform Parent { get; set; }
+		}
+
+		public class ChangeIsActiveConfig
+		{
+			public bool IsActive { get; set; }
 		}
 
 		public class ChangeTransformConfig
@@ -247,29 +289,32 @@ namespace Koala
 		{
 			public string VarName { get; set; }
 			public EAnimatorVariableType VarType { get; set; }
-			public string NewValue { get; set; }
+			public string Value { get; set; }
+
+			// Don't fill these, occurrence handles them
+			public object ValueObject { get; set; }
 		}
 
 		public class ChangeAnimatorStateConfig
 		{
-			public string NewStateName { get; set; }
+			public string StateName { get; set; }
 			public int Layer { get; set; }
-			public bool SaveCurrentNormalizedTime { get; set; }
-			public float NewNormalizedTime { get; set; }
+			public float NormalizedTime { get; set; }
+
+			// Don't fill these, occurrence handles them
+			public int? StateHash { get; set; }
 
 			public ChangeAnimatorStateConfig()
 			{
 				Layer = 0;
-				SaveCurrentNormalizedTime = true;
-				NewNormalizedTime = 0;
+				NormalizedTime = 0;
 			}
 		}
 
-		public class AudioSourceConfig
+		public class ChangeAudioSourceConfig
 		{
 			public string BundleName { get; set; }
 			public string AssetName { get; set; }
-			public AudioClip AudioClip { get; set; }
 			public float? Time { get; set; }
 			public bool? Mute { get; set; }
 			public bool? Loop { get; set; }
@@ -278,6 +323,15 @@ namespace Koala
 			public float? SpatialBlend { get; set; } // is 3D or not
 			public bool? Play { get; set; }
 			public bool? Stop { get; set; }
+
+			// Don't fill these, occurrence handles them
+			public AudioClip AudioClip { get; set; }
+			public bool ChangeAudioClip { get; set; }
+
+			public ChangeAudioSourceConfig()
+			{
+				ChangeAudioClip = false;
+			}
 		}
 
 		public class ChangeRectTransformConfig
@@ -313,9 +367,11 @@ namespace Koala
 		{
 			public string BundleName { get; set; }
 			public string AssetName { get; set; }
-			public Texture Texture { get; set; }
 			public ChangeVector4Config Color { get; set; }
 			public ChangeVector4Config UVRect { get; set; }
+
+			// Don't fill these, occurrence handles them
+			public Texture Texture { get; set; }
 		}
 
 		public class ChangeSiblingOrderConfig
@@ -338,19 +394,23 @@ namespace Koala
 		{
 			public string BundleName { get; set; }
 			public string AssetName { get; set; }
-			public Sprite Sprite { get; set; }
 			public ChangeVector4Config Color { get; set; }
 			public bool? FlipX { get; set; }
 			public bool? FlipY { get; set; }
 			public int? Order { get; set; }
+
+			// Don't fill these, occurrence handles them
+			public Sprite Sprite { get; set; }
 		}
 
 		public class ChangeMaterialConfig
 		{
 			public string BundleName { get; set; }
 			public string AssetName { get; set; }
-			public Material Material { get; set; }
 			public int Index { get; set; }
+
+			// Don't fill these, occurrence handles them
+			public Material Material { get; set; }
 		}
 
 		public class ChangeEllipse2DConfig
@@ -380,6 +440,8 @@ namespace Koala
 			public int? CornerVertices { get; set; }
 			public int? EndCapVertices { get; set; }
 			public bool? Loop { get; set; }
+
+			// Don't fill these, occurrence handles them
 			public bool SuddenChange { get; set; }
 
 			public ChangeLineConfig()

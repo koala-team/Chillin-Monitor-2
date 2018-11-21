@@ -1,59 +1,60 @@
-﻿using TMPro;
+﻿using DG.Tweening;
+using TMPro;
 
 namespace Koala
 {
-	public class ChangeTextOccurrence : Occurrence
+	public class ChangeTextOccurrence : BaseOccurrence<ChangeTextOccurrence, Director.ChangeTextConfig>
 	{
 		private TextMeshProUGUI _text;
-		private Director.ChangeTextConfig _oldConfig;
-
-		private string _reference;
-		private Director.ChangeTextConfig _newConfig;
 
 
-		public ChangeTextOccurrence(string reference, Director.ChangeTextConfig newConfig)
+		public ChangeTextOccurrence() { }
+
+		protected override Director.ChangeTextConfig CreateOldConfig()
 		{
-			_reference = reference;
-			_newConfig = newConfig;
-		}
-
-		public override void Forward()
-		{
-			CreateOldConfig();
-
-			ApplyConfig(_newConfig, true);
-		}
-
-		public override void Backward()
-		{
-			ApplyConfig(_oldConfig, false);
-		}
-
-		private void CreateOldConfig()
-		{
-			_oldConfig = new Director.ChangeTextConfig();
 			var text = GetText();
 
+			var oldConfig = new Director.ChangeTextConfig();
+
 			if (_newConfig.Text != null)
-				_oldConfig.Text = text.text;
+				oldConfig.Text = text.text;
+
 			if (_newConfig.FontSize.HasValue)
-				_oldConfig.FontSize = text.fontSize;
+				oldConfig.FontSize = text.fontSize;
+
 			if (_newConfig.Alignment.HasValue)
-				_oldConfig.Alignment = text.alignment;
+				oldConfig.Alignment = text.alignment;
+
 			if (_newConfig.WordWrappingRatios.HasValue)
-				_oldConfig.WordWrappingRatios = text.wordWrappingRatios;
+				oldConfig.WordWrappingRatios = text.wordWrappingRatios;
+
+			return oldConfig;
 		}
 
-		private void ApplyConfig(Director.ChangeTextConfig config, bool isForward)
+		protected override void ManageTweens(Director.ChangeTextConfig config, bool isForward)
+		{
+			var text = GetText();
+
+			if (config.FontSize.HasValue)
+			{
+				DOTween.To(
+					() => text.fontSize,
+					x => text.fontSize = x,
+					config.FontSize.Value,
+					_duration).RegisterChronosTimeline(_startTime, isForward);
+			}
+		}
+
+		protected override void ManageSuddenChanges(Director.ChangeTextConfig config, bool isForward)
 		{
 			var text = GetText();
 
 			if (config.Text != null)
 				text.text = config.Text;
-			if (config.FontSize.HasValue)
-				text.fontSize = config.FontSize.Value;
+
 			if (config.Alignment.HasValue)
 				text.alignment = config.Alignment.Value;
+
 			if (config.WordWrappingRatios.HasValue)
 				text.wordWrappingRatios = config.WordWrappingRatios.Value;
 		}

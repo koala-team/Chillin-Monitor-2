@@ -100,27 +100,24 @@ namespace Koala
 			Debug.Log("Bundle Loaded");
 
 			// Scenarios
-			//_director.CreateUIElement(1, "Text", null, EUIElementType.Text, new Director.ChangeUIElementConfig
+			//_director.CreateUIElement(1, "Text", null, EUIElementType.Text, new Director.ChangeRectTransformConfig
 			//{
 			//	Position = new Director.ChangeVector3Config { X = 100, Y = -200 },
 			//	Size = new Director.ChangeVector2Config { X = 600 },
 			//	AnchorMin = new Director.ChangeVector2Config { X = 0.1f },
-			//	//Scale = new Director.ChangeVector3Config { X = 10, Y = 5 },
-			//	//Rotation = new Director.ChangeVector3Config { Z = 45 },
 			//});
-			//_director.ChangeUIElement(2, "Text", 2, new Director.ChangeUIElementConfig
+			//_director.ChangeRectTransform(2, "Text", 2, new Director.ChangeRectTransformConfig
 			//{
-			//	//Position = new Director.ChangeVector3Config { X = 100, Y = 200 },
 			//	Size = new Director.ChangeVector2Config { X = 800 },
-			//	//AnchorMin = new Director.ChangeVector2Config { X = 0.1f },
-			//	////Scale = new Director.ChangeVector3Config { X = 10, Y = 5 },
-			//	//Rotation = new Director.ChangeVector3Config { Z = 45 },
+			//	Scale = new Director.ChangeVector3Config { X = 10, Y = 5 },
+			//	Rotation = new Director.ChangeVector3Config { Z = 45 },
 			//});
-			//_director.ChangeText(2, "Text", new Director.ChangeTextConfig
+			//_director.ChangeText(2, "Text", 2, new Director.ChangeTextConfig
 			//{
 			//	Text = "WTF",
+			//	FontSize = 30,
 			//});
-			//_director.ChangeText(2, "Text", new Director.ChangeTextConfig
+			//_director.ChangeText(2, "Text", 0, new Director.ChangeTextConfig
 			//{
 			//	Alignment = TextAlignmentOptions.Left,
 			//});
@@ -160,8 +157,10 @@ namespace Koala
 			//});
 
 
-			//_director.InstantiateBundleAsset(2, "Cube", "main", "cube", new Director.InstantiateConfig
+			//_director.InstantiateBundleAsset(2, "Cube", new Director.InstantiateBundleAssetConfig
 			//{
+			//	BundleName = "main",
+			//	AssetName = "cube",
 			//	Position = new Vector3(0, 10, 0),
 			//	Rotation = new Vector3(45, 45, 45),
 			//	Scale = new Vector3(2, 1, 1),
@@ -280,17 +279,17 @@ namespace Koala
 			//});
 			//_director.ChangeAnimatorState(2, "Sprite", new Director.ChangeAnimatorStateConfig
 			//{
-			//	NewStateName = "Explosion"
+			//	StateName = "Explosion"
 			//});
 			//_director.ChangeAnimatorState(10, "Sprite", new Director.ChangeAnimatorStateConfig
 			//{
-			//	NewStateName = "Pacman",
+			//	StateName = "Pacman",
 			//});
-			//_director.ChangeAnimatorVariable(1, "Sprite", new Director.ChangeAnimatorVariableConfig
+			//_director.ChangeAnimatorVariable(3, "Sprite", new Director.ChangeAnimatorVariableConfig
 			//{
 			//	VarName = "monitorTimeScale",
 			//	VarType = (EAnimatorVariableType)1,
-			//	NewValue = "1",
+			//	Value = "5",
 			//});
 
 
@@ -300,13 +299,21 @@ namespace Koala
 			//	Rotation = new Vector3(),
 			//	Scale = new Vector3(),
 			//});
-			//_director.ChangeAudioSource(2, "Audio", new Director.AudioSourceConfig
+			//_director.ChangeAudioSource(1, "Audio", 0, new Director.ChangeAudioSourceConfig
 			//{
 			//	BundleName = "main",
 			//	AssetName = "carengine",
 			//	Play = true,
 			//});
-			//_director.ChangeAudioSource(20, "Audio", new Director.AudioSourceConfig
+			//_director.ChangeAudioSource(2, "Audio", 4, new Director.ChangeAudioSourceConfig
+			//{
+			//	Volume = 0.1f,
+			//});
+			//_director.ChangeAudioSource(6, "Audio", 4, new Director.ChangeAudioSourceConfig
+			//{
+			//	Volume = 1,
+			//});
+			//_director.ChangeAudioSource(20, "Audio", 0, new Director.ChangeAudioSourceConfig
 			//{
 			//	Play = false,
 			//});
@@ -372,90 +379,104 @@ namespace Koala
 			//});
 
 
-			_director.CreateBasicObject(0, "Ellipse", null, EBasicObjectType.Ellipse2D, new Director.InstantiateConfig
-			{
-				Position = -Vector3.one,
-			});
-			_director.ChangeEllipse2D(1, "Ellipse", 5, new Director.ChangeEllipse2DConfig
-			{
-				FillColor = new Director.ChangeVector4Config { X = 0, Y = 0 },
-				XRadius = 2,
-				YRadius = 1,
-			});
+			//_director.CreateBasicObject(0, "Ellipse", null, EBasicObjectType.Ellipse2D, new Director.InstantiateConfig
+			//{
+			//	Position = -Vector3.one,
+			//});
+			//_director.ChangeEllipse2D(1, "Ellipse", 5, new Director.ChangeEllipse2DConfig
+			//{
+			//	FillColor = new Director.ChangeVector4Config { X = 0, Y = 0 },
+			//	XRadius = 2,
+			//	YRadius = 1,
+			//});
 
-			_director.CreateBasicObject(0, "Polygon", null, EBasicObjectType.Polygon2D, new Director.InstantiateConfig
-			{
-				Position = Vector3.one,
-			});
-			_director.ChangePolygon2D(1, "Polygon", 0, new Director.ChangePolygon2DConfig
-			{
-				FillColor = new Director.ChangeVector4Config { X = 0, Z = 0 },
-				Vertices = new System.Collections.Generic.List<Director.ChangeVector2Config>
-				{
-					new Director.ChangeVector2Config{ X = 0, Y = 0 },
-					new Director.ChangeVector2Config{ X = 1, Y = 0 },
-					new Director.ChangeVector2Config{ X = 1, Y = 1 },
-				},
-			});
-			_director.ChangePolygon2D(1, "Polygon", 4, new Director.ChangePolygon2DConfig
-			{
-				Vertices = new System.Collections.Generic.List<Director.ChangeVector2Config>
-				{
-					new Director.ChangeVector2Config{ X = 1, Y = 0 },
-					new Director.ChangeVector2Config{ X = 1, Y = 1 },
-					new Director.ChangeVector2Config{ X = 0, Y = 0 },
-				},
-			});
-			_director.ChangePolygon2D(5, "Polygon", 1, new Director.ChangePolygon2DConfig
-			{
-				FillColor = new Director.ChangeVector4Config { X = 255, Y = 0 },
-				Vertices = new System.Collections.Generic.List<Director.ChangeVector2Config>
-				{
-					new Director.ChangeVector2Config{ X = 1, Y = 0 },
-					new Director.ChangeVector2Config{ X = 1, Y = 1 },
-					new Director.ChangeVector2Config{ X = 0, Y = 1 },
-					new Director.ChangeVector2Config{ X = 0, Y = 0 },
-				},
-			});
-			_director.ChangePolygon2D(5, "Polygon", 5, new Director.ChangePolygon2DConfig
-			{
-				Vertices = new System.Collections.Generic.List<Director.ChangeVector2Config>
-				{
-					new Director.ChangeVector2Config{ X = 5, Y = 0 },
-					new Director.ChangeVector2Config{ X = 5, Y = 5 },
-					null,
-					null,
-				},
-			});
+			//_director.CreateBasicObject(0, "Polygon", null, EBasicObjectType.Polygon2D, new Director.InstantiateConfig
+			//{
+			//	Position = Vector3.one,
+			//});
+			//_director.ChangePolygon2D(1, "Polygon", 0, new Director.ChangePolygon2DConfig
+			//{
+			//	FillColor = new Director.ChangeVector4Config { X = 0, Z = 0 },
+			//	Vertices = new System.Collections.Generic.List<Director.ChangeVector2Config>
+			//	{
+			//		new Director.ChangeVector2Config{ X = 0, Y = 0 },
+			//		new Director.ChangeVector2Config{ X = 1, Y = 0 },
+			//		new Director.ChangeVector2Config{ X = 1, Y = 1 },
+			//	},
+			//});
+			//_director.ChangePolygon2D(1, "Polygon", 4, new Director.ChangePolygon2DConfig
+			//{
+			//	Vertices = new System.Collections.Generic.List<Director.ChangeVector2Config>
+			//	{
+			//		new Director.ChangeVector2Config{ X = 1, Y = 0 },
+			//		new Director.ChangeVector2Config{ X = 1, Y = 1 },
+			//		new Director.ChangeVector2Config{ X = 0, Y = 0 },
+			//	},
+			//});
+			//_director.ChangePolygon2D(5, "Polygon", 1, new Director.ChangePolygon2DConfig
+			//{
+			//	FillColor = new Director.ChangeVector4Config { X = 255, Y = 0 },
+			//	Vertices = new System.Collections.Generic.List<Director.ChangeVector2Config>
+			//	{
+			//		new Director.ChangeVector2Config{ X = 1, Y = 0 },
+			//		new Director.ChangeVector2Config{ X = 1, Y = 1 },
+			//		new Director.ChangeVector2Config{ X = 0, Y = 1 },
+			//		new Director.ChangeVector2Config{ X = 0, Y = 0 },
+			//	},
+			//});
+			//_director.ChangePolygon2D(5, "Polygon", 5, new Director.ChangePolygon2DConfig
+			//{
+			//	Vertices = new System.Collections.Generic.List<Director.ChangeVector2Config>
+			//	{
+			//		new Director.ChangeVector2Config{ X = 5, Y = 0 },
+			//		new Director.ChangeVector2Config{ X = 5, Y = 5 },
+			//		null,
+			//		null,
+			//	},
+			//});
 
-			_director.CreateBasicObject(0, "Line", null, EBasicObjectType.Line, new Director.InstantiateConfig
-			{
-				Position = new Vector3(-5, 5),
-			});
-			_director.ChangeLine(0, "Line", 0, new Director.ChangeLineConfig
-			{
-				FillColor = new Director.ChangeVector4Config { X = 0, Y = 0 },
-				Width = 0,
-				Vertices = new System.Collections.Generic.List<Director.ChangeVector3Config>
-				{
-					new Director.ChangeVector3Config{ X = 0, Y = 0, Z = 2 },
-					new Director.ChangeVector3Config{ X = 1, Y = 0, Z = 0 },
-					new Director.ChangeVector3Config{ X = 1, Y = 1, Z = -2 },
-				},
-			});
-			_director.ChangeLine(0, "Line", 4, new Director.ChangeLineConfig
-			{
-				Width = 1,
-				CornerVertices = 90,
-				EndCapVertices = 90,
-				Loop = true,
-				Vertices = new System.Collections.Generic.List<Director.ChangeVector3Config>
-				{
-					new Director.ChangeVector3Config{ X = 5, Y = 5, Z = 2 },
-					new Director.ChangeVector3Config{ X = -5, Y = 2, Z = 0 },
-					new Director.ChangeVector3Config{ X = -3, Y = -3, Z = -2 },
-				},
-			});
+			//_director.CreateBasicObject(0, "Line", null, EBasicObjectType.Line, new Director.InstantiateConfig
+			//{
+			//	Position = new Vector3(-5, 5),
+			//});
+			//_director.ChangeLine(0, "Line", 0, new Director.ChangeLineConfig
+			//{
+			//	FillColor = new Director.ChangeVector4Config { X = 0, Y = 0 },
+			//	Width = 0,
+			//	Vertices = new System.Collections.Generic.List<Director.ChangeVector3Config>
+			//	{
+			//		new Director.ChangeVector3Config{ X = 0, Y = 0, Z = 2 },
+			//		new Director.ChangeVector3Config{ X = 1, Y = 0, Z = 0 },
+			//		new Director.ChangeVector3Config{ X = 1, Y = 1, Z = -2 },
+			//	},
+			//});
+			//_director.ChangeLine(0, "Line", 4, new Director.ChangeLineConfig
+			//{
+			//	Width = 1,
+			//	CornerVertices = 90,
+			//	EndCapVertices = 90,
+			//	Loop = true,
+			//	Vertices = new System.Collections.Generic.List<Director.ChangeVector3Config>
+			//	{
+			//		new Director.ChangeVector3Config{ X = 5, Y = 5, Z = 2 },
+			//		new Director.ChangeVector3Config{ X = -5, Y = 2, Z = 0 },
+			//		new Director.ChangeVector3Config{ X = -3, Y = -3, Z = -2 },
+			//	},
+			//});
+
+
+			//_director.InstantiateBundleAsset(2, "Cube", "main", "cube", new Director.InstantiateConfig
+			//{
+			//	Position = new Vector3(0, 0, 0),
+			//});
+			//_director.ChangeIsActive(3, "Cube", new Director.ChangeIsActiveConfig
+			//{
+			//	IsActive = false,
+			//});
+			//_director.ChangeIsActive(5, "Cube", new Director.ChangeIsActiveConfig
+			//{
+			//	IsActive = true,
+			//});
 		}
 	}
 }

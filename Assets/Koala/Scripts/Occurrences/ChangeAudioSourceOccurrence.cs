@@ -1,26 +1,23 @@
-﻿using UnityEngine;
+﻿using DG.Tweening;
+using UnityEngine;
 
 namespace Koala
 {
-	public class ChangeAudioSourceOccurrence : Occurrence
+	public class ChangeAudioSourceOccurrence : BaseOccurrence<ChangeAudioSourceOccurrence, Director.ChangeAudioSourceConfig>
 	{
-		private Director.AudioSourceConfig _oldConfig = null;
+		AudioSource _audioSource = null;
 
-		private string _reference;
-		private Director.AudioSourceConfig _newConfig;
 
-		public ChangeAudioSourceOccurrence(string reference, Director.AudioSourceConfig newConfig)
+		public ChangeAudioSourceOccurrence() { }
+
+		protected override Director.ChangeAudioSourceConfig CreateOldConfig()
 		{
-			_reference = reference;
-			_newConfig = newConfig;
-		}
-
-		public override void Forward()
-		{
-			AudioSource audioSource = References.Instance.GetGameObject(_reference).GetComponent<AudioSource>();
-			_oldConfig = new Director.AudioSourceConfig()
+			var audioSource = GetAudioSource();
+			
+			var oldConfig = new Director.ChangeAudioSourceConfig()
 			{
 				AudioClip = audioSource.clip,
+				ChangeAudioClip = _newConfig.BundleName != null && _newConfig.AssetName != null,
 				Time = audioSource.time,
 				Mute = audioSource.mute,
 				Loop = audioSource.loop,
@@ -30,19 +27,37 @@ namespace Koala
 				Play = audioSource.isPlaying,
 			};
 
-			ApplyConfig(_newConfig, false);
+			return oldConfig;
 		}
 
-		public override void Backward()
+		protected override void ManageTweens(Director.ChangeAudioSourceConfig config, bool isForward)
 		{
-			ApplyConfig(_oldConfig, true);
+			var audioSource = GetAudioSource();
+
+			if (config.Volume.HasValue)
+			{
+				DOTween.To(
+					() => audioSource.volume,
+					x => audioSource.volume = x,
+					config.Volume.Value,
+					_duration).RegisterChronosTimeline(_startTime, isForward);
+			}
+
+			if (config.SpatialBlend.HasValue)
+			{
+				DOTween.To(
+					() => audioSource.spatialBlend,
+					x => audioSource.spatialBlend = x,
+					config.SpatialBlend.Value,
+					_duration).RegisterChronosTimeline(_startTime, isForward);
+			}
 		}
 
-		private void ApplyConfig(Director.AudioSourceConfig config, bool isBackward)
+		protected override void ManageSuddenChanges(Director.ChangeAudioSourceConfig config, bool isForward)
 		{
-			AudioSource audioSource = References.Instance.GetGameObject(_reference).GetComponent<AudioSource>();
+			var audioSource = GetAudioSource();
 
-			if (_newConfig.BundleName != null && _newConfig.AssetName != null)
+			if ((config.BundleName != null && config.AssetName != null) || config.ChangeAudioClip)
 				audioSource.clip = config.AudioClip;
 
 			if (config.Time.HasValue)
@@ -56,12 +71,6 @@ namespace Koala
 
 			if (config.Priority.HasValue)
 				audioSource.priority = config.Priority.Value;
-
-			if (config.Volume.HasValue)
-				audioSource.volume = config.Volume.Value;
-
-			if (config.SpatialBlend.HasValue)
-				audioSource.spatialBlend = config.SpatialBlend.Value;
 
 			if (config.Play.HasValue)
 			{
@@ -79,6 +88,13 @@ namespace Koala
 			{
 				audioSource.Stop();
 			}
+		}
+
+		private AudioSource GetAudioSource()
+		{
+			if (_audioSource == null)
+				_audioSource = References.Instance.GetGameObject(_reference).GetComponent<AudioSource>();
+			return _audioSource;
 		}
 	}
 }

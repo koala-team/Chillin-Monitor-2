@@ -2,43 +2,47 @@
 
 namespace Koala
 {
-	public class ChangeAnimatorStateOccurrence : Occurrence
+	public class ChangeAnimatorStateOccurrence : BaseOccurrence<ChangeAnimatorStateOccurrence, Director.ChangeAnimatorStateConfig>
 	{
-		private float _currentNormalizedTime;
-		private int _oldStateHash;
 		private Animator _animator = null;
 
-		private string _reference;
-		private Director.ChangeAnimatorStateConfig _newConfig;
 
+		public ChangeAnimatorStateOccurrence() { }
 
-		public ChangeAnimatorStateOccurrence(string reference, Director.ChangeAnimatorStateConfig newConfig)
+		protected override Director.ChangeAnimatorStateConfig CreateOldConfig()
 		{
-			_reference = reference;
-			_newConfig = newConfig;
+			var animator = GetAnimator();
+			var currentAnimatorStateInfo = animator.GetCurrentAnimatorStateInfo(_newConfig.Layer);
+
+			var oldConfig = new Director.ChangeAnimatorStateConfig()
+			{
+				StateHash = currentAnimatorStateInfo.shortNameHash,
+				Layer = _newConfig.Layer,
+				NormalizedTime = currentAnimatorStateInfo.normalizedTime.GetFractionalPart(),
+			};
+
+			return oldConfig;
 		}
 
-		public override void Forward()
+		protected override void ManageSuddenChanges(Director.ChangeAnimatorStateConfig config, bool isForward)
+		{
+			var animator = GetAnimator();
+
+			if (config.StateHash.HasValue)
+			{
+				animator.Play(config.StateHash.Value, config.Layer, config.NormalizedTime);
+			}
+			else
+			{
+				animator.Play(config.StateName, config.Layer, config.NormalizedTime);
+			}
+		}
+
+		private Animator GetAnimator()
 		{
 			if (_animator == null)
-			{
 				_animator = References.Instance.GetGameObject(_reference).GetComponent<Animator>();
-			}
-
-			var currentAnimatorState = _animator.GetCurrentAnimatorStateInfo(_newConfig.Layer);
-			_oldStateHash = currentAnimatorState.shortNameHash;
-			if (_newConfig.SaveCurrentNormalizedTime)
-			{
-				_currentNormalizedTime = currentAnimatorState.normalizedTime.GetFractionalPart();
-			}
-
-			_animator.Play(_newConfig.NewStateName, _newConfig.Layer, _newConfig.NewNormalizedTime);
-		}
-
-		public override void Backward()
-		{
-			float normalizedTime = _newConfig.SaveCurrentNormalizedTime ? _currentNormalizedTime : 0.0f;
-			_animator.Play(_oldStateHash, _newConfig.Layer, normalizedTime);
+			return _animator;
 		}
 	}
 }

@@ -2,59 +2,53 @@
 
 namespace Koala
 {
-	public class InstantiateOccurrence : Occurrence
+	public class InstantiateOccurrence : BaseOccurrence<InstantiateOccurrence, Director.InstantiateConfig>
 	{
 		private GameObject _createdGO;
 
-		private string _reference;
-		private GameObject _baseGO;
-		private Director.InstantiateConfig _config;
-		private GameObject _defaultParent;
 
+		public InstantiateOccurrence() { }
 
-		public InstantiateOccurrence(
-			string reference, GameObject go, Director.InstantiateConfig config, GameObject defaultParent)
+		protected override Director.InstantiateConfig CreateOldConfig()
 		{
-			_reference = reference;
-			_baseGO = go;
-			_config = config;
-			_defaultParent = defaultParent;
+			return new Director.InstantiateConfig();
 		}
 
-		public override void Forward()
+		protected override void ManageSuddenChanges(Director.InstantiateConfig config, bool isForward)
 		{
-			GameObject parent = _defaultParent;
-			if (_config.ParentReference != null)
-				parent = References.Instance.GetGameObject(_config.ParentReference);
-
-			if (_baseGO == null)
+			if (isForward)
 			{
-				_createdGO = new GameObject(_reference);
-				_createdGO.transform.parent = parent.transform;
+				GameObject parent = config.ParentReference == null
+					? config.DefaultParent
+					: References.Instance.GetGameObject(config.ParentReference);
+
+				if (config.GameObject == null)
+				{
+					_createdGO = new GameObject(_reference);
+					_createdGO.transform.parent = parent.transform;
+				}
+				else
+				{
+					_createdGO = GameObject.Instantiate(config.GameObject, parent.transform);
+					_createdGO.name = _reference;
+				}
+
+				_createdGO.transform.localPosition = config.Position;
+				if (config.Rotation.HasValue)
+					_createdGO.transform.localEulerAngles = config.Rotation.Value;
+				if (config.Scale.HasValue)
+					_createdGO.transform.localScale = config.Scale.Value;
+
+				References.Instance.AddGameObject(_reference, _createdGO);
+
+				Helper.SetAnimatorsTimeScale(_createdGO);
+				Helper.SetAudioSourcesTimeScale(_createdGO);
 			}
 			else
 			{
-				_createdGO = GameObject.Instantiate(_baseGO, parent.transform);
-				_createdGO.name = _reference;
+				GameObject.Destroy(_createdGO);
+				References.Instance.RemoveGameObject(_reference);
 			}
-
-
-			_createdGO.transform.localPosition = _config.Position;
-			if (_config.Rotation.HasValue)
-				_createdGO.transform.localEulerAngles = _config.Rotation.Value;
-			if (_config.Scale.HasValue)
-				_createdGO.transform.localScale = _config.Scale.Value;
-
-			References.Instance.AddGameObject(_reference, _createdGO);
-
-			Helper.SetAnimatorsTimeScale(_createdGO);
-			Helper.SetAudioSourcesTimeScale(_createdGO);
-		}
-
-		public override void Backward()
-		{
-			GameObject.Destroy(_createdGO);
-			References.Instance.RemoveGameObject(_reference);
 		}
 	}
 }
