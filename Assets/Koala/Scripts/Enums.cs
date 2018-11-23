@@ -29,5 +29,6 @@
 		Ellipse2D,
 		Polygon2D,
 		Line,
+		Light,
 	}
 }

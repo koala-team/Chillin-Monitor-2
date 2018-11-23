@@ -102,36 +102,36 @@ namespace Koala
 			Debug.Log("Bundle Loaded");
 
 			// Scenarios
-			_director.CreateUIElement(1, "Text", null, EUIElementType.Text, new Director.ChangeRectTransformConfig
-			{
-				Position = new Director.ChangeVector3Config { X = 100, Y = -200 },
-				Size = new Director.ChangeVector2Config { X = 600 },
-				AnchorMin = new Director.ChangeVector2Config { X = 0.1f },
-			});
-			_director.ChangeRectTransform(2, "Text", 2, new Director.ChangeRectTransformConfig
-			{
-				Size = new Director.ChangeVector2Config { X = 800 },
-				Scale = new Director.ChangeVector3Config { X = 10, Y = 5 },
-				Rotation = new Director.ChangeVector3Config { Z = 45 },
-			});
-			_director.ChangeText(2, "Text", 2, new Director.ChangeTextConfig
-			{
-				Text = "WTF",
-				FontSize = 30,
-			});
-			_director.ChangeText(2, "Text", 0, new Director.ChangeTextConfig
-			{
-				Alignment = TextAlignmentOptions.Left,
-			});
-			_director.ChangeText(2, "Text", 0, new Director.ChangeTextConfig
-			{
-				FontName = "agitprop",
-			});
-			_director.ChangeText(4, "Text", 0, new Director.ChangeTextConfig
-			{
-				BundleName = "main",
-				AssetName = "anton sdf",
-			});
+			//_director.CreateUIElement(1, "Text", null, EUIElementType.Text, new Director.ChangeRectTransformConfig
+			//{
+			//	Position = new Director.ChangeVector3Config { X = 100, Y = -200 },
+			//	Size = new Director.ChangeVector2Config { X = 600 },
+			//	AnchorMin = new Director.ChangeVector2Config { X = 0.1f },
+			//});
+			//_director.ChangeRectTransform(2, "Text", 2, new Director.ChangeRectTransformConfig
+			//{
+			//	Size = new Director.ChangeVector2Config { X = 800 },
+			//	Scale = new Director.ChangeVector3Config { X = 10, Y = 5 },
+			//	Rotation = new Director.ChangeVector3Config { Z = 45 },
+			//});
+			//_director.ChangeText(2, "Text", 2, new Director.ChangeTextConfig
+			//{
+			//	Text = "WTF",
+			//	FontSize = 30,
+			//});
+			//_director.ChangeText(2, "Text", 0, new Director.ChangeTextConfig
+			//{
+			//	Alignment = TextAlignmentOptions.Left,
+			//});
+			//_director.ChangeText(2, "Text", 0, new Director.ChangeTextConfig
+			//{
+			//	FontName = "agitprop",
+			//});
+			//_director.ChangeText(4, "Text", 0, new Director.ChangeTextConfig
+			//{
+			//	BundleName = "main",
+			//	AssetName = "anton sdf",
+			//});
 
 
 			//_director.CreateUIElement(1, "Slider", null, EUIElementType.Slider, new Director.ChangeRectTransformConfig
@@ -488,6 +488,23 @@ namespace Koala
 			//{
 			//	IsActive = true,
 			//});
+
+
+			_director.CreateBasicObject(0, "Light", null, EBasicObjectType.Light, new Director.InstantiateConfig
+			{
+				Position = Vector3.zero,
+				Rotation = new Vector3(90, 0, 0),
+			});
+			_director.ChangeLight(0, "Light", 8, new Director.ChangeLightConfig
+			{
+				Color = new Director.ChangeVector4Config { Z = 0 },
+				Intensity = 2,
+			});
+			_director.ChangeLight(4, "Light", 8, new Director.ChangeLightConfig
+			{
+				Type = LightType.Spot,
+				SpotAngle = 175,
+			});
 		}
 	}
 }

@@ -66,5 +66,13 @@ namespace Koala
 				return GetBundle(bundleName).LoadAsset<T>(assetName);
 			return null;
 		}
+
+		public T LoadAsset<T>(Director.ChangeAssetConfig config)
+			where T : UnityEngine.Object
+		{
+			if (config != null && config.BundleName != null && config.AssetName != null)
+				return GetBundle(config.BundleName).LoadAsset<T>(config.AssetName);
+			return null;
+		}
 	}
 }

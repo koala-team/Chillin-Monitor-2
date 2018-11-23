@@ -192,6 +192,7 @@ namespace Koala
 				case EBasicObjectType.Ellipse2D:
 				case EBasicObjectType.Polygon2D:
 				case EBasicObjectType.Line:
+				case EBasicObjectType.Light:
 					config.GameObject = Resources.Load("BasicObjects/" + type.ToString()) as GameObject;
 					break;
 				default:
@@ -234,6 +235,15 @@ namespace Koala
 		{
 			BaseAction<ChangeLineOccurrence, ChangeLineConfig>(cycle, reference, durationCycles, config);
 		}
+
+		public void ChangeLight(float cycle, string reference,
+			float durationCycles, ChangeLightConfig config)
+		{
+			config.Cookie = BundleManager.Instance.LoadAsset<Texture>(config.CookieAsset);
+			config.Flare = BundleManager.Instance.LoadAsset<Flare>(config.FlareAsset);
+
+			BaseAction<ChangeLightOccurrence, ChangeLightConfig>(cycle, reference, durationCycles, config);
+		}
 		#endregion
 
 		#region Configs
@@ -256,6 +266,12 @@ namespace Koala
 		{
 			public float? X { get; set; }
 			public float? Y { get; set; }
+		}
+
+		public class ChangeAssetConfig
+		{
+			public string BundleName { get; set; }
+			public string AssetName { get; set; }
 		}
 
 		public class InstantiateConfig
@@ -463,6 +479,28 @@ namespace Koala
 			{
 				SuddenChange = false;
 			}
+		}
+
+		public class ChangeLightConfig
+		{
+			public LightType? Type { get; set; }
+			public float? Range { get; set; }
+			public float? SpotAngle { get; set; }
+			public ChangeVector4Config Color { get; set; }
+			public float? Intensity { get; set; }
+			public float? IndirectMultiplier { get; set; }
+			public LightShadows? ShadowType { get; set; }
+			public float? ShadowStrength { get; set; }
+			public float? ShadowBias { get; set; }
+			public float? ShadowNormalBias { get; set; }
+			public float? ShadowNearPlane { get; set; }
+			public ChangeAssetConfig CookieAsset { get; set; }
+			public float? CookieSize { get; set; }
+			public ChangeAssetConfig FlareAsset { get; set; }
+
+			// Don't fill these, occurrence handles them
+			public Texture Cookie { get; set; }
+			public Flare Flare { get; set; }
 		}
 		#endregion
 	}
