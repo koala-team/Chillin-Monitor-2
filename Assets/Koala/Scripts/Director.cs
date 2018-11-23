@@ -139,6 +139,15 @@ namespace Koala
 		public void ChangeText(float cycle, string reference,
 			float durationCycles, ChangeTextConfig config)
 		{
+			if (config.BundleName != null && config.AssetName != null)
+			{
+				config.Font = BundleManager.Instance.LoadAsset<TMP_FontAsset>(config.BundleName, config.AssetName);
+			}
+			else if (config.FontName != null)
+			{
+				config.Font = Helper.GetFont(config.FontName.ToLower());
+			}
+
 			BaseAction<ChangeTextOccurrence, ChangeTextConfig>(cycle, reference, durationCycles, config);
 		}
 
@@ -347,10 +356,16 @@ namespace Koala
 
 		public class ChangeTextConfig
 		{
+			public string BundleName { get; set; }
+			public string AssetName { get; set; }
+			public string FontName { get; set; }
 			public string Text { get; set; }
 			public float? FontSize { get; set; }
 			public TextAlignmentOptions? Alignment { get; set; }
 			public float? WordWrappingRatios { get; set; }
+
+			// Don't fill these, occurrence handles them
+			public TMP_FontAsset Font { get; set; }
 		}
 
 		public class ChangeSliderConfig

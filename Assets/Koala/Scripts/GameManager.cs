@@ -18,6 +18,7 @@ namespace Koala
 		public GameObject rootDestroyedGameObject;
 		public GameObject userCanvasGameObject;
 		public TextMeshProUGUI timeText;
+		public FontItem[] m_fontItems;
 
 		void Awake()
 		{
@@ -32,6 +33,7 @@ namespace Koala
 			Helper.RootGameObject = rootGameObject;
 			Helper.RootDestroyedGameObject = rootDestroyedGameObject;
 			Helper.UserCanvasGameObject = userCanvasGameObject;
+			Helper.Fonts = m_fontItems;
 
 			// Config Tweens
 			TweensManager.Instance.Reset();
@@ -100,27 +102,36 @@ namespace Koala
 			Debug.Log("Bundle Loaded");
 
 			// Scenarios
-			//_director.CreateUIElement(1, "Text", null, EUIElementType.Text, new Director.ChangeRectTransformConfig
-			//{
-			//	Position = new Director.ChangeVector3Config { X = 100, Y = -200 },
-			//	Size = new Director.ChangeVector2Config { X = 600 },
-			//	AnchorMin = new Director.ChangeVector2Config { X = 0.1f },
-			//});
-			//_director.ChangeRectTransform(2, "Text", 2, new Director.ChangeRectTransformConfig
-			//{
-			//	Size = new Director.ChangeVector2Config { X = 800 },
-			//	Scale = new Director.ChangeVector3Config { X = 10, Y = 5 },
-			//	Rotation = new Director.ChangeVector3Config { Z = 45 },
-			//});
-			//_director.ChangeText(2, "Text", 2, new Director.ChangeTextConfig
-			//{
-			//	Text = "WTF",
-			//	FontSize = 30,
-			//});
-			//_director.ChangeText(2, "Text", 0, new Director.ChangeTextConfig
-			//{
-			//	Alignment = TextAlignmentOptions.Left,
-			//});
+			_director.CreateUIElement(1, "Text", null, EUIElementType.Text, new Director.ChangeRectTransformConfig
+			{
+				Position = new Director.ChangeVector3Config { X = 100, Y = -200 },
+				Size = new Director.ChangeVector2Config { X = 600 },
+				AnchorMin = new Director.ChangeVector2Config { X = 0.1f },
+			});
+			_director.ChangeRectTransform(2, "Text", 2, new Director.ChangeRectTransformConfig
+			{
+				Size = new Director.ChangeVector2Config { X = 800 },
+				Scale = new Director.ChangeVector3Config { X = 10, Y = 5 },
+				Rotation = new Director.ChangeVector3Config { Z = 45 },
+			});
+			_director.ChangeText(2, "Text", 2, new Director.ChangeTextConfig
+			{
+				Text = "WTF",
+				FontSize = 30,
+			});
+			_director.ChangeText(2, "Text", 0, new Director.ChangeTextConfig
+			{
+				Alignment = TextAlignmentOptions.Left,
+			});
+			_director.ChangeText(2, "Text", 0, new Director.ChangeTextConfig
+			{
+				FontName = "agitprop",
+			});
+			_director.ChangeText(4, "Text", 0, new Director.ChangeTextConfig
+			{
+				BundleName = "main",
+				AssetName = "anton sdf",
+			});
 
 
 			//_director.CreateUIElement(1, "Slider", null, EUIElementType.Slider, new Director.ChangeRectTransformConfig

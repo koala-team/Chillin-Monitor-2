@@ -16,6 +16,9 @@ namespace Koala
 
 			var oldConfig = new Director.ChangeTextConfig();
 
+			if (_newConfig.Font != null)
+				oldConfig.Font = text.font;
+
 			if (_newConfig.Text != null)
 				oldConfig.Text = text.text;
 
@@ -48,6 +51,9 @@ namespace Koala
 		protected override void ManageSuddenChanges(Director.ChangeTextConfig config, bool isForward)
 		{
 			var text = GetText();
+
+			if (config.Font != null)
+				text.font = config.Font;
 
 			if (config.Text != null)
 				text.text = config.Text;

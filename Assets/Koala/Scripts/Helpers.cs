@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using TMPro;
+using UnityEngine;
 
 namespace Koala
 {
@@ -8,6 +9,7 @@ namespace Koala
 		public static GameObject RootGameObject { get; set; }
 		public static GameObject RootDestroyedGameObject { get; set; }
 		public static GameObject UserCanvasGameObject { get; set; }
+		public static FontItem[] Fonts { get; set; }
 
 		public static float GetCycleTime(float cycle)
 		{
@@ -50,6 +52,14 @@ namespace Koala
 				{
 				}
 			}
+		}
+
+		public static TMP_FontAsset GetFont(string name)
+		{
+			FontItem fontItem = System.Array.Find(Fonts, fi => fi.Name == name);
+			if (fontItem != null)
+				return fontItem.Font;
+			return null;
 		}
 	}
 }
