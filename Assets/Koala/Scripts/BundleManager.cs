@@ -59,14 +59,6 @@ namespace Koala
 			return _bundles[reference];
 		}
 
-		public T LoadAsset<T>(string bundleName, string assetName)
-			where T : UnityEngine.Object
-		{
-			if (bundleName != null && assetName != null)
-				return GetBundle(bundleName).LoadAsset<T>(assetName);
-			return null;
-		}
-
 		public T LoadAsset<T>(Director.ChangeAssetConfig config)
 			where T : UnityEngine.Object
 		{

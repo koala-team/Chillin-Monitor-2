@@ -41,7 +41,8 @@ namespace Koala
 
 		public void InstantiateBundleAsset(float cycle, string reference, InstantiateBundleAssetConfig config)
 		{
-			config.GameObject = BundleManager.Instance.LoadAsset<GameObject>(config.BundleName, config.AssetName);
+			config.GameObject = BundleManager.Instance.LoadAsset<GameObject>(config.Asset);
+
 			Instantiate(cycle, reference, config);
 		}
 
@@ -97,7 +98,7 @@ namespace Koala
 		public void ChangeAudioSource(float cycle, string reference,
 			float durationCycles, ChangeAudioSourceConfig config)
 		{
-			config.AudioClip = BundleManager.Instance.LoadAsset<AudioClip>(config.BundleName, config.AssetName);
+			config.AudioClip = BundleManager.Instance.LoadAsset<AudioClip>(config.AudioClipAsset);
 
 			BaseAction<ChangeAudioSourceOccurrence, ChangeAudioSourceConfig>(cycle, reference, durationCycles, config);
 		}
@@ -139,9 +140,9 @@ namespace Koala
 		public void ChangeText(float cycle, string reference,
 			float durationCycles, ChangeTextConfig config)
 		{
-			if (config.BundleName != null && config.AssetName != null)
+			if (config.FontAsset != null)
 			{
-				config.Font = BundleManager.Instance.LoadAsset<TMP_FontAsset>(config.BundleName, config.AssetName);
+				config.Font = BundleManager.Instance.LoadAsset<TMP_FontAsset>(config.FontAsset);
 			}
 			else if (config.FontName != null)
 			{
@@ -160,7 +161,8 @@ namespace Koala
 		public void ChangeRawImage(float cycle, string reference,
 			float durationCycles, ChangeRawImageConfig config)
 		{
-			config.Texture = BundleManager.Instance.LoadAsset<Texture>(config.BundleName, config.AssetName);
+			config.Texture = BundleManager.Instance.LoadAsset<Texture>(config.TextureAsset);
+			config.Material = BundleManager.Instance.LoadAsset<Material>(config.MaterialAsset);
 
 			BaseAction<ChangeRawImageOccurrence, ChangeRawImageConfig>(cycle, reference, durationCycles, config);
 		}
@@ -205,7 +207,7 @@ namespace Koala
 		public void ChangeSprite(float cycle, string reference,
 			float durationCycles, ChangeSpriteConfig config)
 		{
-			config.Sprite = BundleManager.Instance.LoadAsset<Sprite>(config.BundleName, config.AssetName);
+			config.Sprite = BundleManager.Instance.LoadAsset<Sprite>(config.SpriteAsset);
 
 			BaseAction<ChangeSpriteOccurrence, ChangeSpriteConfig>(cycle, reference, durationCycles, config);
 		}
@@ -213,7 +215,7 @@ namespace Koala
 		public void ChangeMaterial(float cycle, string reference,
 			ChangeMaterialConfig config)
 		{
-			config.Material = BundleManager.Instance.LoadAsset<Material>(config.BundleName, config.AssetName);
+			config.Material = BundleManager.Instance.LoadAsset<Material>(config.MaterialAsset);
 
 			BaseAction<ChangeMaterialOccurrence, ChangeMaterialConfig>(cycle, reference, 0, config, true);
 		}
@@ -294,8 +296,7 @@ namespace Koala
 
 		public class InstantiateBundleAssetConfig : InstantiateConfig
 		{
-			public string BundleName { get; set; }
-			public string AssetName { get; set; }
+			public ChangeAssetConfig Asset { get; set; }
 		}
 
 		public class DestroyConfig
@@ -344,8 +345,7 @@ namespace Koala
 
 		public class ChangeAudioSourceConfig
 		{
-			public string BundleName { get; set; }
-			public string AssetName { get; set; }
+			public ChangeAssetConfig AudioClipAsset { get; set; }
 			public float? Time { get; set; }
 			public bool? Mute { get; set; }
 			public bool? Loop { get; set; }
@@ -357,12 +357,6 @@ namespace Koala
 
 			// Don't fill these, occurrence handles them
 			public AudioClip AudioClip { get; set; }
-			public bool ChangeAudioClip { get; set; }
-
-			public ChangeAudioSourceConfig()
-			{
-				ChangeAudioClip = false;
-			}
 		}
 
 		public class ChangeRectTransformConfig
@@ -378,8 +372,7 @@ namespace Koala
 
 		public class ChangeTextConfig
 		{
-			public string BundleName { get; set; }
-			public string AssetName { get; set; }
+			public ChangeAssetConfig FontAsset { get; set; }
 			public string FontName { get; set; }
 			public string Text { get; set; }
 			public float? FontSize { get; set; }
@@ -402,13 +395,14 @@ namespace Koala
 
 		public class ChangeRawImageConfig
 		{
-			public string BundleName { get; set; }
-			public string AssetName { get; set; }
+			public ChangeAssetConfig TextureAsset { get; set; }
+			public ChangeAssetConfig MaterialAsset { get; set; }
 			public ChangeVector4Config Color { get; set; }
 			public ChangeVector4Config UVRect { get; set; }
 
 			// Don't fill these, occurrence handles them
 			public Texture Texture { get; set; }
+			public Material Material { get; set; }
 		}
 
 		public class ChangeSiblingOrderConfig
@@ -429,8 +423,7 @@ namespace Koala
 
 		public class ChangeSpriteConfig
 		{
-			public string BundleName { get; set; }
-			public string AssetName { get; set; }
+			public ChangeAssetConfig SpriteAsset { get; set; }
 			public ChangeVector4Config Color { get; set; }
 			public bool? FlipX { get; set; }
 			public bool? FlipY { get; set; }
@@ -442,8 +435,7 @@ namespace Koala
 
 		public class ChangeMaterialConfig
 		{
-			public string BundleName { get; set; }
-			public string AssetName { get; set; }
+			public ChangeAssetConfig MaterialAsset { get; set; }
 			public int Index { get; set; }
 
 			// Don't fill these, occurrence handles them

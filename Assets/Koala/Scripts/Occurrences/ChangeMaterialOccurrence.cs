@@ -18,6 +18,7 @@ namespace Koala
 			{
 				Index = _newConfig.Index,
 				Material = renderer.materials[_newConfig.Index],
+				MaterialAsset = _newConfig.MaterialAsset,
 			};
 
 			return oldConfig;
@@ -27,7 +28,7 @@ namespace Koala
 		{
 			Renderer renderer = GetRenderer();
 
-			if (_newConfig.BundleName != null && _newConfig.AssetName != null)
+			if (config.MaterialAsset != null)
 			{
 				var materials = renderer.materials;
 				materials[config.Index] = config.Material;

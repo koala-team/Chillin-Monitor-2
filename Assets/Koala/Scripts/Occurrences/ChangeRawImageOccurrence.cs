@@ -18,6 +18,9 @@ namespace Koala
 			var oldConfig = new Director.ChangeRawImageConfig
 			{
 				Texture = image.texture,
+				TextureAsset = _newConfig.TextureAsset,
+				Material = image.material,
+				MaterialAsset = _newConfig.MaterialAsset,
 			};
 
 			if (_newConfig.Color != null)
@@ -56,8 +59,11 @@ namespace Koala
 		{
 			var image = GetImage();
 
-			if (_newConfig.BundleName != null && _newConfig.AssetName != null)
+			if (config.TextureAsset != null)
 				image.texture = config.Texture;
+
+			if (config.MaterialAsset != null)
+				image.material = config.Material;
 		}
 
 		private RawImage GetImage()

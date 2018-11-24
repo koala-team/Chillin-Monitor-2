@@ -16,7 +16,8 @@ namespace Koala
 			
 			var oldConfig = new Director.ChangeSpriteConfig
 			{
-				Sprite = spriteRenderer.sprite
+				Sprite = spriteRenderer.sprite,
+				SpriteAsset = _newConfig.SpriteAsset,
 			};
 
 			if (_newConfig.Color != null)
@@ -52,7 +53,7 @@ namespace Koala
 		{
 			SpriteRenderer spriteRenderer = GetSpriteRenderer();
 
-			if (_newConfig.BundleName != null && _newConfig.AssetName != null)
+			if (config.SpriteAsset != null)
 				spriteRenderer.sprite = config.Sprite;
 
 			if (config.FlipX.HasValue)

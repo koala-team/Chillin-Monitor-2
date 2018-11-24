@@ -17,7 +17,7 @@ namespace Koala
 			var oldConfig = new Director.ChangeAudioSourceConfig()
 			{
 				AudioClip = audioSource.clip,
-				ChangeAudioClip = _newConfig.BundleName != null && _newConfig.AssetName != null,
+				AudioClipAsset = _newConfig.AudioClipAsset,
 				Time = audioSource.time,
 				Mute = audioSource.mute,
 				Loop = audioSource.loop,
@@ -57,7 +57,7 @@ namespace Koala
 		{
 			var audioSource = GetAudioSource();
 
-			if ((config.BundleName != null && config.AssetName != null) || config.ChangeAudioClip)
+			if (config.AudioClipAsset != null)
 				audioSource.clip = config.AudioClip;
 
 			if (config.Time.HasValue)
