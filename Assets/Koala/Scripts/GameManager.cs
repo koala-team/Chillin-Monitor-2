@@ -19,6 +19,7 @@ namespace Koala
 		public GameObject userCanvasGameObject;
 		public TextMeshProUGUI timeText;
 		public FontItem[] m_fontItems;
+		public Camera m_mainCamera;
 
 		void Awake()
 		{
@@ -27,6 +28,7 @@ namespace Koala
 
 			// Reset references map
 			References.Instance.ResetMaps();
+			References.Instance.AddGameObject("MainCamera", m_mainCamera.gameObject);
 
 			// set Helpers value
 			Helper.CycleDuration = _cycleDuration;
@@ -490,20 +492,35 @@ namespace Koala
 			//});
 
 
-			_director.CreateBasicObject(0, "Light", null, EBasicObjectType.Light, new Director.InstantiateConfig
+			//_director.CreateBasicObject(0, "Light", null, EBasicObjectType.Light, new Director.InstantiateConfig
+			//{
+			//	Position = Vector3.zero,
+			//	Rotation = new Vector3(90, 0, 0),
+			//});
+			//_director.ChangeLight(0, "Light", 8, new Director.ChangeLightConfig
+			//{
+			//	Color = new Director.ChangeVector4Config { Z = 0 },
+			//	Intensity = 2,
+			//});
+			//_director.ChangeLight(4, "Light", 8, new Director.ChangeLightConfig
+			//{
+			//	Type = LightType.Spot,
+			//	SpotAngle = 175,
+			//});
+
+
+			_director.ChangeCamera(0, "MainCamera", 2, new Director.ChangeCameraConfig
 			{
-				Position = Vector3.zero,
-				Rotation = new Vector3(90, 0, 0),
+				ClearFlags = CameraClearFlags.SolidColor,
+				BackgroundColor = new Director.ChangeVector4Config { X = 0 },
+				FieldOfView = 100,
+				NearClipPlane = 1,
+				FarClipPlane = 100,
 			});
-			_director.ChangeLight(0, "Light", 8, new Director.ChangeLightConfig
+			_director.ChangeCamera(2, "MainCamera", 2, new Director.ChangeCameraConfig
 			{
-				Color = new Director.ChangeVector4Config { Z = 0 },
-				Intensity = 2,
-			});
-			_director.ChangeLight(4, "Light", 8, new Director.ChangeLightConfig
-			{
-				Type = LightType.Spot,
-				SpotAngle = 175,
+				IsOrthographic = true,
+				OrthographicSize = 20,
 			});
 		}
 	}

@@ -244,6 +244,12 @@ namespace Koala
 
 			BaseAction<ChangeLightOccurrence, ChangeLightConfig>(cycle, reference, durationCycles, config);
 		}
+
+		public void ChangeCamera(float cycle, string reference,
+			float durationCycles, ChangeCameraConfig config)
+		{
+			BaseAction<ChangeCameraOccurrence, ChangeCameraConfig>(cycle, reference, durationCycles, config);
+		}
 		#endregion
 
 		#region Configs
@@ -501,6 +507,17 @@ namespace Koala
 			// Don't fill these, occurrence handles them
 			public Texture Cookie { get; set; }
 			public Flare Flare { get; set; }
+		}
+
+		public class ChangeCameraConfig
+		{
+			public CameraClearFlags? ClearFlags { get; set; }
+			public ChangeVector4Config BackgroundColor { get; set; }
+			public bool? IsOrthographic { get; set; }
+			public float? OrthographicSize { get; set; }
+			public float? FieldOfView { get; set; }
+			public float? NearClipPlane { get; set; }
+			public float? FarClipPlane { get; set; }
 		}
 		#endregion
 	}

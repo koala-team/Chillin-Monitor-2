@@ -154,16 +154,16 @@ namespace Koala
 			if (config.Type.HasValue)
 				light.type = config.Type.Value;
 
-			if (_newConfig.ShadowType.HasValue)
+			if (config.ShadowType.HasValue)
 				light.shadows = config.ShadowType.Value;
 
-			if (_newConfig.Cookie != null)
+			if (config.Cookie != null)
 				light.cookie = config.Cookie;
 
-			if (_newConfig.CookieSize.HasValue)
+			if (config.CookieSize.HasValue)
 				light.cookieSize = config.CookieSize.Value;
 
-			if (_newConfig.Flare != null)
+			if (config.Flare != null)
 				light.flare = config.Flare;
 		}
 

@@ -164,6 +164,7 @@ MonoBehaviour:
     m_font: {fileID: 11400000, guid: 5ebb71bb92381cb4fb1fd004ef518ff1, type: 2}
   - m_name: vazir
     m_font: {fileID: 11400000, guid: 561ed55d529e5574baf686c8da0bfe49, type: 2}
+  m_mainCamera: {fileID: 674841639}
 --- !u!1 &279623427
 GameObject:
   m_ObjectHideFlags: 0
