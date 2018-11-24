@@ -59,7 +59,7 @@ namespace Koala
 					() => polygon.FillColor,
 					x => polygon.FillColor = x,
 					polygon.FillColor.ApplyChangeVector4Config(config.FillColor),
-					_duration).RegisterChronosTimeline(_startTime, isForward);
+					_duration).RegisterInTimeline(_startTime, isForward);
 			}
 
 			if (config.Vertices != null && !config.SuddenChange)
@@ -74,7 +74,7 @@ namespace Koala
 						() => polygon.Vertices[index],
 						x => polygon.SetVertex(index, x),
 						polygon.Vertices[index].ApplyChangeVector2Config(config.Vertices[index]),
-						_duration).RegisterChronosTimeline(_startTime, isForward);
+						_duration).RegisterInTimeline(_startTime, isForward);
 				}
 			}
 		}

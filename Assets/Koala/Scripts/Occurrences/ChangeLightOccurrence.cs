@@ -71,7 +71,7 @@ namespace Koala
 					() => light.range,
 					x => light.range = x,
 					config.Range.Value,
-					_duration).RegisterChronosTimeline(_startTime, isForward);
+					_duration).RegisterInTimeline(_startTime, isForward);
 			}
 
 			if (config.SpotAngle.HasValue)
@@ -80,7 +80,7 @@ namespace Koala
 					() => light.spotAngle,
 					x => light.spotAngle = x,
 					config.SpotAngle.Value,
-					_duration).RegisterChronosTimeline(_startTime, isForward);
+					_duration).RegisterInTimeline(_startTime, isForward);
 			}
 
 			if (config.Color != null)
@@ -89,7 +89,7 @@ namespace Koala
 					() => light.color,
 					x => light.color = x,
 					light.color.ApplyChangeVector4Config(config.Color),
-					_duration).RegisterChronosTimeline(_startTime, isForward);
+					_duration).RegisterInTimeline(_startTime, isForward);
 			}
 
 			if (config.Intensity.HasValue)
@@ -98,7 +98,7 @@ namespace Koala
 					() => light.intensity,
 					x => light.intensity = x,
 					config.Intensity.Value,
-					_duration).RegisterChronosTimeline(_startTime, isForward);
+					_duration).RegisterInTimeline(_startTime, isForward);
 			}
 
 			if (config.IndirectMultiplier.HasValue)
@@ -107,7 +107,7 @@ namespace Koala
 					() => light.bounceIntensity,
 					x => light.bounceIntensity = x,
 					config.IndirectMultiplier.Value,
-					_duration).RegisterChronosTimeline(_startTime, isForward);
+					_duration).RegisterInTimeline(_startTime, isForward);
 			}
 
 			if (config.ShadowStrength.HasValue)
@@ -116,7 +116,7 @@ namespace Koala
 					() => light.shadowStrength,
 					x => light.shadowStrength = x,
 					config.ShadowStrength.Value,
-					_duration).RegisterChronosTimeline(_startTime, isForward);
+					_duration).RegisterInTimeline(_startTime, isForward);
 			}
 
 			if (config.ShadowBias.HasValue)
@@ -125,7 +125,7 @@ namespace Koala
 					() => light.shadowBias,
 					x => light.shadowBias = x,
 					config.ShadowBias.Value,
-					_duration).RegisterChronosTimeline(_startTime, isForward);
+					_duration).RegisterInTimeline(_startTime, isForward);
 			}
 
 			if (config.ShadowNormalBias.HasValue)
@@ -134,7 +134,7 @@ namespace Koala
 					() => light.shadowNormalBias,
 					x => light.shadowNormalBias = x,
 					config.ShadowNormalBias.Value,
-					_duration).RegisterChronosTimeline(_startTime, isForward);
+					_duration).RegisterInTimeline(_startTime, isForward);
 			}
 
 			if (config.ShadowNearPlane.HasValue)
@@ -143,7 +143,7 @@ namespace Koala
 					() => light.shadowNearPlane,
 					x => light.shadowNearPlane = x,
 					config.ShadowNearPlane.Value,
-					_duration).RegisterChronosTimeline(_startTime, isForward);
+					_duration).RegisterInTimeline(_startTime, isForward);
 			}
 		}
 

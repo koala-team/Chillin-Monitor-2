@@ -71,7 +71,7 @@ namespace Koala
 					() => line.FillColor,
 					x => line.FillColor = x,
 					line.FillColor.ApplyChangeVector4Config(config.FillColor),
-					_duration).RegisterChronosTimeline(_startTime, isForward);
+					_duration).RegisterInTimeline(_startTime, isForward);
 			}
 
 			if (config.Vertices != null && !config.SuddenChange)
@@ -86,7 +86,7 @@ namespace Koala
 						() => line.Vertices[index],
 						x => line.SetVertex(index, x),
 						line.Vertices[index].ApplyChangeVector3Config(config.Vertices[index]),
-						_duration).RegisterChronosTimeline(_startTime, isForward);
+						_duration).RegisterInTimeline(_startTime, isForward);
 				}
 			}
 
@@ -96,7 +96,7 @@ namespace Koala
 					() => line.Width,
 					x => line.Width = x,
 					config.Width.Value,
-					_duration).RegisterChronosTimeline(_startTime, isForward);
+					_duration).RegisterInTimeline(_startTime, isForward);
 			}
 
 			if (config.CornerVertices.HasValue)
@@ -105,7 +105,7 @@ namespace Koala
 					() => line.CornerVertices,
 					x => line.CornerVertices = x,
 					config.CornerVertices.Value,
-					_duration).RegisterChronosTimeline(_startTime, isForward);
+					_duration).RegisterInTimeline(_startTime, isForward);
 			}
 
 			if (config.EndCapVertices.HasValue)
@@ -114,7 +114,7 @@ namespace Koala
 					() => line.EndCapVertices,
 					x => line.EndCapVertices = x,
 					config.EndCapVertices.Value,
-					_duration).RegisterChronosTimeline(_startTime, isForward);
+					_duration).RegisterInTimeline(_startTime, isForward);
 			}
 		}
 

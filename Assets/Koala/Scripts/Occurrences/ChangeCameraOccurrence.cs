@@ -50,7 +50,7 @@ namespace Koala
 					() => camera.backgroundColor,
 					x => camera.backgroundColor = x,
 					camera.backgroundColor.ApplyChangeVector4Config(config.BackgroundColor),
-					_duration).RegisterChronosTimeline(_startTime, isForward);
+					_duration).RegisterInTimeline(_startTime, isForward);
 			}
 
 			if (config.OrthographicSize.HasValue)
@@ -59,7 +59,7 @@ namespace Koala
 					() => camera.orthographicSize,
 					x => camera.orthographicSize = x,
 					config.OrthographicSize.Value,
-					_duration).RegisterChronosTimeline(_startTime, isForward);
+					_duration).RegisterInTimeline(_startTime, isForward);
 			}
 
 			if (config.FieldOfView.HasValue)
@@ -68,7 +68,7 @@ namespace Koala
 					() => camera.fieldOfView,
 					x => camera.fieldOfView = x,
 					config.FieldOfView.Value,
-					_duration).RegisterChronosTimeline(_startTime, isForward);
+					_duration).RegisterInTimeline(_startTime, isForward);
 			}
 
 			if (config.NearClipPlane.HasValue)
@@ -77,7 +77,7 @@ namespace Koala
 					() => camera.nearClipPlane,
 					x => camera.nearClipPlane = x,
 					config.NearClipPlane.Value,
-					_duration).RegisterChronosTimeline(_startTime, isForward);
+					_duration).RegisterInTimeline(_startTime, isForward);
 			}
 
 			if (config.FarClipPlane.HasValue)
@@ -86,7 +86,7 @@ namespace Koala
 					() => camera.farClipPlane,
 					x => camera.farClipPlane = x,
 					config.FarClipPlane.Value,
-					_duration).RegisterChronosTimeline(_startTime, isForward);
+					_duration).RegisterInTimeline(_startTime, isForward);
 			}
 		}
 

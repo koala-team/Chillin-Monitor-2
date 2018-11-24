@@ -8,7 +8,7 @@ namespace Koala
 {
 	public static class Extensions
 	{
-		public static Tween RegisterChronosTimeline(this Tween tween, float startTime, bool isForward)
+		public static Tween RegisterInTimeline(this Tween tween, float startTime, bool isForward)
 		{
 			TweensManager.Instance.AddTween(tween, isForward);
 
@@ -21,7 +21,7 @@ namespace Koala
 			tween.OnKill(endCallback);
 			tween.OnComplete(endCallback);
 
-			tween.fullPosition = Math.Abs(Timeline.Instance.Time - startTime);
+			tween.Goto(Math.Abs(Timeline.Instance.Time - startTime), true);
 
 			return tween;
 		}

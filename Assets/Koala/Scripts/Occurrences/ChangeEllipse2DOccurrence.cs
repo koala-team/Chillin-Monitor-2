@@ -38,7 +38,7 @@ namespace Koala
 					() => ellipse.FillColor,
 					x => ellipse.FillColor = x,
 					ellipse.FillColor.ApplyChangeVector4Config(config.FillColor),
-					_duration).RegisterChronosTimeline(_startTime, isForward);
+					_duration).RegisterInTimeline(_startTime, isForward);
 			}
 
 			if (config.XRadius.HasValue)
@@ -47,7 +47,7 @@ namespace Koala
 					() => ellipse.XRadius,
 					x => ellipse.XRadius = x,
 					config.XRadius.Value,
-					_duration).RegisterChronosTimeline(_startTime, isForward);
+					_duration).RegisterInTimeline(_startTime, isForward);
 			}
 
 			if (config.YRadius.HasValue)
@@ -56,7 +56,7 @@ namespace Koala
 					() => ellipse.YRadius,
 					x => ellipse.YRadius = x,
 					config.YRadius.Value,
-					_duration).RegisterChronosTimeline(_startTime, isForward);
+					_duration).RegisterInTimeline(_startTime, isForward);
 			}
 		}
 

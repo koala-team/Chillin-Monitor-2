@@ -42,7 +42,7 @@ namespace Koala
 					() => image.color,
 					x => image.color = x,
 					image.color.ApplyChangeVector4Config(config.Color),
-					_duration).RegisterChronosTimeline(_startTime, isForward);
+					_duration).RegisterInTimeline(_startTime, isForward);
 			}
 
 			if (config.UVRect != null)
@@ -51,7 +51,7 @@ namespace Koala
 					() => image.uvRect,
 					x => image.uvRect = x,
 					image.uvRect.ApplyChangeVector4Config(config.UVRect),
-					_duration).RegisterChronosTimeline(_startTime, isForward);
+					_duration).RegisterInTimeline(_startTime, isForward);
 			}
 		}
 

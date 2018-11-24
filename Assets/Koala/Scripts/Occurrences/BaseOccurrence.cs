@@ -1,4 +1,6 @@
-﻿namespace Koala
+﻿using System;
+
+namespace Koala
 {
 	public interface IBaseOccurrence<T, C>
 	{
@@ -11,6 +13,7 @@
 		where T : BaseOccurrence<T, C>
 		where C : class
 	{
+		private static readonly float MIN_DURATION = 0.1e-6f;
 		protected float _duration;
 
 		protected string _reference;
@@ -35,7 +38,7 @@
 			_isForward = isForward;
 			_forwardOccurrence = forwardOccurrence;
 
-			_duration = System.Math.Abs(_endTime - _startTime);
+			_duration = Math.Max(MIN_DURATION, Math.Abs(_endTime - _startTime));
 		}
 
 		public override void Forward()

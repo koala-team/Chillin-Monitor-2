@@ -40,7 +40,7 @@ namespace Koala
 					() => audioSource.volume,
 					x => audioSource.volume = x,
 					config.Volume.Value,
-					_duration).RegisterChronosTimeline(_startTime, isForward);
+					_duration).RegisterInTimeline(_startTime, isForward);
 			}
 
 			if (config.SpatialBlend.HasValue)
@@ -49,7 +49,7 @@ namespace Koala
 					() => audioSource.spatialBlend,
 					x => audioSource.spatialBlend = x,
 					config.SpatialBlend.Value,
-					_duration).RegisterChronosTimeline(_startTime, isForward);
+					_duration).RegisterInTimeline(_startTime, isForward);
 			}
 		}
 

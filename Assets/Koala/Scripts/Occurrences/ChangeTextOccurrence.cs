@@ -44,7 +44,7 @@ namespace Koala
 					() => text.fontSize,
 					x => text.fontSize = x,
 					config.FontSize.Value,
-					_duration).RegisterChronosTimeline(_startTime, isForward);
+					_duration).RegisterInTimeline(_startTime, isForward);
 			}
 		}
 

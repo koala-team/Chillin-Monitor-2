@@ -102,6 +102,26 @@ namespace Koala
 
 			_director = new Director();
 			Debug.Log("Bundle Loaded");
+
+			_director.CreateBasicObject(0, "MainLight", null, EBasicObjectType.Light, new Director.InstantiateConfig
+			{
+				Position = Vector3.zero,
+				Rotation = new Vector3(45, 0, 0),
+			});
+
+			_director.InstantiateBundleAsset(0, "Cube", new Director.InstantiateBundleAssetConfig
+			{
+				Asset = new Director.ChangeAssetConfig { BundleName = "main", AssetName = "cube" },
+				Position = new Vector3(0, 10),
+			});
+			_director.ChangeTransform(1, "Cube", 0, new Director.ChangeTransformConfig
+			{
+				Position = new Director.ChangeVector3Config { Y = 0 },
+			});
+			_director.ChangeTransform(1.5f, "Cube", 1, new Director.ChangeTransformConfig
+			{
+				Position = new Director.ChangeVector3Config { X = 10 },
+			});
 		}
 	}
 }

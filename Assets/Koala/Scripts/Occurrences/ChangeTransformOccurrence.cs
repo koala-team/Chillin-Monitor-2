@@ -36,7 +36,7 @@ namespace Koala
 					() => transform.localPosition,
 					x => transform.localPosition = x,
 					transform.localPosition.ApplyChangeVector3Config(config.Position),
-					_duration).RegisterChronosTimeline(_startTime, isForward);
+					_duration).RegisterInTimeline(_startTime, isForward);
 			}
 
 			if (config.Rotation != null)
@@ -45,7 +45,7 @@ namespace Koala
 					() => transform.localRotation.eulerAngles,
 					x => transform.localEulerAngles = x,
 					transform.localEulerAngles.ApplyChangeVector3Config(config.Rotation),
-					_duration).RegisterChronosTimeline(_startTime, isForward);
+					_duration).RegisterInTimeline(_startTime, isForward);
 			}
 
 			if (config.Scale != null)
@@ -54,7 +54,7 @@ namespace Koala
 					() => transform.localScale,
 					x => transform.localScale = x,
 					transform.localScale.ApplyChangeVector3Config(config.Scale),
-					_duration).RegisterChronosTimeline(_startTime, isForward);
+					_duration).RegisterInTimeline(_startTime, isForward);
 			}
 		}
 
