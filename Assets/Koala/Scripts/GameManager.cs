@@ -14,10 +14,10 @@ namespace Koala
 		private Director _director;
 		private float _cycleDuration = 0.25f; // TODO: get from server
 		
-		public GameObject rootGameObject;
-		public GameObject rootDestroyedGameObject;
-		public GameObject userCanvasGameObject;
-		public TextMeshProUGUI timeText;
+		public GameObject m_rootGameObject;
+		public GameObject m_rootDestroyedGameObject;
+		public GameObject m_userCanvasGameObject;
+		public TextMeshProUGUI m_timeText;
 		public FontItem[] m_fontItems;
 		public Camera m_mainCamera;
 
@@ -28,13 +28,13 @@ namespace Koala
 
 			// Reset references map
 			References.Instance.ResetMaps();
-			References.Instance.AddGameObject("MainCamera", m_mainCamera.gameObject);
+			References.Instance.AddGameObject(int.MaxValue.ToString(), m_mainCamera.gameObject); // "MainCamera"
 
 			// set Helpers value
 			Helper.CycleDuration = _cycleDuration;
-			Helper.RootGameObject = rootGameObject;
-			Helper.RootDestroyedGameObject = rootDestroyedGameObject;
-			Helper.UserCanvasGameObject = userCanvasGameObject;
+			Helper.RootGameObject = m_rootGameObject;
+			Helper.RootDestroyedGameObject = m_rootDestroyedGameObject;
+			Helper.UserCanvasGameObject = m_userCanvasGameObject;
 			Helper.Fonts = m_fontItems;
 
 			// Config Tweens
@@ -55,7 +55,7 @@ namespace Koala
 			Timeline.Instance.Update(Time.deltaTime);
 
 			// Update Time Text
-			timeText.text = "Time: " + Timeline.Instance.Time.ToString("0.0000000") +
+			m_timeText.text = "Time: " + Timeline.Instance.Time.ToString("0.0000000") +
 							"\nCycle: " + (Timeline.Instance.Time / _cycleDuration).TruncateDecimal(1).ToString("0.0") +
 							"\nSpeed: " + Timeline.Instance.TimeScale.ToString() +
 							"\nCycle Duration: " + _cycleDuration.ToString();
@@ -82,8 +82,8 @@ namespace Koala
 		{
 			Timeline.Instance.TimeScale += amount;
 
-			Helper.SetAnimatorsTimeScale(rootGameObject);
-			Helper.SetAudioSourcesTimeScale(rootGameObject);
+			Helper.SetAnimatorsTimeScale(m_rootGameObject);
+			Helper.SetAudioSourcesTimeScale(m_rootGameObject);
 		}
 
 		private IEnumerator DownloadBundle()
@@ -103,24 +103,25 @@ namespace Koala
 			_director = new Director();
 			Debug.Log("Bundle Loaded");
 
-			_director.CreateBasicObject(0, "MainLight", null, EBasicObjectType.Light, new Director.InstantiateConfig
+			_director.Action(new KS.SceneActions.CreateEmptyGameObject
 			{
-				Position = Vector3.zero,
-				Rotation = new Vector3(45, 0, 0),
+				Cycle = 0,
+				Ref = 1,
 			});
-
-			_director.InstantiateBundleAsset(0, "Cube", new Director.InstantiateBundleAssetConfig
+			_director.Action(new KS.SceneActions.CreateBasicObject
 			{
-				Asset = new Director.ChangeAssetConfig { BundleName = "main", AssetName = "cube" },
-				Position = new Vector3(0, 10),
+				Cycle = 0,
+				Ref = 2,
+				ParentRef = 1,
+				Type = KS.SceneActions.EBasicObjectType.Ellipse2D,
 			});
-			_director.ChangeTransform(1, "Cube", 0, new Director.ChangeTransformConfig
+			_director.Action(new KS.SceneActions.ChangeEllipse2D
 			{
-				Position = new Director.ChangeVector3Config { Y = 0 },
-			});
-			_director.ChangeTransform(1.5f, "Cube", 1, new Director.ChangeTransformConfig
-			{
-				Position = new Director.ChangeVector3Config { X = 10 },
+				Cycle = 0,
+				Ref = 2,
+				DurationCycles = 2,
+				XRadius = 2,
+				YRadius = 2,
 			});
 		}
 	}

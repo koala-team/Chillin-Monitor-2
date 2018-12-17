@@ -1,19 +1,20 @@
 ﻿using UnityEngine;
+using KS.SceneActions;
 
 namespace Koala
 {
-	public class ChangeSiblingOrderOccurrence : BaseOccurrence<ChangeSiblingOrderOccurrence, Director.ChangeSiblingOrderConfig>
+	public class ChangeSiblingOrderOccurrence : BaseOccurrence<ChangeSiblingOrderOccurrence, ChangeSiblingOrder>
 	{
 		private Transform _transform;
 
 
 		public ChangeSiblingOrderOccurrence() { }
 
-		protected override Director.ChangeSiblingOrderConfig CreateOldConfig()
+		protected override ChangeSiblingOrder CreateOldConfig()
 		{
 			var transform = GetTransform();
 
-			var oldConfig = new Director.ChangeSiblingOrderConfig
+			var oldConfig = new ChangeSiblingOrder
 			{
 				NewIndex = transform.GetSiblingIndex()
 			};
@@ -21,7 +22,7 @@ namespace Koala
 			return oldConfig;
 		}
 
-		protected override void ManageSuddenChanges(Director.ChangeSiblingOrderConfig config, bool isForward)
+		protected override void ManageSuddenChanges(ChangeSiblingOrder config, bool isForward)
 		{
 			var transform = GetTransform();
 
@@ -34,8 +35,8 @@ namespace Koala
 			else if (config.ChangeIndex.HasValue)
 			{
 				int baseIndex;
-				if (config.SiblingReferenceAsBaseIndex != null)
-					baseIndex = References.Instance.GetGameObject(config.SiblingReferenceAsBaseIndex).transform.GetSiblingIndex();
+				if (config.SiblingRefAsBaseIndex != null)
+					baseIndex = References.Instance.GetGameObject(config.SiblingRefAsBaseIndex).transform.GetSiblingIndex();
 				else
 					baseIndex = transform.GetSiblingIndex();
 

@@ -1,21 +1,21 @@
 ﻿using DG.Tweening;
-using UnityEngine;
 using UnityEngine.UI;
+using KS.SceneActions;
 
 namespace Koala
 {
-	public class ChangeRawImageOccurrence : BaseOccurrence<ChangeRawImageOccurrence, Director.ChangeRawImageConfig>
+	public class ChangeRawImageOccurrence : BaseOccurrence<ChangeRawImageOccurrence, ChangeRawImage>
 	{
 		private RawImage _image;
 
 
 		public ChangeRawImageOccurrence() { }
 
-		protected override Director.ChangeRawImageConfig CreateOldConfig()
+		protected override ChangeRawImage CreateOldConfig()
 		{
 			var image = GetImage();
 
-			var oldConfig = new Director.ChangeRawImageConfig
+			var oldConfig = new ChangeRawImage
 			{
 				Texture = image.texture,
 				TextureAsset = _newConfig.TextureAsset,
@@ -24,15 +24,15 @@ namespace Koala
 			};
 
 			if (_newConfig.Color != null)
-				oldConfig.Color = image.color.ToChangeVector4Config();
+				oldConfig.Color = image.color.ToKSVector4();
 
-			if (_newConfig.UVRect != null)
-				oldConfig.UVRect = image.uvRect.ToChangeVector4Config();
+			if (_newConfig.UvRect != null)
+				oldConfig.UvRect = image.uvRect.ToKSVector4();
 
 			return oldConfig;
 		}
 
-		protected override void ManageTweens(Director.ChangeRawImageConfig config, bool isForward)
+		protected override void ManageTweens(ChangeRawImage config, bool isForward)
 		{
 			var image = GetImage();
 
@@ -41,21 +41,21 @@ namespace Koala
 				DOTween.To(
 					() => image.color,
 					x => image.color = x,
-					image.color.ApplyChangeVector4Config(config.Color),
+					image.color.ApplyKSVector4(config.Color),
 					_duration).RegisterInTimeline(_startTime, isForward);
 			}
 
-			if (config.UVRect != null)
+			if (config.UvRect != null)
 			{
 				DOTween.To(
 					() => image.uvRect,
 					x => image.uvRect = x,
-					image.uvRect.ApplyChangeVector4Config(config.UVRect),
+					image.uvRect.ApplyKSVector4(config.UvRect),
 					_duration).RegisterInTimeline(_startTime, isForward);
 			}
 		}
 
-		protected override void ManageSuddenChanges(Director.ChangeRawImageConfig config, bool isForward)
+		protected override void ManageSuddenChanges(ChangeRawImage config, bool isForward)
 		{
 			var image = GetImage();
 

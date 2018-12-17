@@ -6,7 +6,7 @@ namespace Koala
 {
 	public sealed class References
 	{
-		#region Definition
+		#region Singleton
 		private static readonly References instance = new References();
 
 		// Explicit static constructor to tell C# compiler
@@ -28,8 +28,8 @@ namespace Koala
 		}
 		#endregion
 
-		private Dictionary<string, GameObject> _gameObjectsMap = new Dictionary<string, GameObject>();
-		private char[] referenceSeparator = "/".ToCharArray();
+		private Dictionary<string, GameObject> _gameObjectsMap;
+		private readonly char[] _referenceSeparator = "/".ToCharArray();
 
 		public void ResetMaps()
 		{
@@ -56,15 +56,15 @@ namespace Koala
 			}
 		}
 
-		public GameObject GetGameObject(string reference)
+		public GameObject GetGameObject(string fullReference)
 		{
-			if (reference.Contains("/"))
+			if (fullReference.Contains("/"))
 			{
-				var parts = reference.Split(referenceSeparator, 2);
+				var parts = fullReference.Split(_referenceSeparator, 2);
 				return _gameObjectsMap[parts[0]].transform.Find(parts[1]).gameObject;
 			}
 
-			return _gameObjectsMap[reference];
+			return _gameObjectsMap[fullReference];
 		}
 	}
 }

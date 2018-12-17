@@ -1,23 +1,24 @@
 ﻿using DG.Tweening;
 using UnityEngine;
+using KS.SceneActions;
 
 namespace Koala
 {
-	public class ChangeLightOccurrence : BaseOccurrence<ChangeLightOccurrence, Director.ChangeLightConfig>
+	public class ChangeLightOccurrence : BaseOccurrence<ChangeLightOccurrence, ChangeLight>
 	{
 		private Light _light;
 
 
 		public ChangeLightOccurrence() { }
 
-		protected override Director.ChangeLightConfig CreateOldConfig()
+		protected override ChangeLight CreateOldConfig()
 		{
 			var light = GetLight();
 
-			var oldConfig = new Director.ChangeLightConfig();
+			var oldConfig = new ChangeLight();
 
 			if (_newConfig.Type.HasValue)
-				oldConfig.Type = light.type;
+				oldConfig.Type = (ELightType)light.type;
 
 			if (_newConfig.Range.HasValue)
 				oldConfig.Range = light.range;
@@ -26,7 +27,7 @@ namespace Koala
 				oldConfig.SpotAngle = light.spotAngle;
 
 			if (_newConfig.Color != null)
-				oldConfig.Color = light.color.ToChangeVector4Config();
+				oldConfig.Color = light.color.ToKSVector4();
 
 			if (_newConfig.Intensity.HasValue)
 				oldConfig.Intensity = light.intensity;
@@ -35,7 +36,7 @@ namespace Koala
 				oldConfig.IndirectMultiplier = light.bounceIntensity;
 
 			if (_newConfig.ShadowType.HasValue)
-				oldConfig.ShadowType = light.shadows;
+				oldConfig.ShadowType = (ELightShadowType)light.shadows;
 
 			if (_newConfig.ShadowStrength.HasValue)
 				oldConfig.ShadowStrength = light.shadowStrength;
@@ -61,7 +62,7 @@ namespace Koala
 			return oldConfig;
 		}
 
-		protected override void ManageTweens(Director.ChangeLightConfig config, bool isForward)
+		protected override void ManageTweens(ChangeLight config, bool isForward)
 		{
 			var light = GetLight();
 
@@ -88,7 +89,7 @@ namespace Koala
 				DOTween.To(
 					() => light.color,
 					x => light.color = x,
-					light.color.ApplyChangeVector4Config(config.Color),
+					light.color.ApplyKSVector4(config.Color),
 					_duration).RegisterInTimeline(_startTime, isForward);
 			}
 
@@ -147,15 +148,15 @@ namespace Koala
 			}
 		}
 
-		protected override void ManageSuddenChanges(Director.ChangeLightConfig config, bool isForward)
+		protected override void ManageSuddenChanges(ChangeLight config, bool isForward)
 		{
 			var light = GetLight();
 
 			if (config.Type.HasValue)
-				light.type = config.Type.Value;
+				light.type = (LightType)config.Type.Value;
 
 			if (config.ShadowType.HasValue)
-				light.shadows = config.ShadowType.Value;
+				light.shadows = (LightShadows)config.ShadowType.Value;
 
 			if (config.Cookie != null)
 				light.cookie = config.Cookie;

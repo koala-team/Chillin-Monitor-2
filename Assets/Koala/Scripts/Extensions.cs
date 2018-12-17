@@ -31,35 +31,8 @@ namespace Koala
 			return number - Mathf.Floor(number);
 		}
 
-		#region ChangeVectorConfig
-		public static Vector4 ApplyChangeVector4Config(this Vector4 v, Director.ChangeVector4Config config)
-		{
-			if (config.X.HasValue)
-				v.x = config.X.Value;
-			if (config.Y.HasValue)
-				v.y = config.Y.Value;
-			if (config.Z.HasValue)
-				v.z = config.Z.Value;
-			if (config.W.HasValue)
-				v.w = config.W.Value;
-
-			return v;
-		}
-
-		public static Director.ChangeVector4Config ToChangeVector4Config(this Vector4 v)
-		{
-			var config = new Director.ChangeVector4Config
-			{
-				X = v.x,
-				Y = v.y,
-				Z = v.z,
-				W = v.w,
-			};
-
-			return config;
-		}
-
-		public static Color ApplyChangeVector4Config(this Color c, Director.ChangeVector4Config config)
+		#region KSVectors
+		public static Color ApplyKSVector4(this Color c, KS.SceneActions.Vector4 config)
 		{
 			if (config.X.HasValue)
 				c.r = config.X.Value;
@@ -73,9 +46,9 @@ namespace Koala
 			return c;
 		}
 
-		public static Director.ChangeVector4Config ToChangeVector4Config(this Color c)
+		public static KS.SceneActions.Vector4 ToKSVector4(this Color c)
 		{
-			var config = new Director.ChangeVector4Config
+			var config = new KS.SceneActions.Vector4
 			{
 				X = c.r,
 				Y = c.g,
@@ -86,7 +59,7 @@ namespace Koala
 			return config;
 		}
 
-		public static Rect ApplyChangeVector4Config(this Rect r, Director.ChangeVector4Config config)
+		public static Rect ApplyKSVector4(this Rect r, KS.SceneActions.Vector4 config)
 		{
 			if (config.X.HasValue)
 				r.x = config.X.Value;
@@ -100,9 +73,9 @@ namespace Koala
 			return r;
 		}
 
-		public static Director.ChangeVector4Config ToChangeVector4Config(this Rect r)
+		public static KS.SceneActions.Vector4 ToKSVector4(this Rect r)
 		{
-			var config = new Director.ChangeVector4Config
+			var config = new KS.SceneActions.Vector4
 			{
 				X = r.x,
 				Y = r.y,
@@ -113,7 +86,7 @@ namespace Koala
 			return config;
 		}
 
-		public static Vector3 ApplyChangeVector3Config(this Vector3 v, Director.ChangeVector3Config config)
+		public static Vector3 ApplyKSVector3(this Vector3 v, KS.SceneActions.Vector3 config)
 		{
 			if (config.X.HasValue)
 				v.x = config.X.Value;
@@ -125,9 +98,9 @@ namespace Koala
 			return v;
 		}
 
-		public static Director.ChangeVector3Config ToChangeVector3Config(this Vector3 v)
+		public static KS.SceneActions.Vector3 ToKSVector3(this Vector3 v)
 		{
-			var config = new Director.ChangeVector3Config
+			var config = new KS.SceneActions.Vector3
 			{
 				X = v.x,
 				Y = v.y,
@@ -137,7 +110,7 @@ namespace Koala
 			return config;
 		}
 
-		public static Vector2 ApplyChangeVector2Config(this Vector2 v, Director.ChangeVector2Config config)
+		public static Vector2 ApplyKSVector2(this Vector2 v, KS.SceneActions.Vector2 config)
 		{
 			if (config.X.HasValue)
 				v.x = config.X.Value;
@@ -147,9 +120,9 @@ namespace Koala
 			return v;
 		}
 
-		public static Director.ChangeVector2Config ToChangeVector2Config(this Vector2 v)
+		public static KS.SceneActions.Vector2 ToKSVector2(this Vector2 v)
 		{
-			var config = new Director.ChangeVector2Config
+			var config = new KS.SceneActions.Vector2
 			{
 				X = v.x,
 				Y = v.y,

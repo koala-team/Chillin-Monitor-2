@@ -1,70 +1,79 @@
 ﻿using UnityEngine;
+using KS.SceneActions;
+using DG.Tweening;
 
 namespace Koala
 {
-	public class ChangeAnimatorVariableOccurrence : BaseOccurrence<ChangeAnimatorVariableOccurrence, Director.ChangeAnimatorVariableConfig>
+	public class ChangeAnimatorVariableOccurrence : BaseOccurrence<ChangeAnimatorVariableOccurrence, ChangeAnimatorVariable>
 	{
 		private Animator _animator = null;
 
 
 		public ChangeAnimatorVariableOccurrence() { }
 
-		protected override Director.ChangeAnimatorVariableConfig CreateOldConfig()
+		protected override ChangeAnimatorVariable CreateOldConfig()
 		{
-			var oldConfig = new Director.ChangeAnimatorVariableConfig()
+			var oldConfig = new ChangeAnimatorVariable()
 			{
 				VarName = _newConfig.VarName,
 				VarType = _newConfig.VarType,
-				ValueObject = GetAnimatorVar(_newConfig),
 			};
 
-			return oldConfig;
-		}
-
-		protected override void ManageSuddenChanges(Director.ChangeAnimatorVariableConfig config, bool isForward)
-		{
-			ChangeAnimatorVar(config);
-		}
-
-		private void ChangeAnimatorVar(Director.ChangeAnimatorVariableConfig config)
-		{
-			var animator = GetAnimator();
-
-			switch (config.VarType)
+			switch (_newConfig.VarType)
 			{
 				case EAnimatorVariableType.Int:
-					animator.SetInteger(config.VarName, (int)config.ValueObject);
+					oldConfig.IntValue = _newConfig.IntValue;
 					break;
 				case EAnimatorVariableType.Float:
-					animator.SetFloat(config.VarName, (float)config.ValueObject);
+					oldConfig.FloatValue = _newConfig.FloatValue;
 					break;
 				case EAnimatorVariableType.Bool:
-					animator.SetBool(config.VarName, (bool)config.ValueObject);
+					oldConfig.BoolValue = _newConfig.BoolValue;
 					break;
 				case EAnimatorVariableType.Trigger:
-					animator.SetTrigger(config.VarName);
 					break;
 				default:
 					throw new System.NotSupportedException("varType value not supported!");
 			}
+
+			return oldConfig;
 		}
 
-		private object GetAnimatorVar(Director.ChangeAnimatorVariableConfig config)
+		protected override void ManageTweens(ChangeAnimatorVariable config, bool isForward)
 		{
 			var animator = GetAnimator();
 
 			switch (config.VarType)
 			{
 				case EAnimatorVariableType.Int:
-					return animator.GetInteger(config.VarName);
+					DOTween.To(
+						() => animator.GetInteger(config.VarName),
+						x => animator.SetInteger(config.VarName, x),
+						config.IntValue.Value,
+						_duration).RegisterInTimeline(_startTime, isForward);
+					break;
 				case EAnimatorVariableType.Float:
-					return animator.GetFloat(config.VarName);
+					DOTween.To(
+						() => animator.GetFloat(config.VarName),
+						x => animator.SetFloat(config.VarName, x),
+						config.FloatValue.Value,
+						_duration).RegisterInTimeline(_startTime, isForward);
+					break;
+			}
+		}
+
+		protected override void ManageSuddenChanges(ChangeAnimatorVariable config, bool isForward)
+		{
+			var animator = GetAnimator();
+
+			switch (config.VarType)
+			{
 				case EAnimatorVariableType.Bool:
-					return animator.GetBool(config.VarName);
+					animator.SetBool(config.VarName, config.BoolValue.Value);
+					break;
 				case EAnimatorVariableType.Trigger:
-					return null;
-				default:
-					throw new System.NotSupportedException("varType value not supported!");
+					animator.SetTrigger(config.VarName);
+					break;
 			}
 		}
 

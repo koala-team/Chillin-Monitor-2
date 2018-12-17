@@ -1,20 +1,21 @@
 ﻿using DG.Tweening;
 using TMPro;
+using KS.SceneActions;
 
 namespace Koala
 {
-	public class ChangeTextOccurrence : BaseOccurrence<ChangeTextOccurrence, Director.ChangeTextConfig>
+	public class ChangeTextOccurrence : BaseOccurrence<ChangeTextOccurrence, ChangeText>
 	{
 		private TextMeshProUGUI _text;
 
 
 		public ChangeTextOccurrence() { }
 
-		protected override Director.ChangeTextConfig CreateOldConfig()
+		protected override ChangeText CreateOldConfig()
 		{
 			var text = GetText();
 
-			var oldConfig = new Director.ChangeTextConfig();
+			var oldConfig = new ChangeText();
 
 			if (_newConfig.Font != null)
 				oldConfig.Font = text.font;
@@ -26,7 +27,7 @@ namespace Koala
 				oldConfig.FontSize = text.fontSize;
 
 			if (_newConfig.Alignment.HasValue)
-				oldConfig.Alignment = text.alignment;
+				oldConfig.Alignment = (ETextAlignmentOption)text.alignment;
 
 			if (_newConfig.WordWrappingRatios.HasValue)
 				oldConfig.WordWrappingRatios = text.wordWrappingRatios;
@@ -34,7 +35,7 @@ namespace Koala
 			return oldConfig;
 		}
 
-		protected override void ManageTweens(Director.ChangeTextConfig config, bool isForward)
+		protected override void ManageTweens(ChangeText config, bool isForward)
 		{
 			var text = GetText();
 
@@ -48,7 +49,7 @@ namespace Koala
 			}
 		}
 
-		protected override void ManageSuddenChanges(Director.ChangeTextConfig config, bool isForward)
+		protected override void ManageSuddenChanges(ChangeText config, bool isForward)
 		{
 			var text = GetText();
 
@@ -59,7 +60,7 @@ namespace Koala
 				text.text = config.Text;
 
 			if (config.Alignment.HasValue)
-				text.alignment = config.Alignment.Value;
+				text.alignment = (TextAlignmentOptions)config.Alignment.Value;
 
 			if (config.WordWrappingRatios.HasValue)
 				text.wordWrappingRatios = config.WordWrappingRatios.Value;

@@ -1,36 +1,53 @@
 ﻿using DG.Tweening;
 using UnityEngine;
+using KS.SceneActions;
 
 namespace Koala
 {
-	public class ChangeAudioSourceOccurrence : BaseOccurrence<ChangeAudioSourceOccurrence, Director.ChangeAudioSourceConfig>
+	public class ChangeAudioSourceOccurrence : BaseOccurrence<ChangeAudioSourceOccurrence, ChangeAudioSource>
 	{
 		AudioSource _audioSource = null;
 
 
 		public ChangeAudioSourceOccurrence() { }
 
-		protected override Director.ChangeAudioSourceConfig CreateOldConfig()
+		protected override ChangeAudioSource CreateOldConfig()
 		{
 			var audioSource = GetAudioSource();
 			
-			var oldConfig = new Director.ChangeAudioSourceConfig()
-			{
-				AudioClip = audioSource.clip,
-				AudioClipAsset = _newConfig.AudioClipAsset,
-				Time = audioSource.time,
-				Mute = audioSource.mute,
-				Loop = audioSource.loop,
-				Priority = audioSource.priority,
-				Volume = audioSource.volume,
-				SpatialBlend = audioSource.spatialBlend,
-				Play = audioSource.isPlaying,
-			};
+			var oldConfig = new ChangeAudioSource();
+
+			if (_newConfig.AudioClipAsset != null)
+				oldConfig.AudioClipAsset = new Asset(); // just for don't be null
+
+			if (_newConfig.AudioClip != null)
+				oldConfig.AudioClip = audioSource.clip;
+
+			if (_newConfig.Time.HasValue)
+				oldConfig.Time = audioSource.time;
+
+			if (_newConfig.Mute.HasValue)
+				oldConfig.Mute = audioSource.mute;
+
+			if (_newConfig.Loop.HasValue)
+				oldConfig.Loop = audioSource.loop;
+
+			if (_newConfig.Priority.HasValue)
+				oldConfig.Priority = audioSource.priority;
+
+			if (_newConfig.Volume.HasValue)
+				oldConfig.Volume = audioSource.volume;
+
+			if (_newConfig.SpatialBlend.HasValue)
+				oldConfig.SpatialBlend = audioSource.spatialBlend;
+
+			if (_newConfig.Play.HasValue)
+				oldConfig.Play = audioSource.isPlaying;
 
 			return oldConfig;
 		}
 
-		protected override void ManageTweens(Director.ChangeAudioSourceConfig config, bool isForward)
+		protected override void ManageTweens(ChangeAudioSource config, bool isForward)
 		{
 			var audioSource = GetAudioSource();
 
@@ -53,7 +70,7 @@ namespace Koala
 			}
 		}
 
-		protected override void ManageSuddenChanges(Director.ChangeAudioSourceConfig config, bool isForward)
+		protected override void ManageSuddenChanges(ChangeAudioSource config, bool isForward)
 		{
 			var audioSource = GetAudioSource();
 

@@ -1,20 +1,21 @@
 ﻿using UnityEngine;
+using KS.SceneActions;
 
 namespace Koala
 {
-	public class ChangeAnimatorStateOccurrence : BaseOccurrence<ChangeAnimatorStateOccurrence, Director.ChangeAnimatorStateConfig>
+	public class ChangeAnimatorStateOccurrence : BaseOccurrence<ChangeAnimatorStateOccurrence, ChangeAnimatorState>
 	{
 		private Animator _animator = null;
 
 
 		public ChangeAnimatorStateOccurrence() { }
 
-		protected override Director.ChangeAnimatorStateConfig CreateOldConfig()
+		protected override ChangeAnimatorState CreateOldConfig()
 		{
 			var animator = GetAnimator();
-			var currentAnimatorStateInfo = animator.GetCurrentAnimatorStateInfo(_newConfig.Layer);
+			var currentAnimatorStateInfo = animator.GetCurrentAnimatorStateInfo(_newConfig.Layer.Value);
 
-			var oldConfig = new Director.ChangeAnimatorStateConfig()
+			var oldConfig = new ChangeAnimatorState()
 			{
 				StateHash = currentAnimatorStateInfo.shortNameHash,
 				Layer = _newConfig.Layer,
@@ -24,17 +25,17 @@ namespace Koala
 			return oldConfig;
 		}
 
-		protected override void ManageSuddenChanges(Director.ChangeAnimatorStateConfig config, bool isForward)
+		protected override void ManageSuddenChanges(ChangeAnimatorState config, bool isForward)
 		{
 			var animator = GetAnimator();
 
 			if (config.StateHash.HasValue)
 			{
-				animator.Play(config.StateHash.Value, config.Layer, config.NormalizedTime);
+				animator.Play(config.StateHash.Value, config.Layer.Value, config.NormalizedTime.Value);
 			}
 			else
 			{
-				animator.Play(config.StateName, config.Layer, config.NormalizedTime);
+				animator.Play(config.StateName, config.Layer.Value, config.NormalizedTime.Value);
 			}
 		}
 

@@ -1,20 +1,20 @@
-﻿using UnityEngine;
-using DG.Tweening;
+﻿using DG.Tweening;
+using KS.SceneActions;
 
 namespace Koala
 {
-	public class ChangeSliderOccurrence : BaseOccurrence<ChangeSliderOccurrence, Director.ChangeSliderConfig>
+	public class ChangeSliderOccurrence : BaseOccurrence<ChangeSliderOccurrence, ChangeSlider>
 	{
 		private SliderParts _sliderParts;
 
 
 		public ChangeSliderOccurrence() { }
 
-		protected override Director.ChangeSliderConfig CreateOldConfig()
+		protected override ChangeSlider CreateOldConfig()
 		{
 			var sliderParts = GetSliderParts();
 
-			var oldConfig = new Director.ChangeSliderConfig();
+			var oldConfig = new ChangeSlider();
 
 			if (_newConfig.Value.HasValue)
 				oldConfig.Value = sliderParts.Slider.value;
@@ -26,18 +26,18 @@ namespace Koala
 				oldConfig.MinValue = sliderParts.Slider.minValue;
 
 			if (_newConfig.Direction.HasValue)
-				oldConfig.Direction = sliderParts.Slider.direction;
+				oldConfig.Direction = (ESliderDirection)sliderParts.Slider.direction;
 
 			if (_newConfig.BackgroundColor != null)
-				oldConfig.BackgroundColor = sliderParts.BackgroundImage.color.ToChangeVector4Config();
+				oldConfig.BackgroundColor = sliderParts.BackgroundImage.color.ToKSVector4();
 
 			if (_newConfig.FillColor != null)
-				oldConfig.FillColor = sliderParts.FillImage.color.ToChangeVector4Config();
+				oldConfig.FillColor = sliderParts.FillImage.color.ToKSVector4();
 
 			return oldConfig;
 		}
 
-		protected override void ManageTweens(Director.ChangeSliderConfig config, bool isForward)
+		protected override void ManageTweens(ChangeSlider config, bool isForward)
 		{
 			var sliderParts = GetSliderParts();
 
@@ -73,7 +73,7 @@ namespace Koala
 				DOTween.To(
 					() => sliderParts.BackgroundImage.color,
 					x => sliderParts.BackgroundImage.color = x,
-					sliderParts.BackgroundImage.color.ApplyChangeVector4Config(config.BackgroundColor),
+					sliderParts.BackgroundImage.color.ApplyKSVector4(config.BackgroundColor),
 					_duration).RegisterInTimeline(_startTime, isForward);
 			}
 
@@ -82,17 +82,17 @@ namespace Koala
 				DOTween.To(
 					() => sliderParts.FillImage.color,
 					x => sliderParts.FillImage.color = x,
-					sliderParts.FillImage.color.ApplyChangeVector4Config(config.FillColor),
+					sliderParts.FillImage.color.ApplyKSVector4(config.FillColor),
 					_duration).RegisterInTimeline(_startTime, isForward);
 			}
 		}
 
-		protected override void ManageSuddenChanges(Director.ChangeSliderConfig config, bool isForward)
+		protected override void ManageSuddenChanges(ChangeSlider config, bool isForward)
 		{
 			var sliderParts = GetSliderParts();
 
 			if (config.Direction.HasValue)
-				sliderParts.Slider.direction = config.Direction.Value;
+				sliderParts.Slider.direction = (UnityEngine.UI.Slider.Direction)config.Direction.Value;
 		}
 
 		private SliderParts GetSliderParts()

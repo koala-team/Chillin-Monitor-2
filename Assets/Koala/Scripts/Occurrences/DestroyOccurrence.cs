@@ -1,19 +1,20 @@
 ﻿using UnityEngine;
+using KS.SceneActions;
 
 namespace Koala
 {
-	public class DestroyOccurrence : BaseOccurrence<DestroyOccurrence, Director.DestroyConfig>
+	public class DestroyOccurrence : BaseOccurrence<DestroyOccurrence, Destroy>
 	{
 		private GameObject _go = null;
 
 
 		public DestroyOccurrence() { }
 
-		protected override Director.DestroyConfig CreateOldConfig()
+		protected override Destroy CreateOldConfig()
 		{
 			var go = GetGameObject();
 
-			var oldConfig = new Director.DestroyConfig
+			var oldConfig = new Destroy
 			{
 				Parent = go.transform.parent,
 			};
@@ -21,7 +22,7 @@ namespace Koala
 			return oldConfig;
 		}
 
-		protected override void ManageSuddenChanges(Director.DestroyConfig config, bool isForward)
+		protected override void ManageSuddenChanges(Destroy config, bool isForward)
 		{
 			var go = GetGameObject();
 

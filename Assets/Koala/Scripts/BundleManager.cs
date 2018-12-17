@@ -59,11 +59,11 @@ namespace Koala
 			return _bundles[reference];
 		}
 
-		public T LoadAsset<T>(Director.ChangeAssetConfig config)
+		public T LoadAsset<T>(KS.SceneActions.Asset asset)
 			where T : UnityEngine.Object
 		{
-			if (config != null && config.BundleName != null && config.AssetName != null)
-				return GetBundle(config.BundleName).LoadAsset<T>(config.AssetName);
+			if (asset != null && asset.BundleName != null && asset.AssetName != null)
+				return GetBundle(asset.BundleName).LoadAsset<T>(asset.AssetName);
 			return null;
 		}
 	}

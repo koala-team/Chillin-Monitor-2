@@ -1,26 +1,27 @@
 ﻿using UnityEngine;
+using KS.SceneActions;
 
 namespace Koala
 {
-	public class InstantiateOccurrence : BaseOccurrence<InstantiateOccurrence, Director.InstantiateConfig>
+	public class InstantiateOccurrence : BaseOccurrence<InstantiateOccurrence, BaseCreation>
 	{
 		private GameObject _createdGO;
 
 
 		public InstantiateOccurrence() { }
 
-		protected override Director.InstantiateConfig CreateOldConfig()
+		protected override BaseCreation CreateOldConfig()
 		{
-			return new Director.InstantiateConfig();
+			return new BaseCreation();
 		}
 
-		protected override void ManageSuddenChanges(Director.InstantiateConfig config, bool isForward)
+		protected override void ManageSuddenChanges(BaseCreation config, bool isForward)
 		{
 			if (isForward)
 			{
-				GameObject parent = config.ParentReference == null
+				GameObject parent = !config.ParentRef.HasValue
 					? config.DefaultParent
-					: References.Instance.GetGameObject(config.ParentReference);
+					: References.Instance.GetGameObject(config.FullParentRef);
 
 				if (config.GameObject == null)
 				{
@@ -32,12 +33,6 @@ namespace Koala
 					_createdGO = GameObject.Instantiate(config.GameObject, parent.transform);
 					_createdGO.name = _reference;
 				}
-
-				_createdGO.transform.localPosition = config.Position;
-				if (config.Rotation.HasValue)
-					_createdGO.transform.localEulerAngles = config.Rotation.Value;
-				if (config.Scale.HasValue)
-					_createdGO.transform.localScale = config.Scale.Value;
 
 				References.Instance.AddGameObject(_reference, _createdGO);
 

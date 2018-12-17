@@ -2,7 +2,7 @@
 
 namespace Koala
 {
-	public interface IBaseOccurrence<T, C>
+	public interface IBaseOccurrence<T, in C>
 	{
 		void Init(string reference,
 			float startTime, float endTime, C newConfig,
@@ -11,7 +11,7 @@ namespace Koala
 
 	public abstract class BaseOccurrence<T, C> : Occurrence, IBaseOccurrence<T, C>
 		where T : BaseOccurrence<T, C>
-		where C : class
+		where C : KS.SceneActions.BaseAction
 	{
 		private static readonly float MIN_DURATION = 0.1e-6f;
 		protected float _duration;

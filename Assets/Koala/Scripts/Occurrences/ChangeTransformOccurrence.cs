@@ -1,32 +1,33 @@
 ﻿using UnityEngine;
 using DG.Tweening;
+using KS.SceneActions;
 
 namespace Koala
 {
-	public class ChangeTransformOccurrence : BaseOccurrence<ChangeTransformOccurrence, Director.ChangeTransformConfig>
+	public class ChangeTransformOccurrence : BaseOccurrence<ChangeTransformOccurrence, ChangeTransform>
 	{
 		private Transform _transform = null;
 		
 
 		public ChangeTransformOccurrence() { }
 
-		protected override Director.ChangeTransformConfig CreateOldConfig()
+		protected override ChangeTransform CreateOldConfig()
 		{
 			Transform transform = GetTransform();
 
-			var currentConfig = new Director.ChangeTransformConfig();
+			var currentConfig = new ChangeTransform();
 
 			if (_newConfig.Position != null)
-				currentConfig.Position = transform.position.ToChangeVector3Config();
+				currentConfig.Position = transform.position.ToKSVector3();
 			if (_newConfig.Rotation != null)
-				currentConfig.Rotation = transform.eulerAngles.ToChangeVector3Config();
+				currentConfig.Rotation = transform.eulerAngles.ToKSVector3();
 			if (_newConfig.Scale != null)
-				currentConfig.Scale = transform.localScale.ToChangeVector3Config();
+				currentConfig.Scale = transform.localScale.ToKSVector3();
 
 			return currentConfig;
 		}
 
-		protected override void ManageTweens(Director.ChangeTransformConfig config, bool isForward)
+		protected override void ManageTweens(ChangeTransform config, bool isForward)
 		{
 			Transform transform = GetTransform();
 
@@ -35,7 +36,7 @@ namespace Koala
 				DOTween.To(
 					() => transform.localPosition,
 					x => transform.localPosition = x,
-					transform.localPosition.ApplyChangeVector3Config(config.Position),
+					transform.localPosition.ApplyKSVector3(config.Position),
 					_duration).RegisterInTimeline(_startTime, isForward);
 			}
 
@@ -44,7 +45,7 @@ namespace Koala
 				DOTween.To(
 					() => transform.localRotation.eulerAngles,
 					x => transform.localEulerAngles = x,
-					transform.localEulerAngles.ApplyChangeVector3Config(config.Rotation),
+					transform.localEulerAngles.ApplyKSVector3(config.Rotation),
 					_duration).RegisterInTimeline(_startTime, isForward);
 			}
 
@@ -53,7 +54,7 @@ namespace Koala
 				DOTween.To(
 					() => transform.localScale,
 					x => transform.localScale = x,
-					transform.localScale.ApplyChangeVector3Config(config.Scale),
+					transform.localScale.ApplyKSVector3(config.Scale),
 					_duration).RegisterInTimeline(_startTime, isForward);
 			}
 		}

@@ -1,46 +1,47 @@
 ﻿using UnityEngine;
 using DG.Tweening;
+using KS.SceneActions;
 
 namespace Koala
 {
-	public class ChangeUIElementOccurrence : BaseOccurrence<ChangeUIElementOccurrence, Director.ChangeRectTransformConfig>
+	public class ChangeUIElementOccurrence : BaseOccurrence<ChangeUIElementOccurrence, ChangeRectTransform>
 	{
 		private RectTransform _rect = null;
 
 
 		public ChangeUIElementOccurrence() { }
 
-		protected override Director.ChangeRectTransformConfig CreateOldConfig()
+		protected override ChangeRectTransform CreateOldConfig()
 		{
 			RectTransform rect = GetRect();
 
-			var currentConfig = new Director.ChangeRectTransformConfig();
+			var currentConfig = new ChangeRectTransform();
 
 			if (_newConfig.Position != null)
-				currentConfig.Position = rect.anchoredPosition3D.ToChangeVector3Config();
+				currentConfig.Position = rect.anchoredPosition3D.ToKSVector3();
 
 			if (_newConfig.Rotation != null)
-				currentConfig.Rotation = rect.eulerAngles.ToChangeVector3Config();
+				currentConfig.Rotation = rect.eulerAngles.ToKSVector3();
 
 			if (_newConfig.Scale != null)
-				currentConfig.Scale = rect.localScale.ToChangeVector3Config();
+				currentConfig.Scale = rect.localScale.ToKSVector3();
 
 			if (_newConfig.Pivot != null)
-				currentConfig.Pivot = rect.pivot.ToChangeVector2Config();
+				currentConfig.Pivot = rect.pivot.ToKSVector2();
 
 			if (_newConfig.AnchorMin != null)
-				currentConfig.AnchorMin = rect.anchorMin.ToChangeVector2Config();
+				currentConfig.AnchorMin = rect.anchorMin.ToKSVector2();
 
 			if (_newConfig.AnchorMax != null)
-				currentConfig.AnchorMax = rect.anchorMax.ToChangeVector2Config();
+				currentConfig.AnchorMax = rect.anchorMax.ToKSVector2();
 
 			if (_newConfig.Size != null)
-				currentConfig.Size = rect.sizeDelta.ToChangeVector2Config();
+				currentConfig.Size = rect.sizeDelta.ToKSVector2();
 
 			return currentConfig;
 		}
 
-		protected override void ManageTweens(Director.ChangeRectTransformConfig config, bool isForward)
+		protected override void ManageTweens(ChangeRectTransform config, bool isForward)
 		{
 			RectTransform rect = GetRect();
 
@@ -49,7 +50,7 @@ namespace Koala
 				DOTween.To(
 					() => rect.anchoredPosition3D,
 					x => rect.anchoredPosition3D = x,
-					rect.anchoredPosition3D.ApplyChangeVector3Config(config.Position),
+					rect.anchoredPosition3D.ApplyKSVector3(config.Position),
 					_duration).RegisterInTimeline(_startTime, isForward);
 			}
 
@@ -58,7 +59,7 @@ namespace Koala
 				DOTween.To(
 					() => rect.localEulerAngles,
 					x => rect.localEulerAngles = x,
-					rect.localEulerAngles.ApplyChangeVector3Config(config.Rotation),
+					rect.localEulerAngles.ApplyKSVector3(config.Rotation),
 					_duration).RegisterInTimeline(_startTime, isForward);
 			}
 
@@ -67,7 +68,7 @@ namespace Koala
 				DOTween.To(
 					() => rect.localScale,
 					x => rect.localScale = x,
-					rect.localScale.ApplyChangeVector3Config(config.Scale),
+					rect.localScale.ApplyKSVector3(config.Scale),
 					_duration).RegisterInTimeline(_startTime, isForward);
 			}
 
@@ -76,7 +77,7 @@ namespace Koala
 				DOTween.To(
 					() => rect.pivot,
 					x => rect.pivot = x,
-					rect.pivot.ApplyChangeVector2Config(config.Pivot),
+					rect.pivot.ApplyKSVector2(config.Pivot),
 					_duration).RegisterInTimeline(_startTime, isForward);
 			}
 
@@ -85,7 +86,7 @@ namespace Koala
 				DOTween.To(
 					() => rect.anchorMin,
 					x => rect.anchorMin = x,
-					rect.anchorMin.ApplyChangeVector2Config(config.AnchorMin),
+					rect.anchorMin.ApplyKSVector2(config.AnchorMin),
 					_duration).RegisterInTimeline(_startTime, isForward);
 			}
 
@@ -94,7 +95,7 @@ namespace Koala
 				DOTween.To(
 					() => rect.anchorMax,
 					x => rect.anchorMax = x,
-					rect.anchorMax.ApplyChangeVector2Config(config.AnchorMax),
+					rect.anchorMax.ApplyKSVector2(config.AnchorMax),
 					_duration).RegisterInTimeline(_startTime, isForward);
 			}
 
@@ -103,7 +104,7 @@ namespace Koala
 				DOTween.To(
 					() => rect.sizeDelta,
 					x => rect.sizeDelta = x,
-					rect.sizeDelta.ApplyChangeVector2Config(config.Size),
+					rect.sizeDelta.ApplyKSVector2(config.Size),
 					_duration).RegisterInTimeline(_startTime, isForward);
 			}
 		}

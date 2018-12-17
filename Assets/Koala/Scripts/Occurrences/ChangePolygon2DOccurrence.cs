@@ -2,24 +2,25 @@
 using DG.Tweening;
 using System.Linq;
 using System.Collections.Generic;
+using KS.SceneActions;
 
 namespace Koala
 {
-	public class ChangePolygon2DOccurrence : BaseOccurrence<ChangePolygon2DOccurrence, Director.ChangePolygon2DConfig>
+	public class ChangePolygon2DOccurrence : BaseOccurrence<ChangePolygon2DOccurrence, ChangePolygon2D>
 	{
 		private Polygon2D _polygon2D = null;
 
 
 		public ChangePolygon2DOccurrence() { }
 
-		protected override Director.ChangePolygon2DConfig CreateOldConfig()
+		protected override ChangePolygon2D CreateOldConfig()
 		{
 			Polygon2D polygon = GetPolygon2D();
 
-			var oldConfig = new Director.ChangePolygon2DConfig();
+			var oldConfig = new ChangePolygon2D();
 
 			if (_newConfig.FillColor != null)
-				oldConfig.FillColor = polygon.FillColor.ToChangeVector4Config();
+				oldConfig.FillColor = polygon.FillColor.ToKSVector4();
 
 			if (_newConfig.Vertices != null)
 			{
@@ -27,14 +28,14 @@ namespace Koala
 
 				if (vertices.Length == 0)
 				{
-					oldConfig.Vertices = new List<Director.ChangeVector2Config> { };
+					oldConfig.Vertices = new List<KS.SceneActions.Vector2> { };
 				}
 				else
 				{
 					oldConfig.Vertices = Enumerable.Range(0, vertices.Length)
 						.Select(i =>
 						{
-							return vertices[i].ToChangeVector2Config();
+							return vertices[i].ToKSVector2();
 						})
 						.ToList();
 				}
@@ -49,7 +50,7 @@ namespace Koala
 			return oldConfig;
 		}
 
-		protected override void ManageTweens(Director.ChangePolygon2DConfig config, bool isForward)
+		protected override void ManageTweens(ChangePolygon2D config, bool isForward)
 		{
 			Polygon2D polygon = GetPolygon2D();
 
@@ -58,7 +59,7 @@ namespace Koala
 				DOTween.To(
 					() => polygon.FillColor,
 					x => polygon.FillColor = x,
-					polygon.FillColor.ApplyChangeVector4Config(config.FillColor),
+					polygon.FillColor.ApplyKSVector4(config.FillColor),
 					_duration).RegisterInTimeline(_startTime, isForward);
 			}
 
@@ -73,13 +74,13 @@ namespace Koala
 					DOTween.To(
 						() => polygon.Vertices[index],
 						x => polygon.SetVertex(index, x),
-						polygon.Vertices[index].ApplyChangeVector2Config(config.Vertices[index]),
+						polygon.Vertices[index].ApplyKSVector2(config.Vertices[index]),
 						_duration).RegisterInTimeline(_startTime, isForward);
 				}
 			}
 		}
 
-		protected override void ManageSuddenChanges(Director.ChangePolygon2DConfig config, bool isForward)
+		protected override void ManageSuddenChanges(ChangePolygon2D config, bool isForward)
 		{
 			Polygon2D polygon = GetPolygon2D();
 
@@ -88,7 +89,7 @@ namespace Koala
 				polygon.Vertices = Enumerable.Range(0, config.Vertices.Count)
 					.Select(i =>
 					{
-						return Vector2.zero.ApplyChangeVector2Config(config.Vertices[i]);
+						return UnityEngine.Vector2.zero.ApplyKSVector2(config.Vertices[i]);
 					})
 					.ToArray();
 			}

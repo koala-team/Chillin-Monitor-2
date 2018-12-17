@@ -1,26 +1,27 @@
 ﻿using DG.Tweening;
 using UnityEngine;
+using KS.SceneActions;
 
 namespace Koala
 {
-	public class ChangeCameraOccurrence : BaseOccurrence<ChangeCameraOccurrence, Director.ChangeCameraConfig>
+	public class ChangeCameraOccurrence : BaseOccurrence<ChangeCameraOccurrence, ChangeCamera>
 	{
 		private Camera _camera;
 
 
 		public ChangeCameraOccurrence() { }
 
-		protected override Director.ChangeCameraConfig CreateOldConfig()
+		protected override ChangeCamera CreateOldConfig()
 		{
 			var camera = GetCamera();
 
-			var oldConfig = new Director.ChangeCameraConfig();
+			var oldConfig = new ChangeCamera();
 
-			if (_newConfig.ClearFlags.HasValue)
-				oldConfig.ClearFlags = camera.clearFlags;
+			if (_newConfig.ClearFlag.HasValue)
+				oldConfig.ClearFlag = (ECameraClearFlag)camera.clearFlags;
 
 			if (_newConfig.BackgroundColor != null)
-				oldConfig.BackgroundColor = camera.backgroundColor.ToChangeVector4Config();
+				oldConfig.BackgroundColor = camera.backgroundColor.ToKSVector4();
 
 			if (_newConfig.IsOrthographic.HasValue)
 				oldConfig.IsOrthographic = camera.orthographic;
@@ -40,7 +41,7 @@ namespace Koala
 			return oldConfig;
 		}
 
-		protected override void ManageTweens(Director.ChangeCameraConfig config, bool isForward)
+		protected override void ManageTweens(ChangeCamera config, bool isForward)
 		{
 			var camera = GetCamera();
 
@@ -49,7 +50,7 @@ namespace Koala
 				DOTween.To(
 					() => camera.backgroundColor,
 					x => camera.backgroundColor = x,
-					camera.backgroundColor.ApplyChangeVector4Config(config.BackgroundColor),
+					camera.backgroundColor.ApplyKSVector4(config.BackgroundColor),
 					_duration).RegisterInTimeline(_startTime, isForward);
 			}
 
@@ -90,12 +91,12 @@ namespace Koala
 			}
 		}
 
-		protected override void ManageSuddenChanges(Director.ChangeCameraConfig config, bool isForward)
+		protected override void ManageSuddenChanges(ChangeCamera config, bool isForward)
 		{
 			var camera = GetCamera();
 
-			if (config.ClearFlags.HasValue)
-				camera.clearFlags = config.ClearFlags.Value;
+			if (config.ClearFlag.HasValue)
+				camera.clearFlags = (CameraClearFlags)config.ClearFlag.Value;
 			
 			if (config.IsOrthographic.HasValue)
 				camera.orthographic = config.IsOrthographic.Value;

@@ -1,8 +1,9 @@
 ﻿using UnityEngine;
+using KS.SceneActions;
 
 namespace Koala
 {
-	public class ManageComponentsOccurrence : BaseOccurrence<ManageComponentsOccurrence, Director.ManageComponentsConfig>
+	public class ManageComponentsOccurrence : BaseOccurrence<ManageComponentsOccurrence, ManageComponents>
 	{
 		private GameObject _gameObject;
 		private MonoBehaviour _component;
@@ -10,9 +11,9 @@ namespace Koala
 
 		public ManageComponentsOccurrence() { }
 
-		protected override Director.ManageComponentsConfig CreateOldConfig()
+		protected override ManageComponents CreateOldConfig()
 		{
-			var oldConfig = new Director.ManageComponentsConfig();
+			var oldConfig = new ManageComponents();
 
 			if (_newConfig.Add.HasValue && _newConfig.Add.Value)
 				oldConfig.Add = false;
@@ -26,7 +27,7 @@ namespace Koala
 			return oldConfig;
 		}
 
-		protected override void ManageSuddenChanges(Director.ManageComponentsConfig config, bool isForward)
+		protected override void ManageSuddenChanges(ManageComponents config, bool isForward)
 		{
 			if (config.Add.HasValue)
 			{

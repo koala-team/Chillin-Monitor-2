@@ -61,5 +61,10 @@ namespace Koala
 				return fontItem.Font;
 			return null;
 		}
+
+		public static T Cast<T>(object o)
+		{
+			return (T)o;
+		}
 	}
 }

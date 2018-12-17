@@ -153,10 +153,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9ad24c6d4fa00f478d12fbc4504293f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rootGameObject: {fileID: 2026576869}
-  rootDestroyedGameObject: {fileID: 597214424}
-  userCanvasGameObject: {fileID: 1100095213}
-  timeText: {fileID: 1740248602}
+  m_rootGameObject: {fileID: 2026576869}
+  m_rootDestroyedGameObject: {fileID: 597214424}
+  m_userCanvasGameObject: {fileID: 1100095213}
+  m_timeText: {fileID: 1740248602}
   m_fontItems:
   - m_name: agitprop
     m_font: {fileID: 11400000, guid: 8cbb861586a97b54ba6027adc93c1b1a, type: 2}

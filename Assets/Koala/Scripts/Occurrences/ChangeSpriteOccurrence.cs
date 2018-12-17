@@ -1,27 +1,28 @@
 ﻿using UnityEngine;
 using DG.Tweening;
+using KS.SceneActions;
 
 namespace Koala
 {
-	public class ChangeSpriteOccurrence : BaseOccurrence<ChangeSpriteOccurrence, Director.ChangeSpriteConfig>
+	public class ChangeSpriteOccurrence : BaseOccurrence<ChangeSpriteOccurrence, ChangeSprite>
 	{
 		private SpriteRenderer _spriteRenderer = null;
 
 
 		public ChangeSpriteOccurrence() { }
 
-		protected override Director.ChangeSpriteConfig CreateOldConfig()
+		protected override ChangeSprite CreateOldConfig()
 		{
 			SpriteRenderer spriteRenderer = GetSpriteRenderer();
 			
-			var oldConfig = new Director.ChangeSpriteConfig
+			var oldConfig = new ChangeSprite
 			{
 				Sprite = spriteRenderer.sprite,
 				SpriteAsset = _newConfig.SpriteAsset,
 			};
 
 			if (_newConfig.Color != null)
-				oldConfig.Color = spriteRenderer.color.ToChangeVector4Config();
+				oldConfig.Color = spriteRenderer.color.ToKSVector4();
 
 			if (_newConfig.FlipX.HasValue)
 				oldConfig.FlipX = spriteRenderer.flipX;
@@ -35,7 +36,7 @@ namespace Koala
 			return oldConfig;
 		}
 
-		protected override void ManageTweens(Director.ChangeSpriteConfig config, bool isForward)
+		protected override void ManageTweens(ChangeSprite config, bool isForward)
 		{
 			SpriteRenderer spriteRenderer = GetSpriteRenderer();
 
@@ -44,12 +45,12 @@ namespace Koala
 				DOTween.To(
 					() => spriteRenderer.color,
 					x => spriteRenderer.color = x,
-					spriteRenderer.color.ApplyChangeVector4Config(config.Color),
+					spriteRenderer.color.ApplyKSVector4(config.Color),
 					_duration).RegisterInTimeline(_startTime, isForward);
 			}
 		}
 
-		protected override void ManageSuddenChanges(Director.ChangeSpriteConfig config, bool isForward)
+		protected override void ManageSuddenChanges(ChangeSprite config, bool isForward)
 		{
 			SpriteRenderer spriteRenderer = GetSpriteRenderer();
 

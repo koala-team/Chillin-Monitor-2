@@ -1,23 +1,23 @@
-﻿using UnityEngine;
-using DG.Tweening;
+﻿using DG.Tweening;
+using KS.SceneActions;
 
 namespace Koala
 {
-	public class ChangeEllipse2DOccurrence : BaseOccurrence<ChangeEllipse2DOccurrence, Director.ChangeEllipse2DConfig>
+	public class ChangeEllipse2DOccurrence : BaseOccurrence<ChangeEllipse2DOccurrence, ChangeEllipse2D>
 	{
 		private Ellipse2D _ellipse2D = null;
 
 
 		public ChangeEllipse2DOccurrence() { }
 
-		protected override Director.ChangeEllipse2DConfig CreateOldConfig()
+		protected override ChangeEllipse2D CreateOldConfig()
 		{
 			Ellipse2D ellipse = GetEllipse2D();
 
-			var oldConfig = new Director.ChangeEllipse2DConfig();
+			var oldConfig = new ChangeEllipse2D();
 
 			if (_newConfig.FillColor != null)
-				oldConfig.FillColor = ellipse.FillColor.ToChangeVector4Config();
+				oldConfig.FillColor = ellipse.FillColor.ToKSVector4();
 
 			if (_newConfig.XRadius.HasValue)
 				oldConfig.XRadius = ellipse.XRadius;
@@ -28,7 +28,7 @@ namespace Koala
 			return oldConfig;
 		}
 
-		protected override void ManageTweens(Director.ChangeEllipse2DConfig config, bool isForward)
+		protected override void ManageTweens(ChangeEllipse2D config, bool isForward)
 		{
 			Ellipse2D ellipse = GetEllipse2D();
 
@@ -37,7 +37,7 @@ namespace Koala
 				DOTween.To(
 					() => ellipse.FillColor,
 					x => ellipse.FillColor = x,
-					ellipse.FillColor.ApplyChangeVector4Config(config.FillColor),
+					ellipse.FillColor.ApplyKSVector4(config.FillColor),
 					_duration).RegisterInTimeline(_startTime, isForward);
 			}
 
