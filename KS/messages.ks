@@ -15,6 +15,7 @@ authenticated = boolean
 _def = class
 game_name = string
 sides = map<string, list<string>>
+gui_cycle_duration = float
 
 ##########################################################
 

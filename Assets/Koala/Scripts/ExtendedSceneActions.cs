@@ -1,4 +1,5 @@
 ﻿using Koala;
+using System;
 using UnityEngine;
 
 namespace KS.SceneActions
@@ -12,6 +13,15 @@ namespace KS.SceneActions
 
 
 		public virtual void Prepare() { }
+
+		public static BaseAction GetAction(string type, string data)
+		{
+			var baseActionType = Helper.Assembly.GetType("KS.SceneActions." + type);
+			var baseAction = Activator.CreateInstance(baseActionType) as BaseAction;
+			baseAction.Deserialize(data.GetBytes());
+
+			return baseAction;
+		}
 	}
 
 	public partial class Vector2
@@ -129,11 +139,6 @@ namespace KS.SceneActions
 			}
 			DefaultParent = Helper.UserCanvasGameObject;
 		}
-	}
-
-	public partial class Destroy
-	{
-		public Transform Parent { get; set; }
 	}
 
 	public partial class ChangeVisibility
@@ -254,5 +259,34 @@ namespace KS.SceneActions
 			Cookie = BundleManager.Instance.LoadAsset<Texture>(CookieAsset);
 			Flare = BundleManager.Instance.LoadAsset<Flare>(FlareAsset);
 		}
+	}
+
+	// New Actions
+	public class AgentJoined : BaseAction
+	{
+		public new const string NameStatic = "AgentJoined";
+		public override string Name() => "AgentJoined";
+
+		public string Team { get; set; }
+		public string Side { get; set; }
+		public string AgentName { get; set; }
+	}
+
+	public class AgentLeft : BaseAction
+	{
+		public new const string NameStatic = "AgentLeft";
+		public override string Name() => "AgentLeft";
+
+		public string Side { get; set; }
+		public string AgentName { get; set; }
+		public bool IsLeft { get; set; } = true;
+	}
+
+	public class EndGame : BaseAction
+	{
+		public new const string NameStatic = "EndGame";
+		public override string Name() => "EndGame";
+
+		public GameObject EndGamePanel { get; set; }
 	}
 }

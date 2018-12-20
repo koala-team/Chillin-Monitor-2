@@ -36,6 +36,20 @@ namespace Koala
 			_gameObjectsMap = new Dictionary<string, GameObject>();
 		}
 
+		public string[] GetRefs()
+		{
+			var keys = new string[_gameObjectsMap.Keys.Count];
+			_gameObjectsMap.Keys.CopyTo(keys, 0);
+			return keys;
+		}
+
+		public GameObject[] GetGameObjects()
+		{
+			var gameObjects = new GameObject[_gameObjectsMap.Values.Count];
+			_gameObjectsMap.Values.CopyTo(gameObjects, 0);
+			return gameObjects;
+		}
+
 		public void AddGameObject(string reference, GameObject go)
 		{
 			if (_gameObjectsMap.ContainsKey(reference))

@@ -7,9 +7,8 @@ namespace Koala
 	public sealed class Timeline
 	{
 		public static readonly int TIME_TRUNCATE_DECIMALS = 3;
-		delegate bool comparator(int a, int b, int c);
 
-		#region Definition
+		#region Singleton
 		private static readonly Timeline instance = new Timeline();
 
 		// Explicit static constructor to tell C# compiler
@@ -61,53 +60,55 @@ namespace Koala
 			_occurrences[convertedTime].AddLast(occurrence);
 		}
 
-		public void Update(float unscaledDeltaTime)
+		public void Update(float unscaledDeltaTime, float maxTime)
 		{
+			// Check time don't go behind zero and above maxTime
+			if (Time <= 0 && TimeScale < 0) return;
+			if (Time >= maxTime && TimeScale > 0) return;
+
 			float deltaTime = unscaledDeltaTime * TimeScale;
+			float newTime = Time + deltaTime;
 
-			if (deltaTime != 0)
+			if (deltaTime == 0) return;
+
+			// Check new time don't go behind zero and above maxTime
+			if (newTime < 0 && TimeScale < 0) newTime = 0;
+			if (newTime > maxTime && TimeScale > 0) newTime = maxTime;
+
+			// Update Time
+			float prevTime = Time;
+			Time = newTime;
+
+			// Update Tweens
+			TweensManager.Instance.UpdateTweensIsBackward(deltaTime);
+			DOTween.ManualUpdate(Math.Abs(deltaTime), 0);
+
+			// Execute Occurrences
+			int step = TimeScale > 0 ? 1 : -1;
+			int convertedPrevTime = ConvertTime(prevTime);
+			int convertedTime = ConvertTime(Time);
+
+			if (_occurrences.Count > 4)
 			{
-				// Update Time
-				float prevTime = Time;
-				Time += deltaTime;
+				int tempIndex = _occurrencesIndex;
+				if (!CheckIsTimeBetween(convertedPrevTime, _occurrences.Keys[tempIndex], convertedTime))
+					tempIndex += step;
 
-				// Update Tweens
-				TweensManager.Instance.UpdateTweensIsBackward(deltaTime);
-				DOTween.ManualUpdate(Math.Abs(deltaTime), 0);
-
-				// Execute Occurrences
-				comparator comparator = (a, b, c) =>
+				while (CheckIsTimeBetween(convertedPrevTime, _occurrences.Keys[tempIndex], convertedTime))
 				{
-					return TimeScale > 0 ?
-							a <= b && b < c :
-							a > b && b >= c;
-				};
-				int step = TimeScale > 0 ? 1 : -1;
-				int convertedPrevTime = ConvertTime(prevTime);
-				int convertedTime = ConvertTime(Time);
-
-				if (_occurrences.Count > 4)
-				{
-					int tempIndex = _occurrencesIndex;
-					if (!comparator(convertedPrevTime, _occurrences.Keys[tempIndex], convertedTime))
-						tempIndex += step;
-
-					while (comparator(convertedPrevTime, _occurrences.Keys[tempIndex], convertedTime))
-					{
-						ExecuteOccurrences(_occurrences[_occurrences.Keys[tempIndex]]);
-						tempIndex += step;
-						_occurrencesIndex = tempIndex;
-					}
-
+					ExecuteOccurrences(_occurrences[_occurrences.Keys[tempIndex]]);
+					tempIndex += step;
+					_occurrencesIndex = tempIndex;
 				}
 
-				// Check time don't go behind zero
-				if (Time <= 0 && TimeScale < 0)
-				{
-					TimeScale = 0;
-					UnityEngine.Debug.Log("Force Pause");
-				}
 			}
+		}
+
+		private bool CheckIsTimeBetween(int prevTime, int checkTime, int newTime)
+		{
+			return TimeScale > 0
+					? prevTime <= checkTime && checkTime < newTime
+					: prevTime > checkTime && checkTime >= newTime;
 		}
 
 		private void ExecuteOccurrences(LinkedList<Occurrence> occurrences)

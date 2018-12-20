@@ -6,41 +6,41 @@ namespace Koala
 	public class DestroyOccurrence : BaseOccurrence<DestroyOccurrence, Destroy>
 	{
 		private GameObject _go = null;
+		private Transform _parent = null;
 
 
 		public DestroyOccurrence() { }
 
 		protected override Destroy CreateOldConfig()
 		{
-			var go = GetGameObject();
+			_go = References.Instance.GetGameObject(_newConfig.FullRef);
+			_parent = _go.transform.parent;
 
-			var oldConfig = new Destroy
-			{
-				Parent = go.transform.parent,
-			};
+			var oldConfig = new Destroy();
 
 			return oldConfig;
 		}
 
 		protected override void ManageSuddenChanges(Destroy config, bool isForward)
 		{
-			var go = GetGameObject();
-
-			go.transform.SetParent(isForward ? Helper.RootDestroyedGameObject.transform : config.Parent, true);
-
-			go.SetActive(!isForward);
-
 			if (isForward)
-				References.Instance.RemoveGameObject(_reference);
+				Destroy(_go, _newConfig.FullRef, _newConfig.ChildRef == null);
 			else
-				References.Instance.AddGameObject(_reference, go);
+				Restore(_go, _parent, _newConfig.FullRef, _newConfig.ChildRef == null);
 		}
 
-		private GameObject GetGameObject()
+		public static void Destroy(GameObject go, string reference, bool editReferences)
 		{
-			if (_go == null)
-				_go = References.Instance.GetGameObject(_reference);
-			return _go;
+			go.transform.SetParent(Helper.RootDestroyedGameObject.transform, true);
+			go.SetActive(false);
+			if (editReferences) References.Instance.RemoveGameObject(reference);
+		}
+
+		public static void Restore(GameObject go, Transform parent, string reference, bool editReferences)
+		{
+			go.transform.SetParent(parent, true);
+			go.SetActive(true);
+			if (editReferences) References.Instance.AddGameObject(reference, go);
 		}
 	}
 }

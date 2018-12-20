@@ -2,13 +2,13 @@
 using System.Reflection;
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Koala
 {
 	// This Class create and manage occurrences
 	public class Director
 	{
-		private readonly Assembly _asm = Assembly.GetExecutingAssembly();
 		private readonly MethodInfo _doActionMethodInfo = typeof(Director).GetMethod("DoAction");
 		private readonly MethodInfo _castMethodInfo = typeof(Helper).GetMethod("Cast");
 		private readonly Dictionary<string, bool> _onlySuddenChanges;
@@ -43,6 +43,9 @@ namespace Koala
 				{ ChangeCamera.NameStatic,           false },
 				{ StoreBundleData.NameStatic,        true },
 				{ ClearScene.NameStatic,             true },
+				{ AgentJoined.NameStatic,            true },
+				{ AgentLeft.NameStatic,              true },
+				{ EndGame.NameStatic,                true },
 			};
 		}
 
@@ -79,13 +82,20 @@ namespace Koala
 				case InstantiateBundleAsset.NameStatic:
 				case CreateBasicObject.NameStatic:
 				case CreateUIElement.NameStatic:
-					occurrenceType = _asm.GetType("Koala.InstantiateOccurrence");
+					occurrenceType = Helper.Assembly.GetType("Koala.InstantiateOccurrence");
 					break;
+
+				case StoreBundleData.NameStatic:
+					var bundleData = (StoreBundleData)action;
+					
+					AssetBundle bundle = AssetBundle.LoadFromMemory(bundleData.BundleData.GetBytes());
+					BundleManager.Instance.AddBundle(bundleData.BundleName, bundle);
+					return;
 			}
 
 			// Defaults
-			actionType = actionType ?? _asm.GetType("KS.SceneActions." + action.Name());
-			occurrenceType = occurrenceType ?? _asm.GetType("Koala." + action.Name() + "Occurrence");
+			actionType = actionType ?? Helper.Assembly.GetType("KS.SceneActions." + action.Name());
+			occurrenceType = occurrenceType ?? Helper.Assembly.GetType("Koala." + action.Name() + "Occurrence");
 
 			// Call method
 			var castMethod = _castMethodInfo.MakeGenericMethod(actionType);

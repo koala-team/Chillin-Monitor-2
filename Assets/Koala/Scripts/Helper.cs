@@ -1,4 +1,5 @@
-﻿using TMPro;
+﻿using System.Reflection;
+using TMPro;
 using UnityEngine;
 
 namespace Koala
@@ -10,6 +11,13 @@ namespace Koala
 		public static GameObject RootDestroyedGameObject { get; set; }
 		public static GameObject UserCanvasGameObject { get; set; }
 		public static FontItem[] Fonts { get; set; }
+		public static PlayersBoard PlayersBoard { get; set; }
+		public static Protocol Protocol { get; set; }
+		public static bool ReplayMode { get; set; }
+		public static bool GameStarted { get; set; }
+
+		public static Assembly Assembly => Assembly.GetExecutingAssembly();
+
 
 		public static float GetCycleTime(float cycle)
 		{

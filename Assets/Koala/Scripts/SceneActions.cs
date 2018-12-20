@@ -2930,7 +2930,7 @@ namespace KS.SceneActions
 	
 	public enum ELightShadowType
 	{
-		None = 0,
+		Disabled = 0,
 		Hard = 1,
 		Soft = 2,
 	}

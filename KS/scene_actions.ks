@@ -347,7 +347,7 @@ _def = enum <byte>
 [ELightShadowType]
 _def = enum <byte>
 	{
-		None (0),
+		Disabled (0),
 		Hard (1),
 		Soft (2)
 	}

@@ -1,41 +1,59 @@
 ﻿using UnityEngine;
 using System.Collections;
-using UnityEngine.Networking;
 using TMPro;
 using DG.Tweening;
+using KS.Messages;
+using System.Threading.Tasks;
+using UnityEngine.UI;
+using System;
+using System.Collections.Generic;
 
 namespace Koala
 {
-
 	public class GameManager : MonoBehaviour
 	{
 		public static readonly float TIME_SCALE_DELTA = 0.25f;
 
-		private Director _director;
-		private float _cycleDuration = 0.25f; // TODO: get from server
+		private Director Director { get; set; } = new Director();
+		private bool GameEnded { get; set; } = false;
+		private float MaxCycle { get; set; } = 0;
 		
 		public GameObject m_rootGameObject;
 		public GameObject m_rootDestroyedGameObject;
 		public GameObject m_userCanvasGameObject;
-		public TextMeshProUGUI m_timeText;
 		public FontItem[] m_fontItems;
 		public Camera m_mainCamera;
 
-		void Awake()
+		public Slider m_cycleSlider;
+		public TextMeshProUGUI m_cycleText;
+		public Button m_playButton;
+		public Button m_pauseButton;
+		public Button m_incSpeedButton;
+		public Button m_decSpeedButton;
+		public PlayersBoard m_playersBoard;
+		public GameObject m_startGamePanel;
+		public GameObject m_endGamePanel;
+		public GameObject m_detailCell;
+
+
+		public void Awake()
 		{
 			// Setup timeline
 			Timeline.Instance.Reset();
+			Timeline.Instance.TimeScale = 1;
 
 			// Reset references map
 			References.Instance.ResetMaps();
 			References.Instance.AddGameObject(int.MaxValue.ToString(), m_mainCamera.gameObject); // "MainCamera"
 
 			// set Helpers value
-			Helper.CycleDuration = _cycleDuration;
+			Helper.CycleDuration = 0;
 			Helper.RootGameObject = m_rootGameObject;
 			Helper.RootDestroyedGameObject = m_rootDestroyedGameObject;
 			Helper.UserCanvasGameObject = m_userCanvasGameObject;
 			Helper.Fonts = m_fontItems;
+			Helper.PlayersBoard = m_playersBoard;
+			Helper.GameStarted = false;
 
 			// Config Tweens
 			TweensManager.Instance.Reset();
@@ -43,38 +61,49 @@ namespace Koala
 			DOTween.defaultEaseType = Ease.Linear;
 			DOTween.defaultUpdateType = UpdateType.Manual;
 			DOTween.useSafeMode = false;
+
+			// Start Proper HandleMessages
+			if (Helper.ReplayMode)
+				StartCoroutine(HandleReplayMessages());
+			else
+				StartCoroutine(HandleOnlineMessages());
 		}
 
-		void Start()
+		public void FixedUpdate()
 		{
-			StartCoroutine(DownloadBundle());
+			if (Helper.CycleDuration != 0)
+				Timeline.Instance.Update(Time.fixedDeltaTime, MaxCycle * Helper.CycleDuration);
 		}
 
-		void Update()
+		public void Update()
 		{
-			Timeline.Instance.Update(Time.deltaTime);
+			// Update Cycle UI
+			float cycle = Helper.CycleDuration == 0 ? 0 : Timeline.Instance.Time / Helper.CycleDuration;
+			m_cycleSlider.maxValue = MaxCycle;
+			m_cycleSlider.value = cycle;
+			m_cycleText.text = string.Format("{0} / {1} @{2}X", cycle.TruncateDecimal(1).ToString("0.0"), (int)MaxCycle, Timeline.Instance.TimeScale);
 
-			// Update Time Text
-			m_timeText.text = "Time: " + Timeline.Instance.Time.ToString("0.0000000") +
-							"\nCycle: " + (Timeline.Instance.Time / _cycleDuration).TruncateDecimal(1).ToString("0.0") +
-							"\nSpeed: " + Timeline.Instance.TimeScale.ToString() +
-							"\nCycle Duration: " + _cycleDuration.ToString();
+			ControlTime();
+		}
 
-			// Control Time
-			if (Input.GetKeyDown(KeyCode.P) && Timeline.Instance.TimeScale != 0)
+		private void ControlTime()
+		{
+			if (!Helper.GameStarted) return;
+
+			if (Input.GetKeyDown(KeyCode.P))
 			{
-				ChangeTimeScale(-Timeline.Instance.TimeScale); // Pause
-				//Debug.Log("Pause");
+				if (Timeline.Instance.TimeScale == 0)
+					Play();
+				else
+					Pause();
 			}
-			else if (Input.GetKeyDown(KeyCode.LeftBracket) && Timeline.Instance.Time > 0)
+			else if (Input.GetKeyDown(KeyCode.LeftBracket))
 			{
-				ChangeTimeScale(-TIME_SCALE_DELTA); // Rewind
-				//Debug.Log("Rewind: " + Timeline.Instance.TimeScale.ToString());
+				DecSpeed();
 			}
 			else if (Input.GetKeyDown(KeyCode.RightBracket))
 			{
-				ChangeTimeScale(TIME_SCALE_DELTA); // Forward
-				//Debug.Log("Play: " + Timeline.Instance.TimeScale.ToString());
+				IncSpeed();
 			}
 		}
 
@@ -86,43 +115,191 @@ namespace Koala
 			Helper.SetAudioSourcesTimeScale(m_rootGameObject);
 		}
 
-		private IEnumerator DownloadBundle()
+		public void Pause()
 		{
-			string uri = "http://127.0.0.1:8081/asset1";
-			var request = UnityWebRequest.Get(uri);
-			yield return request.SendWebRequest();
-			var bytes = request.downloadHandler.data;
-			AssetBundle bundle = AssetBundle.LoadFromMemory(bytes);
-			BundleManager.Instance.AddBundle("main", bundle);
+			if (Timeline.Instance.TimeScale == 0) return;
 
-			foreach (var name in bundle.GetAllAssetNames())
+			ChangeTimeScale(-Timeline.Instance.TimeScale);
+			ShowPauseOrPlay(false);
+		}
+
+		public void Play()
+		{
+			if (Timeline.Instance.TimeScale == 1) return;
+
+			ChangeTimeScale(1);
+			ShowPauseOrPlay(true);
+		}
+
+		public void IncSpeed()
+		{
+			ChangeTimeScale(TIME_SCALE_DELTA);
+			ShowPauseOrPlay(Timeline.Instance.TimeScale != 0);
+		}
+
+		public void DecSpeed()
+		{
+			ChangeTimeScale(-TIME_SCALE_DELTA);
+			ShowPauseOrPlay(Timeline.Instance.TimeScale != 0);
+		}
+
+		public void ShowPauseOrPlay(bool isPlaying)
+		{
+			m_playButton.gameObject.SetActive(!isPlaying);
+			m_pauseButton.gameObject.SetActive(isPlaying);
+		}
+
+		private IEnumerator HandleOnlineMessages()
+		{
+			var protocol = Helper.Protocol;
+			Task<KS.KSObject> recvTask;
+
+			while (!GameEnded)
 			{
-				Debug.Log(name);
+				recvTask = protocol.RecvMessage();
+				yield return recvTask.WaitUntilComplete();
+				ParseMessage(recvTask.Result);
 			}
 
-			_director = new Director();
-			Debug.Log("Bundle Loaded");
+			protocol.Network.Disconnect();
+		}
 
-			_director.Action(new KS.SceneActions.CreateEmptyGameObject
+		private IEnumerator HandleReplayMessages()
+		{
+			yield return null;
+		}
+
+		private void ParseMessage(KS.KSObject message)
+		{
+			switch (message.Name())
 			{
-				Cycle = 0,
-				Ref = 1,
-			});
-			_director.Action(new KS.SceneActions.CreateBasicObject
+				case GameInfo.NameStatic:
+					var gameInfo = (GameInfo)message;
+					Helper.CycleDuration = gameInfo.GuiCycleDuration.Value;
+					m_playersBoard.Init(gameInfo.Sides);
+					break;
+
+				case AgentJoined.NameStatic:
+					var agentJoined = (AgentJoined)message;
+					Director.Action(new KS.SceneActions.AgentJoined
+					{
+						Cycle = MaxCycle,
+						Team = agentJoined.TeamNickname,
+						Side = agentJoined.SideName,
+						AgentName = agentJoined.AgentName,
+					});
+					break;
+
+				case AgentLeft.NameStatic:
+					var agentLeft = (AgentLeft)message;
+					Director.Action(new KS.SceneActions.AgentLeft
+					{
+						Cycle = MaxCycle,
+						Side = agentLeft.SideName,
+						AgentName = agentLeft.AgentName,
+						IsLeft = true,
+					});
+					break;
+
+				case StartGame.NameStatic:
+					var startGame = (StartGame)message;
+					StartCoroutine(StartGameCounter((int)startGame.StartTime.Value));
+					break;
+
+				case EndGame.NameStatic:
+					var endGame = (EndGame)message;
+					MaxCycle += 1;
+					FillEndGamePanel(endGame.WinnerSidename, endGame.Details);
+					Director.Action(new KS.SceneActions.EndGame
+					{
+						Cycle = MaxCycle - 0.01f,
+						EndGamePanel = m_endGamePanel,
+					});
+					GameEnded = true;
+					break;
+
+				case SceneActions.NameStatic:
+					var sceneActions = (SceneActions)message;
+					foreach (var action in sceneActions.ParsedActions)
+					{
+						Director.Action(action);
+					}
+
+					MaxCycle += 1;
+					break;
+			}
+		}
+
+		private void FillEndGamePanel(string winnerSidename, Dictionary<string, Dictionary<string, string>> details)
+		{
+			// Fill winner text
+			var winnerText = m_endGamePanel.transform.Find("Contents/WinnerText").GetComponent<TextMeshProUGUI>();
+			if (winnerSidename == null)
 			{
-				Cycle = 0,
-				Ref = 2,
-				ParentRef = 1,
-				Type = KS.SceneActions.EBasicObjectType.Ellipse2D,
-			});
-			_director.Action(new KS.SceneActions.ChangeEllipse2D
+				winnerText.text = "Draw";
+				winnerText.color = Color.white;
+			}
+			else
 			{
-				Cycle = 0,
-				Ref = 2,
-				DurationCycles = 2,
-				XRadius = 2,
-				YRadius = 2,
-			});
+				winnerText.text = "Winner: " + winnerSidename;
+			}
+
+			// Fill details
+			if (details != null)
+			{
+				var detailsTransform = m_endGamePanel.transform.Find("Contents/Details");
+				detailsTransform.GetComponent<GridLayoutGroup>().constraintCount = details.Keys.Count + 1;
+
+				bool firstProperty = true;
+
+				foreach (var property in details.Keys)
+				{
+					if (firstProperty)
+					{
+						// Add Headers
+						
+						CreateDetailCell("", TextAlignmentOptions.Center, detailsTransform);
+						foreach (var side in details[property].Keys)
+							CreateDetailCell(side, TextAlignmentOptions.Center, detailsTransform);
+
+						firstProperty = false;
+					}
+
+					CreateDetailCell(property, TextAlignmentOptions.MidlineLeft, detailsTransform);
+					foreach (var side in details[property].Keys)
+						CreateDetailCell(details[property][side], TextAlignmentOptions.Center, detailsTransform);
+				}
+			}
+		}
+
+		private void CreateDetailCell(string text, TextAlignmentOptions alignment, Transform parent)
+		{
+			var cell = Instantiate(m_detailCell, parent);
+			var cellText = cell.GetComponent<TextMeshProUGUI>();
+			cellText.text = text;
+			cellText.alignment = alignment;
+		}
+
+		private IEnumerator StartGameCounter(int startTime)
+		{
+			yield return null;
+			Pause();
+
+			DateTime baseTime = new DateTime(1970, 1, 1);
+
+			while (true)
+			{
+				double remainingTime = startTime - DateTime.UtcNow.Subtract(baseTime).TotalSeconds;
+				TextMeshProUGUI text = m_startGamePanel.GetComponentInChildren<TextMeshProUGUI>();
+				if (remainingTime > 0)
+					text.text = string.Format("Game Starts in:<br/>{0}", remainingTime.TruncateDecimal(2));
+				else
+					break;
+			}
+
+			Helper.GameStarted = true;
+			Play();
+			Destroy(m_startGamePanel);
 		}
 	}
 }

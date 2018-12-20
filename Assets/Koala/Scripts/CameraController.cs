@@ -17,6 +17,8 @@ namespace Koala
 
 		void Update()
 		{
+			if (!Helper.GameStarted) return;
+
 			// Mouse
 			if (Input.GetMouseButton(0))
 			{

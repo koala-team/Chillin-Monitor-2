@@ -25,16 +25,16 @@ namespace Koala
 
 				if (config.GameObject == null)
 				{
-					_createdGO = new GameObject(_reference);
+					_createdGO = new GameObject(_newConfig.Ref.ToString());
 					_createdGO.transform.parent = parent.transform;
 				}
 				else
 				{
 					_createdGO = GameObject.Instantiate(config.GameObject, parent.transform);
-					_createdGO.name = _reference;
+					_createdGO.name = _newConfig.Ref.ToString();
 				}
 
-				References.Instance.AddGameObject(_reference, _createdGO);
+				References.Instance.AddGameObject(_newConfig.Ref.ToString(), _createdGO);
 
 				Helper.SetAnimatorsTimeScale(_createdGO);
 				Helper.SetAudioSourcesTimeScale(_createdGO);
@@ -42,7 +42,7 @@ namespace Koala
 			else
 			{
 				GameObject.Destroy(_createdGO);
-				References.Instance.RemoveGameObject(_reference);
+				References.Instance.RemoveGameObject(_newConfig.Ref.ToString());
 			}
 		}
 	}

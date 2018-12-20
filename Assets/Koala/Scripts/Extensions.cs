@@ -1,13 +1,19 @@
 ﻿using DG.Tweening;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Koala
 {
 	public static class Extensions
 	{
+		private static readonly Encoding _isoEncoding = Encoding.GetEncoding("ISO-8859-1");
+
+
 		public static Tween RegisterInTimeline(this Tween tween, float startTime, bool isForward)
 		{
 			TweensManager.Instance.AddTween(tween, isForward);
@@ -138,12 +144,33 @@ namespace Koala
 			return (float)Math.Truncate(number * multiplier) / multiplier;
 		}
 
+		public static double TruncateDecimal(this double number, int decimals)
+		{
+			double multiplier = Math.Pow(10, decimals);
+			return Math.Truncate(number * multiplier) / multiplier;
+		}
+
 		/// <summary>
 		/// Extension that converts an array of Vector2 to an array of Vector3
 		/// </summary>
 		public static Vector3[] ToVector3(this Vector2[] vectors)
 		{
 			return Array.ConvertAll<Vector2, Vector3>(vectors, v => v);
+		}
+
+		public static WaitUntil WaitUntilComplete(this Task t)
+		{
+			return new WaitUntil(() => t.IsCompleted);
+		}
+
+		public static WaitUntil WaitUntilComplete(this AsyncOperation t)
+		{
+			return new WaitUntil(() => t.isDone);
+		}
+
+		public static byte[] GetBytes(this string s)
+		{
+			return _isoEncoding.GetBytes(s);
 		}
 	}
 }
