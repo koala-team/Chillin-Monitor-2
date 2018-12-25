@@ -76,5 +76,11 @@ namespace Koala
 		{
 			return (T)o;
 		}
+
+		public static void AddParticleSystemManager(GameObject go)
+		{
+			foreach (var component in go.GetComponentsInChildren<ParticleSystem>())
+				component.gameObject.AddComponent<ParticleSystemManager>();
+		}
 	}
 }

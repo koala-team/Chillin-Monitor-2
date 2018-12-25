@@ -38,6 +38,7 @@ namespace Koala
 
 				Helper.SetAnimatorsTimeScale(_createdGO);
 				Helper.SetAudioSourcesTimeScale(_createdGO);
+				Helper.AddParticleSystemManager(_createdGO);
 			}
 			else
 			{
