@@ -15,7 +15,7 @@ namespace Koala
 		public GameObject m_nameColumn;
 
 
-		public void Init(Dictionary<string, List<string>> sides)
+		public void Init(Dictionary<string, List<string>> sides, Dictionary<string, string> sideColors)
 		{
 			bool showNameColumn = false;
 
@@ -27,13 +27,16 @@ namespace Koala
 
 				foreach (var name in names)
 				{
+					Color bgColor = Color.red;
+					ColorUtility.TryParseHtmlString(sideColors[side], out bgColor);
+
 					var agent = new Agent
 					{
 						Team = "-",
 						Side = side,
 						Name = name,
-						BackgroundColor = Color.red,
-						TextColor = Color.white,
+						BackgroundColor = bgColor,
+						TextColor = bgColor.ContrastColor(),
 					};
 					agent.Draw(this);
 					_agents.Add(agent);
@@ -92,9 +95,9 @@ namespace Koala
 			{
 				if (isLeft)
 				{
-					EditCell(_teamCell, null, Color.gray);
-					EditCell(_sideCell, null, Color.gray);
-					EditCell(_nameCell, null, Color.gray);
+					EditCell(_teamCell, null, Color.gray, Color.white);
+					EditCell(_sideCell, null, Color.gray, Color.white);
+					EditCell(_nameCell, null, Color.gray, Color.white);
 				}
 				else
 				{

@@ -16,7 +16,6 @@ namespace Koala
 
 		private Director Director { get; set; } = new Director();
 		private bool GameEnded { get; set; } = false;
-		private float MaxCycle { get; set; } = 0;
 		
 		public GameObject m_rootGameObject;
 		public GameObject m_rootDestroyedGameObject;
@@ -54,6 +53,7 @@ namespace Koala
 			Helper.Fonts = m_fontItems;
 			Helper.PlayersBoard = m_playersBoard;
 			Helper.GameStarted = false;
+			Helper.MaxCycle = 0;
 
 			// Config Tweens
 			TweensManager.Instance.Reset();
@@ -72,16 +72,16 @@ namespace Koala
 		public void FixedUpdate()
 		{
 			if (Helper.CycleDuration != 0)
-				Timeline.Instance.Update(Time.fixedDeltaTime, MaxCycle * Helper.CycleDuration);
+				Timeline.Instance.Update(Time.fixedDeltaTime, Helper.MaxCycle * Helper.CycleDuration);
 		}
 
 		public void Update()
 		{
 			// Update Cycle UI
 			float cycle = Helper.CycleDuration == 0 ? 0 : Timeline.Instance.Time / Helper.CycleDuration;
-			m_cycleSlider.maxValue = MaxCycle;
+			m_cycleSlider.maxValue = Helper.MaxCycle;
 			m_cycleSlider.value = cycle;
-			m_cycleText.text = string.Format("{0} / {1} @{2}X", cycle.TruncateDecimal(1).ToString("0.0"), (int)MaxCycle, Timeline.Instance.TimeScale);
+			m_cycleText.text = string.Format("{0} / {1} @{2}X", cycle.TruncateDecimal(1).ToString("0.0"), (int)Helper.MaxCycle, Timeline.Instance.TimeScale);
 
 			ControlTime();
 		}
@@ -171,19 +171,21 @@ namespace Koala
 
 		private void ParseMessage(KS.KSObject message)
 		{
+			if (message == null) return;
+
 			switch (message.Name())
 			{
 				case GameInfo.NameStatic:
 					var gameInfo = (GameInfo)message;
 					Helper.CycleDuration = gameInfo.GuiCycleDuration.Value;
-					m_playersBoard.Init(gameInfo.Sides);
+					m_playersBoard.Init(gameInfo.Sides, gameInfo.GuiSideColors);
 					break;
 
 				case AgentJoined.NameStatic:
 					var agentJoined = (AgentJoined)message;
 					Director.Action(new KS.SceneActions.AgentJoined
 					{
-						Cycle = MaxCycle,
+						Cycle = Helper.MaxCycle,
 						Team = agentJoined.TeamNickname,
 						Side = agentJoined.SideName,
 						AgentName = agentJoined.AgentName,
@@ -194,7 +196,7 @@ namespace Koala
 					var agentLeft = (AgentLeft)message;
 					Director.Action(new KS.SceneActions.AgentLeft
 					{
-						Cycle = MaxCycle,
+						Cycle = Helper.MaxCycle,
 						Side = agentLeft.SideName,
 						AgentName = agentLeft.AgentName,
 						IsLeft = true,
@@ -208,13 +210,13 @@ namespace Koala
 
 				case EndGame.NameStatic:
 					var endGame = (EndGame)message;
-					MaxCycle += 1;
 					FillEndGamePanel(endGame.WinnerSidename, endGame.Details);
 					Director.Action(new KS.SceneActions.EndGame
 					{
-						Cycle = MaxCycle - 0.01f,
+						Cycle = 1f - 0.01f,
 						EndGamePanel = m_endGamePanel,
 					});
+					Helper.MaxCycle += 1;
 					GameEnded = true;
 					break;
 
@@ -224,8 +226,6 @@ namespace Koala
 					{
 						Director.Action(action);
 					}
-
-					MaxCycle += 1;
 					break;
 			}
 		}
@@ -241,13 +241,14 @@ namespace Koala
 			}
 			else
 			{
-				winnerText.text = "Winner: " + winnerSidename;
+				winnerText.text = winnerSidename + " wins!";
 			}
 
 			// Fill details
 			if (details != null)
 			{
 				var detailsTransform = m_endGamePanel.transform.Find("Contents/Details");
+				detailsTransform.gameObject.SetActive(true);
 				detailsTransform.GetComponent<GridLayoutGroup>().constraintCount = details.Keys.Count + 1;
 
 				bool firstProperty = true;
@@ -265,7 +266,7 @@ namespace Koala
 						firstProperty = false;
 					}
 
-					CreateDetailCell(property, TextAlignmentOptions.MidlineLeft, detailsTransform);
+					CreateDetailCell(property, TextAlignmentOptions.Center, detailsTransform);
 					foreach (var side in details[property].Keys)
 						CreateDetailCell(details[property][side], TextAlignmentOptions.Center, detailsTransform);
 				}

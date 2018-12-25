@@ -29,18 +29,18 @@ namespace Koala
 				Message message = new Message();
 				message.Deserialize(buffer);
 
-				var baseMessageType = Helper.Assembly.GetType("KS.Mesasges." + message.Type);
+				var baseMessageType = Helper.Assembly.GetType("KS.Messages." + message.Type);
 				KS.KSObject baseMessage = Activator.CreateInstance(baseMessageType) as KS.KSObject;
 				baseMessage.Deserialize(message.Payload.GetBytes());
 
 				if (baseMessage.Name() == SceneActions.NameStatic)
 				{
 					var sceneActions = (SceneActions)baseMessage;
-					sceneActions.ParsedActions = new List<KS.SceneActions.BaseAction>(sceneActions.ActionTypes.Count);
+					sceneActions.ParsedActions = new List<KS.KSObject>(sceneActions.ActionTypes.Count);
 
 					for (int i = 0; i < sceneActions.ActionTypes.Count; i++)
 					{
-						var action = KS.SceneActions.BaseAction.GetAction(sceneActions.ActionTypes[i], sceneActions.ActionPayloads[i]);
+						var action = KS.KSObject.GetAction(sceneActions.ActionTypes[i], sceneActions.ActionPayloads[i]);
 						sceneActions.ParsedActions.Add(action);
 					}
 				}

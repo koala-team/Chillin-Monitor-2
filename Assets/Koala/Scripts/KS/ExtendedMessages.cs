@@ -4,6 +4,6 @@ namespace KS.Messages
 {
 	public partial class SceneActions
 	{
-		public List<KS.SceneActions.BaseAction> ParsedActions { get; set; }
+		public List<KS.KSObject> ParsedActions { get; set; }
 	}
 }

@@ -13,15 +13,6 @@ namespace KS.SceneActions
 
 
 		public virtual void Prepare() { }
-
-		public static BaseAction GetAction(string type, string data)
-		{
-			var baseActionType = Helper.Assembly.GetType("KS.SceneActions." + type);
-			var baseAction = Activator.CreateInstance(baseActionType) as BaseAction;
-			baseAction.Deserialize(data.GetBytes());
-
-			return baseAction;
-		}
 	}
 
 	public partial class Vector2

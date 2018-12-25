@@ -1,8 +1,5 @@
 ﻿using DG.Tweening;
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -11,7 +8,7 @@ namespace Koala
 {
 	public static class Extensions
 	{
-		private static readonly Encoding _isoEncoding = Encoding.GetEncoding("ISO-8859-1");
+		private static readonly Encoding _encoding = Encoding.GetEncoding("ISO-8859-1");
 
 
 		public static Tween RegisterInTimeline(this Tween tween, float startTime, bool isForward)
@@ -170,7 +167,15 @@ namespace Koala
 
 		public static byte[] GetBytes(this string s)
 		{
-			return _isoEncoding.GetBytes(s);
+			return _encoding.GetBytes(s);
+		}
+
+		public static Color ContrastColor(this Color color)
+		{
+			// Counting the perceptive luminance - human eye favors green color... 
+			double luminance = 0.299 * color.r + 0.587 * color.g + 0.114 * color.b;
+
+			return luminance > 0.5 ? Color.black : Color.white;
 		}
 	}
 }

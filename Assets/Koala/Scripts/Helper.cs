@@ -15,8 +15,10 @@ namespace Koala
 		public static Protocol Protocol { get; set; }
 		public static bool ReplayMode { get; set; }
 		public static bool GameStarted { get; set; }
+		public static float MaxCycle { get; set; }
 
-		public static Assembly Assembly => Assembly.GetExecutingAssembly();
+		private static readonly Assembly _asm = Assembly.GetExecutingAssembly();
+		public static Assembly Assembly => _asm;
 
 
 		public static float GetCycleTime(float cycle)
@@ -27,8 +29,8 @@ namespace Koala
 		public static void GetCyclesDurationTime(float startCycle, float durationCycles,
 			out float startTime, out float endTime, out float duration)
 		{
-			startTime = GetCycleTime(startCycle);
-			endTime = GetCycleTime(startCycle + durationCycles);
+			startTime = GetCycleTime(startCycle + MaxCycle);
+			endTime = GetCycleTime(startCycle + durationCycles + MaxCycle);
 			duration =  endTime - startTime;
 		}
 

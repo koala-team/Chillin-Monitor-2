@@ -43,6 +43,7 @@ namespace Koala
 				{ ChangeCamera.NameStatic,           false },
 				{ StoreBundleData.NameStatic,        true },
 				{ ClearScene.NameStatic,             true },
+				{ EndCycle.NameStatic,               true },
 				{ AgentJoined.NameStatic,            true },
 				{ AgentLeft.NameStatic,              true },
 				{ EndGame.NameStatic,                true },
@@ -53,10 +54,13 @@ namespace Koala
 			where T : Occurrence, IBaseOccurrence<T, C>, new()
 			where C : BaseAction
 		{
+			if (action.Cycle.HasValue && action.Cycle.Value < 0) return;
+			if (action.DurationCycles.HasValue && action.DurationCycles.Value < 0) return;
+
 			action.Prepare();
 
 			float startTime, endTime, duration;
-			Helper.GetCyclesDurationTime(action.Cycle.Value, action.DurationCycles ?? 0, out startTime, out endTime, out duration);
+			Helper.GetCyclesDurationTime(action.Cycle ?? 0, action.DurationCycles ?? 0, out startTime, out endTime, out duration);
 
 			T forwardOccurrence = new T();
 			forwardOccurrence.Init(action.FullRef, startTime, endTime, action, true, null);
@@ -70,7 +74,7 @@ namespace Koala
 			}
 		}
 
-		public void Action(BaseAction action)
+		public void Action(KS.KSObject action)
 		{
 			Type actionType = null;
 			Type occurrenceType = null;
@@ -90,6 +94,10 @@ namespace Koala
 					
 					AssetBundle bundle = AssetBundle.LoadFromMemory(bundleData.BundleData.GetBytes());
 					BundleManager.Instance.AddBundle(bundleData.BundleName, bundle);
+					return;
+
+				case EndCycle.NameStatic:
+					Helper.MaxCycle += 1;
 					return;
 			}
 

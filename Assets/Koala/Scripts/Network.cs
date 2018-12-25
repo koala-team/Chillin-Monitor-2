@@ -38,7 +38,10 @@ namespace Koala
 
 			try
 			{
-				_client = new TcpClient(_ip, _port);
+				_client = new TcpClient(_ip, _port)
+				{
+					NoDelay = true,
+				};
 				_stream = new SslStream(_client.GetStream(), true,
 										new RemoteCertificateValidationCallback(ValidateServerCertificate), null);
 
@@ -48,7 +51,7 @@ namespace Koala
 				_stream.ReadTimeout = _timeout;
 				_stream.WriteTimeout = _timeout;
 			}
-			catch (System.Exception e)
+			catch (Exception e)
 			{
 				Debug.LogError(e.Message);
 			}
@@ -71,11 +74,11 @@ namespace Koala
 				byte[] buffer = await FullReceive(NUM_LENGTH_BYTES);
 				int messageLength = BitConverter.ToInt32(buffer, 0);
 
-				buffer = await FullReceive(messageLength);
-				return buffer;
+				return await FullReceive(messageLength);
 			}
-			catch
+			catch (Exception e)
 			{
+				Debug.LogError(e.Message);
 				return null;
 			}
 		}
@@ -93,23 +96,28 @@ namespace Koala
 
 				return buffer;
 			}
-			catch
+			catch (Exception e)
 			{
+				Debug.LogError(e.Message);
 				return null;
 			}
 		}
 
 		public async Task Send(byte[] data)
 		{
-			await new WaitForBackgroundThread();
+			try
+			{
+				await new WaitForBackgroundThread();
 
-			byte[] numBytesBuffer = BitConverter.GetBytes(data.Length);
-
-			byte[] buffer = new byte[NUM_LENGTH_BYTES + data.Length];
-			Buffer.BlockCopy(numBytesBuffer, 0, buffer, 0, NUM_LENGTH_BYTES);
-			Buffer.BlockCopy(data, 0, buffer, NUM_LENGTH_BYTES, data.Length);
-
-			await _stream.WriteAsync(buffer, 0, buffer.Length);
+				byte[] numBytesBuffer = BitConverter.GetBytes(data.Length);
+				
+				await _stream.WriteAsync(numBytesBuffer, 0, numBytesBuffer.Length);
+				await _stream.WriteAsync(data, 0, data.Length);
+			}
+			catch (Exception e)
+			{
+				Debug.LogError(e.Message);
+			}
 		}
 
 		private bool ValidateServerCertificate(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)

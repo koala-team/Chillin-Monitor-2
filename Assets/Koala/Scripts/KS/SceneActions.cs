@@ -49,7 +49,7 @@ namespace KS.SceneActions
 				s.Add((byte)tmp0.Count);
 				s.AddRange(tmp0);
 				
-				s.AddRange(System.Text.Encoding.ASCII.GetBytes(ChildRef));
+				s.AddRange(System.Text.Encoding.GetEncoding("ISO-8859-1").GetBytes(ChildRef));
 			}
 			
 			// serialize DurationCycles
@@ -103,7 +103,7 @@ namespace KS.SceneActions
 				uint tmp6;
 				tmp6 = BitConverter.ToUInt32(tmp5, (int)0);
 				
-				ChildRef = System.Text.Encoding.ASCII.GetString(s.Skip((int)offset).Take((int)tmp6).ToArray());
+				ChildRef = System.Text.Encoding.GetEncoding("ISO-8859-1").GetString(s.Skip((int)offset).Take((int)tmp6).ToArray());
 				offset += tmp6;
 			}
 			else
@@ -409,7 +409,7 @@ namespace KS.SceneActions
 				s.Add((byte)tmp17.Count);
 				s.AddRange(tmp17);
 				
-				s.AddRange(System.Text.Encoding.ASCII.GetBytes(BundleName));
+				s.AddRange(System.Text.Encoding.GetEncoding("ISO-8859-1").GetBytes(BundleName));
 			}
 			
 			// serialize AssetName
@@ -423,7 +423,7 @@ namespace KS.SceneActions
 				s.Add((byte)tmp18.Count);
 				s.AddRange(tmp18);
 				
-				s.AddRange(System.Text.Encoding.ASCII.GetBytes(AssetName));
+				s.AddRange(System.Text.Encoding.GetEncoding("ISO-8859-1").GetBytes(AssetName));
 			}
 			
 			return s.ToArray();
@@ -446,7 +446,7 @@ namespace KS.SceneActions
 				uint tmp22;
 				tmp22 = BitConverter.ToUInt32(tmp21, (int)0);
 				
-				BundleName = System.Text.Encoding.ASCII.GetString(s.Skip((int)offset).Take((int)tmp22).ToArray());
+				BundleName = System.Text.Encoding.GetEncoding("ISO-8859-1").GetString(s.Skip((int)offset).Take((int)tmp22).ToArray());
 				offset += tmp22;
 			}
 			else
@@ -467,7 +467,7 @@ namespace KS.SceneActions
 				uint tmp26;
 				tmp26 = BitConverter.ToUInt32(tmp25, (int)0);
 				
-				AssetName = System.Text.Encoding.ASCII.GetString(s.Skip((int)offset).Take((int)tmp26).ToArray());
+				AssetName = System.Text.Encoding.GetEncoding("ISO-8859-1").GetString(s.Skip((int)offset).Take((int)tmp26).ToArray());
 				offset += tmp26;
 			}
 			else
@@ -516,7 +516,7 @@ namespace KS.SceneActions
 				s.Add((byte)tmp27.Count);
 				s.AddRange(tmp27);
 				
-				s.AddRange(System.Text.Encoding.ASCII.GetBytes(ParentChildRef));
+				s.AddRange(System.Text.Encoding.GetEncoding("ISO-8859-1").GetBytes(ParentChildRef));
 			}
 			
 			return s.ToArray();
@@ -554,7 +554,7 @@ namespace KS.SceneActions
 				uint tmp32;
 				tmp32 = BitConverter.ToUInt32(tmp31, (int)0);
 				
-				ParentChildRef = System.Text.Encoding.ASCII.GetString(s.Skip((int)offset).Take((int)tmp32).ToArray());
+				ParentChildRef = System.Text.Encoding.GetEncoding("ISO-8859-1").GetString(s.Skip((int)offset).Take((int)tmp32).ToArray());
 				offset += tmp32;
 			}
 			else
@@ -987,7 +987,7 @@ namespace KS.SceneActions
 				s.Add((byte)tmp42.Count);
 				s.AddRange(tmp42);
 				
-				s.AddRange(System.Text.Encoding.ASCII.GetBytes(VarName));
+				s.AddRange(System.Text.Encoding.GetEncoding("ISO-8859-1").GetBytes(VarName));
 			}
 			
 			// serialize VarType
@@ -1041,7 +1041,7 @@ namespace KS.SceneActions
 				uint tmp46;
 				tmp46 = BitConverter.ToUInt32(tmp45, (int)0);
 				
-				VarName = System.Text.Encoding.ASCII.GetString(s.Skip((int)offset).Take((int)tmp46).ToArray());
+				VarName = System.Text.Encoding.GetEncoding("ISO-8859-1").GetString(s.Skip((int)offset).Take((int)tmp46).ToArray());
 				offset += tmp46;
 			}
 			else
@@ -1134,7 +1134,7 @@ namespace KS.SceneActions
 				s.Add((byte)tmp52.Count);
 				s.AddRange(tmp52);
 				
-				s.AddRange(System.Text.Encoding.ASCII.GetBytes(StateName));
+				s.AddRange(System.Text.Encoding.GetEncoding("ISO-8859-1").GetBytes(StateName));
 			}
 			
 			// serialize Layer
@@ -1174,7 +1174,7 @@ namespace KS.SceneActions
 				uint tmp56;
 				tmp56 = BitConverter.ToUInt32(tmp55, (int)0);
 				
-				StateName = System.Text.Encoding.ASCII.GetString(s.Skip((int)offset).Take((int)tmp56).ToArray());
+				StateName = System.Text.Encoding.GetEncoding("ISO-8859-1").GetString(s.Skip((int)offset).Take((int)tmp56).ToArray());
 				offset += tmp56;
 			}
 			else
@@ -1673,7 +1673,7 @@ namespace KS.SceneActions
 				s.Add((byte)tmp75.Count);
 				s.AddRange(tmp75);
 				
-				s.AddRange(System.Text.Encoding.ASCII.GetBytes(FontName));
+				s.AddRange(System.Text.Encoding.GetEncoding("ISO-8859-1").GetBytes(FontName));
 			}
 			
 			// serialize Text
@@ -1687,7 +1687,7 @@ namespace KS.SceneActions
 				s.Add((byte)tmp76.Count);
 				s.AddRange(tmp76);
 				
-				s.AddRange(System.Text.Encoding.ASCII.GetBytes(Text));
+				s.AddRange(System.Text.Encoding.GetEncoding("ISO-8859-1").GetBytes(Text));
 			}
 			
 			// serialize FontSize
@@ -1746,7 +1746,7 @@ namespace KS.SceneActions
 				uint tmp81;
 				tmp81 = BitConverter.ToUInt32(tmp80, (int)0);
 				
-				FontName = System.Text.Encoding.ASCII.GetString(s.Skip((int)offset).Take((int)tmp81).ToArray());
+				FontName = System.Text.Encoding.GetEncoding("ISO-8859-1").GetString(s.Skip((int)offset).Take((int)tmp81).ToArray());
 				offset += tmp81;
 			}
 			else
@@ -1767,7 +1767,7 @@ namespace KS.SceneActions
 				uint tmp85;
 				tmp85 = BitConverter.ToUInt32(tmp84, (int)0);
 				
-				Text = System.Text.Encoding.ASCII.GetString(s.Skip((int)offset).Take((int)tmp85).ToArray());
+				Text = System.Text.Encoding.GetEncoding("ISO-8859-1").GetString(s.Skip((int)offset).Take((int)tmp85).ToArray());
 				offset += tmp85;
 			}
 			else
@@ -2150,7 +2150,7 @@ namespace KS.SceneActions
 				s.Add((byte)tmp101.Count);
 				s.AddRange(tmp101);
 				
-				s.AddRange(System.Text.Encoding.ASCII.GetBytes(SiblingRefAsBaseIndex));
+				s.AddRange(System.Text.Encoding.GetEncoding("ISO-8859-1").GetBytes(SiblingRefAsBaseIndex));
 			}
 			
 			return s.ToArray();
@@ -2224,7 +2224,7 @@ namespace KS.SceneActions
 				uint tmp109;
 				tmp109 = BitConverter.ToUInt32(tmp108, (int)0);
 				
-				SiblingRefAsBaseIndex = System.Text.Encoding.ASCII.GetString(s.Skip((int)offset).Take((int)tmp109).ToArray());
+				SiblingRefAsBaseIndex = System.Text.Encoding.GetEncoding("ISO-8859-1").GetString(s.Skip((int)offset).Take((int)tmp109).ToArray());
 				offset += tmp109;
 			}
 			else
@@ -3431,7 +3431,7 @@ namespace KS.SceneActions
 		}
 	}
 	
-	public partial class StoreBundleData : BaseAction
+	public partial class StoreBundleData : KSObject
 	{
 		public string BundleName { get; set; }
 		public string BundleData { get; set; }
@@ -3449,9 +3449,6 @@ namespace KS.SceneActions
 		{
 			List<byte> s = new List<byte>();
 			
-			// serialize parents
-			s.AddRange(base.Serialize());
-			
 			// serialize BundleName
 			s.Add((byte)((BundleName == null) ? 0 : 1));
 			if (BundleName != null)
@@ -3463,7 +3460,7 @@ namespace KS.SceneActions
 				s.Add((byte)tmp172.Count);
 				s.AddRange(tmp172);
 				
-				s.AddRange(System.Text.Encoding.ASCII.GetBytes(BundleName));
+				s.AddRange(System.Text.Encoding.GetEncoding("ISO-8859-1").GetBytes(BundleName));
 			}
 			
 			// serialize BundleData
@@ -3477,7 +3474,7 @@ namespace KS.SceneActions
 				s.Add((byte)tmp173.Count);
 				s.AddRange(tmp173);
 				
-				s.AddRange(System.Text.Encoding.ASCII.GetBytes(BundleData));
+				s.AddRange(System.Text.Encoding.GetEncoding("ISO-8859-1").GetBytes(BundleData));
 			}
 			
 			return s.ToArray();
@@ -3485,9 +3482,6 @@ namespace KS.SceneActions
 		
 		public override uint Deserialize(byte[] s, uint offset = 0)
 		{
-			// deserialize parents
-			offset = base.Deserialize(s, offset);
-			
 			// deserialize BundleName
 			byte tmp174;
 			tmp174 = (byte)s[(int)offset];
@@ -3503,7 +3497,7 @@ namespace KS.SceneActions
 				uint tmp177;
 				tmp177 = BitConverter.ToUInt32(tmp176, (int)0);
 				
-				BundleName = System.Text.Encoding.ASCII.GetString(s.Skip((int)offset).Take((int)tmp177).ToArray());
+				BundleName = System.Text.Encoding.GetEncoding("ISO-8859-1").GetString(s.Skip((int)offset).Take((int)tmp177).ToArray());
 				offset += tmp177;
 			}
 			else
@@ -3524,7 +3518,7 @@ namespace KS.SceneActions
 				uint tmp181;
 				tmp181 = BitConverter.ToUInt32(tmp180, (int)0);
 				
-				BundleData = System.Text.Encoding.ASCII.GetString(s.Skip((int)offset).Take((int)tmp181).ToArray());
+				BundleData = System.Text.Encoding.GetEncoding("ISO-8859-1").GetString(s.Skip((int)offset).Take((int)tmp181).ToArray());
 				offset += tmp181;
 			}
 			else
@@ -3561,6 +3555,31 @@ namespace KS.SceneActions
 			// deserialize parents
 			offset = base.Deserialize(s, offset);
 			
+			return offset;
+		}
+	}
+	
+	public partial class EndCycle : KSObject
+	{
+		
+
+		public EndCycle()
+		{
+		}
+		
+		public new const string NameStatic = "EndCycle";
+		
+		public override string Name() => "EndCycle";
+		
+		public override byte[] Serialize()
+		{
+			List<byte> s = new List<byte>();
+			
+			return s.ToArray();
+		}
+		
+		public override uint Deserialize(byte[] s, uint offset = 0)
+		{
 			return offset;
 		}
 	}
