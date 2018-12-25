@@ -273,15 +273,9 @@ sibling_ref_as_base_index = string
 ##########################################################
 ##########################################################
 
-[EComponentType]
-_def = enum <byte>
-	{
-		ParticleSystemManager
-	}
-
 [ManageComponents]
 _def = class(BaseAction)
-type = EComponentType
+type = string
 add = boolean
 is_active = boolean
 

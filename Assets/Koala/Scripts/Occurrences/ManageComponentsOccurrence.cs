@@ -13,14 +13,17 @@ namespace Koala
 
 		protected override ManageComponents CreateOldConfig()
 		{
-			var oldConfig = new ManageComponents();
+			var oldConfig = new ManageComponents
+			{
+				Type = _newConfig.Type,
+			};
 
 			if (_newConfig.Add.HasValue && _newConfig.Add.Value)
 				oldConfig.Add = false;
 
 			if (_newConfig.IsActive.HasValue)
 			{
-				var component = GetComponent();
+				var component = GetComponent(_newConfig.Type);
 				oldConfig.IsActive = component.enabled;
 			}
 
@@ -32,14 +35,14 @@ namespace Koala
 			if (config.Add.HasValue)
 			{
 				if (config.Add.Value)
-					CreateComponent();
+					CreateComponent(config.Type);
 				else
-					GameObject.Destroy(GetComponent());
+					GameObject.Destroy(GetComponent(config.Type));
 			}
 
 			if (config.IsActive.HasValue)
 			{
-				GetComponent().enabled = config.IsActive.Value;
+				GetComponent(config.Type).enabled = config.IsActive.Value;
 			}
 		}
 
@@ -50,37 +53,21 @@ namespace Koala
 			return _gameObject;
 		}
 
-		private MonoBehaviour GetComponent()
+		private MonoBehaviour GetComponent(string name)
 		{
 			var gameObject = GetGameObject();
 
 			if (_component == null)
-			{
-				switch (_newConfig.Type)
-				{
-					case EComponentType.ParticleSystemManager:
-						_component = gameObject.GetComponent<ParticleSystemManager>();
-						break;
-					default:
-						throw new System.NotSupportedException("Type is not supported!");
-				}
-			}
+				_component = (MonoBehaviour)gameObject.GetComponent(Helper.Assembly.GetType(name));
 
 			return _component;
 		}
 
-		private void CreateComponent()
+		private void CreateComponent(string name)
 		{
 			var gameObject = GetGameObject();
 			
-			switch (_newConfig.Type)
-			{
-				case EComponentType.ParticleSystemManager:
-					_component = gameObject.AddComponent<ParticleSystemManager>();
-					break;
-				default:
-					throw new System.NotSupportedException("Type is not supported!");
-			}
+			_component = (MonoBehaviour)gameObject.AddComponent(Helper.Assembly.GetType(name));
 		}
 	}
 }
