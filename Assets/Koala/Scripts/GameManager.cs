@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 using System.Threading;
+using System.IO;
 
 namespace Koala
 {
@@ -18,7 +19,8 @@ namespace Koala
 
 		private Director Director { get; set; } = new Director();
 		private bool GameEnded { get; set; } = false;
-		
+		private FileStream ReplayStream { get; set; }
+
 		public GameObject m_rootGameObject;
 		public GameObject m_rootDestroyedGameObject;
 		public GameObject m_userCanvasGameObject;
@@ -170,6 +172,19 @@ namespace Koala
 
 		private IEnumerator HandleReplayMessages()
 		{
+			using (ReplayStream = new FileStream(Helper.ReplayPath, FileMode.Open))
+			{
+				while (!GameEnded && ReplayStream.Position != ReplayStream.Length)
+				{
+					var recvTask = ReplayStream.Receive();
+					yield return recvTask.WaitUntilComplete();
+
+					var processTask = Helper.ProcessBuffer(recvTask.Result);
+					yield return processTask.WaitUntilComplete();
+
+					ParseMessage(processTask.Result);
+				}
+			}
 			yield return null;
 		}
 
@@ -318,6 +333,9 @@ namespace Koala
 
 			yield return new WaitForEndOfFrame();
 			yield return new WaitForEndOfFrame();
+
+			if (ReplayStream != null)
+				ReplayStream.Close();
 
 			yield return SceneManager.LoadSceneAsync("MainMenu").WaitUntilComplete();
 		}

@@ -1,4 +1,8 @@
-﻿using System.Reflection;
+﻿using KS.Messages;
+using System;
+using System.Collections.Generic;
+using System.Reflection;
+using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 
@@ -16,6 +20,7 @@ namespace Koala
 		public static bool ReplayMode { get; set; }
 		public static bool GameStarted { get; set; }
 		public static float MaxCycle { get; set; }
+		public static string ReplayPath { get; set; }
 
 		private static readonly Assembly _asm = Assembly.GetExecutingAssembly();
 		public static Assembly Assembly => _asm;
@@ -81,6 +86,35 @@ namespace Koala
 		{
 			foreach (var component in go.GetComponentsInChildren<ParticleSystem>())
 				component.gameObject.AddComponent<ParticleSystemManager>();
+		}
+
+		public static async Task<KS.KSObject> ProcessBuffer(byte[] buffer)
+		{
+			await new WaitForBackgroundThread();
+
+			return await Task.Run<KS.KSObject>(() =>
+			{
+				Message message = new Message();
+				message.Deserialize(buffer);
+
+				var baseMessageType = Helper.Assembly.GetType("KS.Messages." + message.Type);
+				KS.KSObject baseMessage = Activator.CreateInstance(baseMessageType) as KS.KSObject;
+				baseMessage.Deserialize(message.Payload.GetBytes());
+
+				if (baseMessage.Name() == SceneActions.NameStatic)
+				{
+					var sceneActions = (SceneActions)baseMessage;
+					sceneActions.ParsedActions = new List<KS.KSObject>(sceneActions.ActionTypes.Count);
+
+					for (int i = 0; i < sceneActions.ActionTypes.Count; i++)
+					{
+						var action = KS.KSObject.GetAction(sceneActions.ActionTypes[i], sceneActions.ActionPayloads[i]);
+						sceneActions.ParsedActions.Add(action);
+					}
+				}
+
+				return baseMessage;
+			});
 		}
 	}
 }

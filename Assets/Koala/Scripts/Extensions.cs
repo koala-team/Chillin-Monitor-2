@@ -1,5 +1,6 @@
 ﻿using DG.Tweening;
 using System;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -8,7 +9,9 @@ namespace Koala
 {
 	public static class Extensions
 	{
-		private static readonly Encoding _encoding = Encoding.GetEncoding("ISO-8859-1");
+		public static readonly Encoding _encoding = Encoding.GetEncoding("ISO-8859-1");
+		public const int NUM_LENGTH_BYTES = 4;
+		public const int MAX_RECEIVE = 1024;
 
 
 		public static Tween RegisterInTimeline(this Tween tween, float startTime, bool isForward)
@@ -177,5 +180,61 @@ namespace Koala
 
 			return luminance > 0.5 ? Color.black : Color.white;
 		}
+
+		#region Stream
+		public static async Task<byte[]> Receive(this Stream stream)
+		{
+			await new WaitForBackgroundThread();
+
+			try
+			{
+				byte[] buffer = await stream.FullReceive(NUM_LENGTH_BYTES);
+				int messageLength = BitConverter.ToInt32(buffer, 0);
+
+				return await stream.FullReceive(messageLength);
+			}
+			catch
+			{
+				return null;
+			}
+		}
+
+		private static async Task<byte[]> FullReceive(this Stream stream, int length)
+		{
+			try
+			{
+				int bytesReceived = 0;
+				byte[] buffer = new byte[length];
+				while (bytesReceived < length)
+				{
+					bytesReceived += await stream.ReadAsync(buffer, bytesReceived, Math.Min(MAX_RECEIVE, length - bytesReceived));
+				}
+
+				return buffer;
+			}
+			catch (Exception e)
+			{
+				Debug.LogError(e.Message);
+				return null;
+			}
+		}
+
+		public static async Task Send(this Stream stream, byte[] data)
+		{
+			await new WaitForBackgroundThread();
+
+			try
+			{
+				byte[] numBytesBuffer = BitConverter.GetBytes(data.Length);
+
+				await stream.WriteAsync(numBytesBuffer, 0, numBytesBuffer.Length);
+				await stream.WriteAsync(data, 0, data.Length);
+			}
+			catch (Exception e)
+			{
+				Debug.LogError(e.Message);
+			}
+		}
+		#endregion
 	}
 }

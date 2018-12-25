@@ -10,8 +10,6 @@ namespace Koala
 	public class Network
 	{
 		private const int MAX_TIMEOUT = 2147483647;
-		private const int NUM_LENGTH_BYTES = 4;
-		private const int MAX_RECEIVE = 1024;
 
 		private TcpClient _client;
 		private SslStream _stream;
@@ -67,56 +65,12 @@ namespace Koala
 
 		public async Task<byte[]> Receive()
 		{
-			await new WaitForBackgroundThread();
-
-			try
-			{
-				byte[] buffer = await FullReceive(NUM_LENGTH_BYTES);
-				int messageLength = BitConverter.ToInt32(buffer, 0);
-
-				return await FullReceive(messageLength);
-			}
-			catch
-			{
-				return null;
-			}
-		}
-
-		private async Task<byte[]> FullReceive(int length)
-		{
-			try
-			{
-				int bytesReceived = 0;
-				byte[] buffer = new byte[length];
-				while (bytesReceived < length)
-				{
-					bytesReceived += await _stream.ReadAsync(buffer, bytesReceived, Math.Min(MAX_RECEIVE, length - bytesReceived));
-				}
-
-				return buffer;
-			}
-			catch (Exception e)
-			{
-				Debug.LogError(e.Message);
-				return null;
-			}
+			return await _stream.Receive();
 		}
 
 		public async Task Send(byte[] data)
 		{
-			try
-			{
-				await new WaitForBackgroundThread();
-
-				byte[] numBytesBuffer = BitConverter.GetBytes(data.Length);
-				
-				await _stream.WriteAsync(numBytesBuffer, 0, numBytesBuffer.Length);
-				await _stream.WriteAsync(data, 0, data.Length);
-			}
-			catch (Exception e)
-			{
-				Debug.LogError(e.Message);
-			}
+			await _stream.Send(data);
 		}
 
 		private bool ValidateServerCertificate(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)

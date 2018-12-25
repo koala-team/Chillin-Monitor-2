@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using SimpleFileBrowser;
 
 namespace Koala
 {
@@ -13,14 +14,17 @@ namespace Koala
 		public InputField m_portInputText;
 		public Button m_connectButton;
 		public Button m_cancelButton;
+		public Button m_loadReplayButton;
 
-		
+
 		public void Start()
 		{
 			PlayerConfigs.Init();
 
 			m_ipInputText.text = PlayerConfigs.IP;
 			m_portInputText.text = PlayerConfigs.Port.ToString();
+
+			FileBrowser.SetFilters(false, new FileBrowser.Filter("Chillin Replay", ".cr"));
 		}
 
 		public void Connect()
@@ -37,6 +41,7 @@ namespace Koala
 			m_portInputText.interactable = false;
 			m_connectButton.gameObject.SetActive(false);
 			m_cancelButton.gameObject.SetActive(true);
+			m_loadReplayButton.gameObject.SetActive(false);
 
 			Network network = new Network(PlayerConfigs.IP, PlayerConfigs.Port);
 			// Try to connect to network
@@ -82,6 +87,7 @@ namespace Koala
 				m_portInputText.interactable = true;
 				m_connectButton.gameObject.SetActive(true);
 				m_cancelButton.gameObject.SetActive(false);
+				m_loadReplayButton.gameObject.SetActive(true);
 			}
 		}
 
@@ -93,6 +99,36 @@ namespace Koala
 		public void CancelConnect()
 		{
 			_tryConnect = false;
+		}
+
+		public void ShowLoadReplayDialog()
+		{
+			StartCoroutine(ShowLoadReplayDialogCoroutine());
+		}
+
+		private IEnumerator ShowLoadReplayDialogCoroutine()
+		{
+			m_connectButton.gameObject.SetActive(false);
+			m_loadReplayButton.interactable = false;
+
+			// Show a load file dialog and wait for a response from user
+			// Load file/folder: file, Initial path: default (Documents), Title: "Load File", submit button text: "Load"
+			yield return FileBrowser.WaitForLoadDialog(false, null, "Load Replay File", "Load");
+
+			// Dialog is closed
+			if (FileBrowser.Success)
+			{
+				m_loadReplayButton.gameObject.SetActive(false);
+
+				Helper.ReplayPath = FileBrowser.Result;
+				Helper.ReplayMode = true;
+				StartCoroutine(LoadGameScene());
+			}
+			else
+			{
+				m_connectButton.gameObject.SetActive(true);
+				m_loadReplayButton.interactable = true;
+			}
 		}
 
 		public void Quit()
