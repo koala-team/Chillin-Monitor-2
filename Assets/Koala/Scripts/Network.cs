@@ -51,6 +51,7 @@ namespace Koala
 			}
 			catch (Exception e)
 			{
+				await new WaitForMainThread();
 				Debug.LogError(e.Message);
 			}
 		}

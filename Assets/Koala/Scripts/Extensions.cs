@@ -214,6 +214,7 @@ namespace Koala
 			}
 			catch (Exception e)
 			{
+				await new WaitForMainThread();
 				Debug.LogError(e.Message);
 				return null;
 			}
@@ -232,6 +233,7 @@ namespace Koala
 			}
 			catch (Exception e)
 			{
+				await new WaitForMainThread();
 				Debug.LogError(e.Message);
 			}
 		}

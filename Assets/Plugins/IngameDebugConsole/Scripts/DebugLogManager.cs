@@ -525,15 +525,14 @@ namespace IngameDebugConsole
 		public void Resize( BaseEventData dat )
 		{
 			PointerEventData eventData = (PointerEventData) dat;
-
-			// Grab the resize button from top; 36f is the height of the resize button
-			float newHeight = ( eventData.position.y - logWindowTR.position.y ) / -canvasTR.localScale.y + 36f;
+			
+			float newHeight = eventData.position.y / canvasTR.localScale.y;
 			if( newHeight < minimumHeight )
 				newHeight = minimumHeight;
 
-			Vector2 anchorMin = logWindowTR.anchorMin;
-			anchorMin.y = Mathf.Max( 0f, 1f - newHeight / canvasTR.sizeDelta.y );
-			logWindowTR.anchorMin = anchorMin;
+			Vector2 anchorMax = logWindowTR.anchorMax;
+			anchorMax.y = Mathf.Min( 1f, newHeight / canvasTR.sizeDelta.y );
+			logWindowTR.anchorMax = anchorMax;
 
 			// Update the recycled list view
 			recycledListView.OnViewportDimensionsChanged();
