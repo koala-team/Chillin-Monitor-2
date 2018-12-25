@@ -43,7 +43,7 @@ namespace Koala
 
 			// Reset references map
 			References.Instance.ResetMaps();
-			References.Instance.AddGameObject(int.MaxValue.ToString(), m_mainCamera.gameObject); // "MainCamera"
+			References.Instance.AddGameObject("-1", m_mainCamera.gameObject); // "MainCamera"
 
 			// set Helpers value
 			Helper.CycleDuration = 0;
