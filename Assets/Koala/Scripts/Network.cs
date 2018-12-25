@@ -76,9 +76,8 @@ namespace Koala
 
 				return await FullReceive(messageLength);
 			}
-			catch (Exception e)
+			catch
 			{
-				Debug.LogError(e.Message);
 				return null;
 			}
 		}

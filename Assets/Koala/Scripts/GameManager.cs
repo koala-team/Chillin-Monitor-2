@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using UnityEngine.UI;
 using System;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
+using System.Threading;
 
 namespace Koala
 {
@@ -151,17 +153,19 @@ namespace Koala
 
 		private IEnumerator HandleOnlineMessages()
 		{
-			var protocol = Helper.Protocol;
 			Task<KS.KSObject> recvTask;
 
-			while (!GameEnded)
+			while (!GameEnded && Helper.Protocol.Network.IsConnected)
 			{
-				recvTask = protocol.RecvMessage();
+				recvTask = Helper.Protocol.RecvMessage();
 				yield return recvTask.WaitUntilComplete();
-				ParseMessage(recvTask.Result);
+
+				if (!GameEnded)
+					ParseMessage(recvTask.Result);
 			}
 
-			protocol.Network.Disconnect();
+			if (Helper.Protocol.Network.IsConnected)
+				Helper.Protocol.Network.Disconnect();
 		}
 
 		private IEnumerator HandleReplayMessages()
@@ -301,6 +305,21 @@ namespace Koala
 			Helper.GameStarted = true;
 			Play();
 			Destroy(m_startGamePanel);
+		}
+
+		public void BackToMainMenu()
+		{
+			StartCoroutine(BackToMainMenuCoroutine());
+		}
+
+		private IEnumerator BackToMainMenuCoroutine()
+		{
+			GameEnded = true;
+
+			yield return new WaitForEndOfFrame();
+			yield return new WaitForEndOfFrame();
+
+			yield return SceneManager.LoadSceneAsync("MainMenu").WaitUntilComplete();
 		}
 	}
 }
