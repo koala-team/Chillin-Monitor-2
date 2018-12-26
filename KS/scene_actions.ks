@@ -273,7 +273,7 @@ sibling_ref_as_base_index = string
 ##########################################################
 ##########################################################
 
-[ManageComponents]
+[ManageComponent]
 _def = class(BaseAction)
 type = string
 add = boolean

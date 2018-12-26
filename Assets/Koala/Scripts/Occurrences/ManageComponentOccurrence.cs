@@ -3,17 +3,17 @@ using KS.SceneActions;
 
 namespace Koala
 {
-	public class ManageComponentsOccurrence : BaseOccurrence<ManageComponentsOccurrence, ManageComponents>
+	public class ManageComponentOccurrence : BaseOccurrence<ManageComponentOccurrence, ManageComponent>
 	{
 		private GameObject _gameObject;
 		private MonoBehaviour _component;
 
 
-		public ManageComponentsOccurrence() { }
+		public ManageComponentOccurrence() { }
 
-		protected override ManageComponents CreateOldConfig()
+		protected override ManageComponent CreateOldConfig()
 		{
-			var oldConfig = new ManageComponents
+			var oldConfig = new ManageComponent
 			{
 				Type = _newConfig.Type,
 			};
@@ -30,7 +30,7 @@ namespace Koala
 			return oldConfig;
 		}
 
-		protected override void ManageSuddenChanges(ManageComponents config, bool isForward)
+		protected override void ManageSuddenChanges(ManageComponent config, bool isForward)
 		{
 			if (config.Add.HasValue)
 			{

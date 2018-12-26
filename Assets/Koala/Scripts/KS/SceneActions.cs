@@ -2234,20 +2234,20 @@ namespace KS.SceneActions
 		}
 	}
 	
-	public partial class ManageComponents : BaseAction
+	public partial class ManageComponent : BaseAction
 	{
 		public string Type { get; set; }
 		public bool? Add { get; set; }
 		public bool? IsActive { get; set; }
 		
 
-		public ManageComponents()
+		public ManageComponent()
 		{
 		}
 		
-		public new const string NameStatic = "ManageComponents";
+		public new const string NameStatic = "ManageComponent";
 		
-		public override string Name() => "ManageComponents";
+		public override string Name() => "ManageComponent";
 		
 		public override byte[] Serialize()
 		{

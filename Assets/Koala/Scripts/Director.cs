@@ -33,7 +33,7 @@ namespace Koala
 				{ ChangeSlider.NameStatic,           false },
 				{ ChangeRawImage.NameStatic,         false },
 				{ ChangeSiblingOrder.NameStatic,     true },
-				{ ManageComponents.NameStatic,       true },
+				{ ManageComponent.NameStatic,        true },
 				{ ChangeSprite.NameStatic,           false },
 				{ ChangeMaterial.NameStatic,         true },
 				{ ChangeEllipse2D.NameStatic,        false },
