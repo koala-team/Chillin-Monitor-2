@@ -94,18 +94,25 @@ namespace Koala
 		{
 			if (!Helper.GameStarted) return;
 
-			if (Input.GetKeyDown(KeyCode.P))
+			if (Input.GetKeyDown(KeyCode.Space))
 			{
 				if (Timeline.Instance.TimeScale == 0)
-					Play();
+					PlayForward();
 				else
 					Pause();
 			}
-			else if (Input.GetKeyDown(KeyCode.LeftBracket))
+			else if (Input.GetKeyDown(KeyCode.B))
+			{
+				if (Timeline.Instance.TimeScale == 0)
+					PlayBackward();
+				else
+					Pause();
+			}
+			else if (Input.GetKeyDown(KeyCode.C))
 			{
 				DecSpeed();
 			}
-			else if (Input.GetKeyDown(KeyCode.RightBracket))
+			else if (Input.GetKeyDown(KeyCode.V))
 			{
 				IncSpeed();
 			}
@@ -127,11 +134,19 @@ namespace Koala
 			ShowPauseOrPlay(false);
 		}
 
-		public void Play()
+		public void PlayForward()
 		{
 			if (Timeline.Instance.TimeScale == 1) return;
 
 			ChangeTimeScale(1);
+			ShowPauseOrPlay(true);
+		}
+
+		public void PlayBackward()
+		{
+			if (Timeline.Instance.TimeScale == -1) return;
+
+			ChangeTimeScale(-1);
 			ShowPauseOrPlay(true);
 		}
 
@@ -318,7 +333,7 @@ namespace Koala
 			}
 
 			Helper.GameStarted = true;
-			Play();
+			PlayForward();
 			Destroy(m_startGamePanel);
 		}
 
