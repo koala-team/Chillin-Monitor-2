@@ -29,8 +29,11 @@ namespace Koala
 
 		private Dictionary<string, AssetBundle> _bundles = new Dictionary<string, AssetBundle>();
 
-		public void ResetMap()
+		public void Reset()
 		{
+			foreach (var bundle in _bundles.Values)
+				bundle.Unload(false);
+
 			_bundles = new Dictionary<string, AssetBundle>();
 		}
 
@@ -50,6 +53,9 @@ namespace Koala
 		{
 			if (_bundles.ContainsKey(reference))
 			{
+				AssetBundle assetBundle = GetBundle(reference);
+				assetBundle.Unload(false);
+
 				_bundles.Remove(reference);
 			}
 		}

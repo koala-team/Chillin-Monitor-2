@@ -49,6 +49,9 @@ namespace Koala
 			References.Instance.ResetMaps();
 			References.Instance.AddGameObject(Helper.MainCameraRef.ToString(), m_mainCamera.gameObject); // "MainCamera"
 
+			// Reset Bundle Manager
+			BundleManager.Instance.Reset();
+
 			// set Helpers value
 			Helper.CycleDuration = 0;
 			Helper.RootGameObject = m_rootGameObject;
