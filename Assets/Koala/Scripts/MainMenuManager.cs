@@ -2,20 +2,41 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using SimpleFileBrowser;
+using SFB;
+using System.Threading.Tasks;
+#if UNITY_2018_3_OR_NEWER
+using UnityEngine.Networking;
+#endif
 
 namespace Koala
 {
 	public class MainMenuManager : MonoBehaviour
 	{
-		private bool _tryConnect = false;
+		private bool TryConnect { get; set; } = false;
+		private ExtensionFilter[] Extensions { get; set; } = new[] {
+			new ExtensionFilter("Chillin Replay", "cr" ),
+		};
 
 		public InputField m_ipInputText;
 		public InputField m_portInputText;
 		public Button m_connectButton;
 		public Button m_cancelButton;
 		public Button m_loadReplayButton;
+		public Slider m_loadReplayProgress;
 
+
+#if UNITY_WEBGL && !UNITY_EDITOR
+		//
+		// WebGL
+		//
+		[DllImport("__Internal")]
+		private static extern void UploadFile(string gameObjectName, string methodName, string filter, bool multiple);
+
+		// Called from browser
+		public void OnFileUpload(string url) {
+			StartCoroutine(DownloadReplay(url));
+		}
+#endif
 
 		public void Start()
 		{
@@ -23,8 +44,6 @@ namespace Koala
 
 			m_ipInputText.text = PlayerConfigs.IP;
 			m_portInputText.text = PlayerConfigs.Port.ToString();
-
-			FileBrowser.SetFilters(false, new FileBrowser.Filter("Chillin Replay", ".cr"));
 		}
 
 		public void Connect()
@@ -34,7 +53,7 @@ namespace Koala
 
 		public IEnumerator TryConnectCoroutine()
 		{
-			_tryConnect = true;
+			TryConnect = true;
 
 			// Deactive button
 			m_ipInputText.interactable = false;
@@ -45,19 +64,19 @@ namespace Koala
 
 			Network network = new Network(PlayerConfigs.IP, PlayerConfigs.Port);
 			// Try to connect to network
-			while (!network.IsConnected && _tryConnect)
+			while (!network.IsConnected && TryConnect)
 			{
 				Debug.LogFormat("Connecting to {0}:{1}...", PlayerConfigs.IP, PlayerConfigs.Port);
 				yield return network.Connect().WaitUntilComplete();
 
-				if (!network.IsConnected && _tryConnect)
+				if (!network.IsConnected && TryConnect)
 				{
 					Debug.LogWarning("Try in 3 Seconds...");
 					yield return new WaitForSecondsRealtime(3);
 				}
 			}
 
-			if (_tryConnect)
+			if (TryConnect)
 			{
 				m_cancelButton.gameObject.SetActive(false);
 				Protocol protocol = new Protocol(network);
@@ -98,37 +117,86 @@ namespace Koala
 
 		public void CancelConnect()
 		{
-			_tryConnect = false;
+			TryConnect = false;
 		}
 
 		public void ShowLoadReplayDialog()
 		{
-			StartCoroutine(ShowLoadReplayDialogCoroutine());
+			StartCoroutine(GetReplayBytes());
 		}
 
-		private IEnumerator ShowLoadReplayDialogCoroutine()
+		private IEnumerator GetReplayBytes()
 		{
 			m_connectButton.gameObject.SetActive(false);
-			m_loadReplayButton.interactable = false;
+			m_loadReplayButton.gameObject.SetActive(false);
+			m_loadReplayProgress.gameObject.SetActive(true);
 
-			// Show a load file dialog and wait for a response from user
-			// Load file/folder: file, Initial path: default (Documents), Title: "Load File", submit button text: "Load"
-			yield return FileBrowser.WaitForLoadDialog(false, null, "Load Replay File", "Load");
+#if UNITY_EDITOR || UNITY_STANDALONE
+			bool isDone = false;
+			string uri = null;
 
-			// Dialog is closed
-			if (FileBrowser.Success)
+			StandaloneFileBrowser.OpenFilePanelAsync("Select Replay", "", Extensions, false, (string[] paths) =>
 			{
-				m_loadReplayButton.gameObject.SetActive(false);
+				if (paths.Length > 0)
+				{
+					uri = new System.Uri(paths[0]).AbsoluteUri;
+				}
 
-				Helper.ReplayPath = FileBrowser.Result;
-				Helper.ReplayMode = true;
-				StartCoroutine(LoadGameScene());
-			}
-			else
+				isDone = true;
+			});
+
+			yield return new WaitUntil(() => isDone);
+			StartCoroutine(DownloadReplay(uri));
+#elif UNITY_WEBGL
+			UploadFile(gameObject.name, "OnFileUpload", ".cr", false);
+#endif
+		}
+
+		private IEnumerator DownloadReplay(string uri)
+		{
+			if (uri != null && uri.Length > 0)
 			{
-				m_connectButton.gameObject.SetActive(true);
-				m_loadReplayButton.interactable = true;
+#if UNITY_2018_3_OR_NEWER
+				var req = UnityWebRequest.Get(uri);
+#else
+				var req = new WWW(uri);
+#endif
+				
+				while (!req.isDone)
+				{
+#if UNITY_2018_3_OR_NEWER
+					m_loadReplayProgress.value = req.downloadProgress;
+#else
+					m_loadReplayProgress.value = req.progress;
+#endif
+					yield return new WaitForEndOfFrame();
+				}
+
+#if UNITY_2018_3_OR_NEWER
+				if (req.isHttpError || req.isNetworkError)
+#else
+				if (req.error != null && req.error.Length > 0)
+#endif
+				{
+					Debug.LogError(req.error);
+				}
+				else
+				{
+					m_loadReplayProgress.gameObject.SetActive(false);
+					Helper.ReplayMode = true;
+#if UNITY_2018_3_OR_NEWER
+					Helper.ReplayBytes = req.downloadHandler.data;
+#else
+					Helper.ReplayBytes = req.bytes;
+#endif
+					StartCoroutine(LoadGameScene());
+					yield break;
+				}
 			}
+
+			m_connectButton.gameObject.SetActive(true);
+			m_loadReplayButton.gameObject.SetActive(true);
+			m_loadReplayProgress.gameObject.SetActive(false);
 		}
 
 		public void Quit()

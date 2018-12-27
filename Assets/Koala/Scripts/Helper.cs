@@ -1,6 +1,7 @@
 ﻿using KS.Messages;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
 using TMPro;
@@ -20,7 +21,7 @@ namespace Koala
 		public static bool ReplayMode { get; set; }
 		public static bool GameStarted { get; set; }
 		public static float MaxCycle { get; set; }
-		public static string ReplayPath { get; set; }
+		public static byte[] ReplayBytes { get; set; }
 
 		private static readonly Assembly _asm = Assembly.GetExecutingAssembly();
 		public static Assembly Assembly => _asm;

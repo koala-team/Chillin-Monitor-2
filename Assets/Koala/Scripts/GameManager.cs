@@ -19,7 +19,7 @@ namespace Koala
 
 		private Director Director { get; set; } = new Director();
 		private bool GameEnded { get; set; } = false;
-		private FileStream ReplayStream { get; set; }
+		private MemoryStream ReplayStream { get; set; }
 
 		public GameObject m_rootGameObject;
 		public GameObject m_rootDestroyedGameObject;
@@ -190,7 +190,7 @@ namespace Koala
 
 		private IEnumerator HandleReplayMessages()
 		{
-			using (ReplayStream = new FileStream(Helper.ReplayPath, FileMode.Open))
+			using (ReplayStream = new MemoryStream(Helper.ReplayBytes))
 			{
 				while (!GameEnded && ReplayStream.Position != ReplayStream.Length)
 				{
@@ -203,7 +203,8 @@ namespace Koala
 					ParseMessage(processTask.Result);
 				}
 			}
-			yield return null;
+
+			Helper.ReplayBytes = new byte[0];
 		}
 
 		private void ParseMessage(KS.KSObject message)
@@ -354,6 +355,7 @@ namespace Koala
 
 			if (ReplayStream != null)
 				ReplayStream.Close();
+			Helper.ReplayBytes = new byte[0];
 
 			yield return SceneManager.LoadSceneAsync("MainMenu").WaitUntilComplete();
 		}
