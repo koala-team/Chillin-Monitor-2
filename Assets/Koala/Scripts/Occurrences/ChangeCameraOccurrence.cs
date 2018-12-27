@@ -1,6 +1,7 @@
 ﻿using DG.Tweening;
 using UnityEngine;
 using KS.SceneActions;
+using UnityEngine.PostProcessing;
 
 namespace Koala
 {
@@ -8,6 +9,7 @@ namespace Koala
 	{
 		private Camera _camera;
 		private CameraController _cameraController;
+		private PostProcessingBehaviour _postProcessingBehaviour;
 
 
 		public ChangeCameraOccurrence() { }
@@ -16,8 +18,13 @@ namespace Koala
 		{
 			var camera = GetCamera();
 			var cameraController = GetCameraController();
+			var postProcessingBehaviour = GetPostProcessingBehaviour();
 
-			var oldConfig = new ChangeCamera();
+			var oldConfig = new ChangeCamera
+			{
+				PostProcessingProfileAsset = _newConfig.PostProcessingProfileAsset,
+				PostProcessingProfile = postProcessingBehaviour.profile,
+			};
 
 			if (_newConfig.ClearFlag.HasValue)
 				oldConfig.ClearFlag = (ECameraClearFlag)camera.clearFlags;
@@ -51,6 +58,9 @@ namespace Koala
 
 			if (_newConfig.MaxRotation != null)
 				oldConfig.MaxRotation = cameraController.MaxRotation.ToKSVector2();
+
+			if (_newConfig.PostProcessingProfileAsset != null)
+				oldConfig.PostProcessingProfile = postProcessingBehaviour.profile;
 
 			return oldConfig;
 		}
@@ -145,12 +155,16 @@ namespace Koala
 		protected override void ManageSuddenChanges(ChangeCamera config, bool isForward)
 		{
 			var camera = GetCamera();
+			var postProcessingBehaviour = GetPostProcessingBehaviour();
 
 			if (config.ClearFlag.HasValue)
 				camera.clearFlags = (CameraClearFlags)config.ClearFlag.Value;
 			
 			if (config.IsOrthographic.HasValue)
 				camera.orthographic = config.IsOrthographic.Value;
+
+			if (config.PostProcessingProfileAsset != null)
+				postProcessingBehaviour.profile = config.PostProcessingProfile;
 		}
 
 		private Camera GetCamera()
@@ -165,6 +179,13 @@ namespace Koala
 			if (_cameraController == null)
 				_cameraController = References.Instance.GetGameObject(_reference).GetComponent<CameraController>();
 			return _cameraController;
+		}
+
+		private PostProcessingBehaviour GetPostProcessingBehaviour()
+		{
+			if (_postProcessingBehaviour == null)
+				_postProcessingBehaviour = References.Instance.GetGameObject(_reference).GetComponent<PostProcessingBehaviour>();
+			return _postProcessingBehaviour;
 		}
 	}
 }

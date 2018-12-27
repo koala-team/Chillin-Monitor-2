@@ -1,6 +1,7 @@
 ﻿using Koala;
 using System;
 using UnityEngine;
+using UnityEngine.PostProcessing;
 
 namespace KS.SceneActions
 {
@@ -254,12 +255,17 @@ namespace KS.SceneActions
 
 	public partial class ChangeCamera
 	{
+		public PostProcessingProfile PostProcessingProfile { get; set; }
+
+
 		public override void Prepare()
 		{
 			base.Prepare();
 
 			Ref = Helper.MainCameraRef;
 			ChildRef = null;
+
+			PostProcessingProfile = BundleManager.Instance.LoadAsset<PostProcessingProfile>(PostProcessingProfileAsset);
 		}
 	}
 

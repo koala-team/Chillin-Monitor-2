@@ -388,6 +388,7 @@ min_position = Vector3
 max_position = Vector3
 min_rotation = Vector2
 max_rotation = Vector2
+post_processing_profile_asset = Asset
 
 ##########################################################
 ##########################################################
