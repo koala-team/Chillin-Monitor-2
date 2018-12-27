@@ -7,6 +7,7 @@ namespace Koala
 	public class ChangeCameraOccurrence : BaseOccurrence<ChangeCameraOccurrence, ChangeCamera>
 	{
 		private Camera _camera;
+		private CameraController _cameraController;
 
 
 		public ChangeCameraOccurrence() { }
@@ -14,6 +15,7 @@ namespace Koala
 		protected override ChangeCamera CreateOldConfig()
 		{
 			var camera = GetCamera();
+			var cameraController = GetCameraController();
 
 			var oldConfig = new ChangeCamera();
 
@@ -38,12 +40,25 @@ namespace Koala
 			if (_newConfig.FarClipPlane.HasValue)
 				oldConfig.FarClipPlane = camera.farClipPlane;
 
+			if (_newConfig.MinPosition != null)
+				oldConfig.MinPosition = cameraController.MinPosition.ToKSVector3();
+
+			if (_newConfig.MaxPosition != null)
+				oldConfig.MaxPosition = cameraController.MaxPosition.ToKSVector3();
+
+			if (_newConfig.MinRotation != null)
+				oldConfig.MinRotation = cameraController.MinRotation.ToKSVector2();
+
+			if (_newConfig.MaxRotation != null)
+				oldConfig.MaxRotation = cameraController.MaxRotation.ToKSVector2();
+
 			return oldConfig;
 		}
 
 		protected override void ManageTweens(ChangeCamera config, bool isForward)
 		{
 			var camera = GetCamera();
+			var cameraController = GetCameraController();
 
 			if (config.BackgroundColor != null)
 			{
@@ -89,6 +104,42 @@ namespace Koala
 					config.FarClipPlane.Value,
 					_duration).RegisterInTimeline(_startTime, isForward);
 			}
+
+			if (config.MinPosition != null)
+			{
+				DOTween.To(
+					() => cameraController.MinPosition,
+					x => cameraController.MinPosition = x,
+					cameraController.MinPosition.ApplyKSVector3(config.MinPosition),
+					_duration).RegisterInTimeline(_startTime, isForward);
+			}
+
+			if (config.MaxPosition != null)
+			{
+				DOTween.To(
+					() => cameraController.MaxPosition,
+					x => cameraController.MaxPosition = x,
+					cameraController.MaxPosition.ApplyKSVector3(config.MaxPosition),
+					_duration).RegisterInTimeline(_startTime, isForward);
+			}
+
+			if (config.MinRotation != null)
+			{
+				DOTween.To(
+					() => cameraController.MinRotation,
+					x => cameraController.MinRotation = x,
+					cameraController.MinRotation.ApplyKSVector2(config.MinRotation),
+					_duration).RegisterInTimeline(_startTime, isForward);
+			}
+
+			if (config.MaxRotation != null)
+			{
+				DOTween.To(
+					() => cameraController.MaxRotation,
+					x => cameraController.MaxRotation = x,
+					cameraController.MaxRotation.ApplyKSVector2(config.MaxRotation),
+					_duration).RegisterInTimeline(_startTime, isForward);
+			}
 		}
 
 		protected override void ManageSuddenChanges(ChangeCamera config, bool isForward)
@@ -107,6 +158,13 @@ namespace Koala
 			if (_camera == null)
 				_camera = References.Instance.GetGameObject(_reference).GetComponent<Camera>();
 			return _camera;
+		}
+
+		private CameraController GetCameraController()
+		{
+			if (_cameraController == null)
+				_cameraController = References.Instance.GetGameObject(_reference).GetComponent<CameraController>();
+			return _cameraController;
 		}
 	}
 }

@@ -8,24 +8,31 @@ namespace Koala
 		// shift : Makes camera accelerate
 		// space : Moves camera on X and Z axis only.  So camera doesn't gain any height*/
 
+		public Vector3 MinPosition { get; set; } = new Vector3(float.MinValue, float.MinValue, float.MinValue);
+		public Vector3 MaxPosition { get; set; } = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
+		public Vector2 MinRotation { get; set; } = new Vector2(float.MinValue, float.MinValue);
+		public Vector2 MaxRotation { get; set; } = new Vector2(float.MaxValue, float.MaxValue);
+
 		// camera movements
-		private const float MAIN_SPEED = 50.0f; // regular speed
-		private const float SHIFT_ADD = 250.0f; // multiplied by how long shift is held. Basically running
+		private const float MAIN_SPEED = 5.0f; // regular speed
+		private const float SHIFT_ADD = 50.0f; // multiplied by how long shift is held. Basically running
 		private const float MAX_SHIFT = 1000.0f; // Maximum speed when holding shift
-		private const float CAM_SENS = 3.0f; // How sensitive it with mouse
+		private const float CAM_SENS = 2.5f; // How sensitive it with mouse
 		private float totalRun = 1.0f;
 
 		void Update()
 		{
-			// if (!Helper.GameStarted) return;
+			if (!Helper.GameStarted) return;
 
 			// Mouse
 			if (Input.GetMouseButton(0))
 			{
-				transform.Rotate(new Vector3(-Input.GetAxis("Mouse Y") * CAM_SENS, Input.GetAxis("Mouse X") * CAM_SENS, 0));
-				var X = transform.rotation.eulerAngles.x;
-				var Y = transform.rotation.eulerAngles.y;
-				transform.rotation = Quaternion.Euler(X, Y, 0);
+				transform.Rotate(new Vector3(-Input.GetAxis("Mouse Y") * CAM_SENS, Input.GetAxis("Mouse X") * CAM_SENS, 0), Space.World);
+				transform.rotation = Quaternion.Euler(
+					Mathf.Clamp(transform.rotation.eulerAngles.x, MinRotation.x, MaxRotation.x),
+					Mathf.Clamp(transform.rotation.eulerAngles.y, MinRotation.y, MaxRotation.y),
+					0
+				);
 			}
 
 			//Keyboard commands
@@ -45,7 +52,13 @@ namespace Koala
 			}
 
 			p = p * Time.deltaTime;
-			transform.Translate(p);
+			var newPosition = transform.position + p;
+
+			transform.position = new Vector3(
+				Mathf.Clamp(newPosition.x, MinPosition.x, MaxPosition.x),
+				Mathf.Clamp(newPosition.y, MinPosition.y, MaxPosition.y),
+				Mathf.Clamp(newPosition.z, MinPosition.z, MaxPosition.z)
+			);
 
 			//if (Input.GetKey(KeyCode.Space)) // If player wants to move on X and Z axis only
 			//{

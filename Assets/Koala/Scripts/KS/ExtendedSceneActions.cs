@@ -252,6 +252,17 @@ namespace KS.SceneActions
 		}
 	}
 
+	public partial class ChangeCamera
+	{
+		public override void Prepare()
+		{
+			base.Prepare();
+
+			Ref = Helper.MainCameraRef;
+			ChildRef = null;
+		}
+	}
+
 	// New Actions
 	public class AgentJoined : BaseAction
 	{

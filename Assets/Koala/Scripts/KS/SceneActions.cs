@@ -3276,6 +3276,10 @@ namespace KS.SceneActions
 		public float? FieldOfView { get; set; }
 		public float? NearClipPlane { get; set; }
 		public float? FarClipPlane { get; set; }
+		public Vector3 MinPosition { get; set; }
+		public Vector3 MaxPosition { get; set; }
+		public Vector2 MinRotation { get; set; }
+		public Vector2 MaxRotation { get; set; }
 		
 
 		public ChangeCamera()
@@ -3340,6 +3344,34 @@ namespace KS.SceneActions
 			if (FarClipPlane != null)
 			{
 				s.AddRange(BitConverter.GetBytes((float)FarClipPlane));
+			}
+			
+			// serialize MinPosition
+			s.Add((byte)((MinPosition == null) ? 0 : 1));
+			if (MinPosition != null)
+			{
+				s.AddRange(MinPosition.Serialize());
+			}
+			
+			// serialize MaxPosition
+			s.Add((byte)((MaxPosition == null) ? 0 : 1));
+			if (MaxPosition != null)
+			{
+				s.AddRange(MaxPosition.Serialize());
+			}
+			
+			// serialize MinRotation
+			s.Add((byte)((MinRotation == null) ? 0 : 1));
+			if (MinRotation != null)
+			{
+				s.AddRange(MinRotation.Serialize());
+			}
+			
+			// serialize MaxRotation
+			s.Add((byte)((MaxRotation == null) ? 0 : 1));
+			if (MaxRotation != null)
+			{
+				s.AddRange(MaxRotation.Serialize());
 			}
 			
 			return s.ToArray();
@@ -3436,6 +3468,54 @@ namespace KS.SceneActions
 			else
 				FarClipPlane = null;
 			
+			// deserialize MinPosition
+			byte tmp175;
+			tmp175 = (byte)s[(int)offset];
+			offset += sizeof(byte);
+			if (tmp175 == 1)
+			{
+				MinPosition = new Vector3();
+				offset = MinPosition.Deserialize(s, offset);
+			}
+			else
+				MinPosition = null;
+			
+			// deserialize MaxPosition
+			byte tmp176;
+			tmp176 = (byte)s[(int)offset];
+			offset += sizeof(byte);
+			if (tmp176 == 1)
+			{
+				MaxPosition = new Vector3();
+				offset = MaxPosition.Deserialize(s, offset);
+			}
+			else
+				MaxPosition = null;
+			
+			// deserialize MinRotation
+			byte tmp177;
+			tmp177 = (byte)s[(int)offset];
+			offset += sizeof(byte);
+			if (tmp177 == 1)
+			{
+				MinRotation = new Vector2();
+				offset = MinRotation.Deserialize(s, offset);
+			}
+			else
+				MinRotation = null;
+			
+			// deserialize MaxRotation
+			byte tmp178;
+			tmp178 = (byte)s[(int)offset];
+			offset += sizeof(byte);
+			if (tmp178 == 1)
+			{
+				MaxRotation = new Vector2();
+				offset = MaxRotation.Deserialize(s, offset);
+			}
+			else
+				MaxRotation = null;
+			
 			return offset;
 		}
 	}
@@ -3462,12 +3542,12 @@ namespace KS.SceneActions
 			s.Add((byte)((BundleName == null) ? 0 : 1));
 			if (BundleName != null)
 			{
-				List<byte> tmp175 = new List<byte>();
-				tmp175.AddRange(BitConverter.GetBytes((uint)BundleName.Count()));
-				while (tmp175.Count > 0 && tmp175.Last() == 0)
-					tmp175.RemoveAt(tmp175.Count - 1);
-				s.Add((byte)tmp175.Count);
-				s.AddRange(tmp175);
+				List<byte> tmp179 = new List<byte>();
+				tmp179.AddRange(BitConverter.GetBytes((uint)BundleName.Count()));
+				while (tmp179.Count > 0 && tmp179.Last() == 0)
+					tmp179.RemoveAt(tmp179.Count - 1);
+				s.Add((byte)tmp179.Count);
+				s.AddRange(tmp179);
 				
 				s.AddRange(System.Text.Encoding.GetEncoding("ISO-8859-1").GetBytes(BundleName));
 			}
@@ -3476,12 +3556,12 @@ namespace KS.SceneActions
 			s.Add((byte)((BundleData == null) ? 0 : 1));
 			if (BundleData != null)
 			{
-				List<byte> tmp176 = new List<byte>();
-				tmp176.AddRange(BitConverter.GetBytes((uint)BundleData.Count()));
-				while (tmp176.Count > 0 && tmp176.Last() == 0)
-					tmp176.RemoveAt(tmp176.Count - 1);
-				s.Add((byte)tmp176.Count);
-				s.AddRange(tmp176);
+				List<byte> tmp180 = new List<byte>();
+				tmp180.AddRange(BitConverter.GetBytes((uint)BundleData.Count()));
+				while (tmp180.Count > 0 && tmp180.Last() == 0)
+					tmp180.RemoveAt(tmp180.Count - 1);
+				s.Add((byte)tmp180.Count);
+				s.AddRange(tmp180);
 				
 				s.AddRange(System.Text.Encoding.GetEncoding("ISO-8859-1").GetBytes(BundleData));
 			}
@@ -3492,27 +3572,6 @@ namespace KS.SceneActions
 		public override uint Deserialize(byte[] s, uint offset = 0)
 		{
 			// deserialize BundleName
-			byte tmp177;
-			tmp177 = (byte)s[(int)offset];
-			offset += sizeof(byte);
-			if (tmp177 == 1)
-			{
-				byte tmp178;
-				tmp178 = (byte)s[(int)offset];
-				offset += sizeof(byte);
-				byte[] tmp179 = new byte[sizeof(uint)];
-				Array.Copy(s, offset, tmp179, 0, tmp178);
-				offset += tmp178;
-				uint tmp180;
-				tmp180 = BitConverter.ToUInt32(tmp179, (int)0);
-				
-				BundleName = System.Text.Encoding.GetEncoding("ISO-8859-1").GetString(s.Skip((int)offset).Take((int)tmp180).ToArray());
-				offset += tmp180;
-			}
-			else
-				BundleName = null;
-			
-			// deserialize BundleData
 			byte tmp181;
 			tmp181 = (byte)s[(int)offset];
 			offset += sizeof(byte);
@@ -3527,8 +3586,29 @@ namespace KS.SceneActions
 				uint tmp184;
 				tmp184 = BitConverter.ToUInt32(tmp183, (int)0);
 				
-				BundleData = System.Text.Encoding.GetEncoding("ISO-8859-1").GetString(s.Skip((int)offset).Take((int)tmp184).ToArray());
+				BundleName = System.Text.Encoding.GetEncoding("ISO-8859-1").GetString(s.Skip((int)offset).Take((int)tmp184).ToArray());
 				offset += tmp184;
+			}
+			else
+				BundleName = null;
+			
+			// deserialize BundleData
+			byte tmp185;
+			tmp185 = (byte)s[(int)offset];
+			offset += sizeof(byte);
+			if (tmp185 == 1)
+			{
+				byte tmp186;
+				tmp186 = (byte)s[(int)offset];
+				offset += sizeof(byte);
+				byte[] tmp187 = new byte[sizeof(uint)];
+				Array.Copy(s, offset, tmp187, 0, tmp186);
+				offset += tmp186;
+				uint tmp188;
+				tmp188 = BitConverter.ToUInt32(tmp187, (int)0);
+				
+				BundleData = System.Text.Encoding.GetEncoding("ISO-8859-1").GetString(s.Skip((int)offset).Take((int)tmp188).ToArray());
+				offset += tmp188;
 			}
 			else
 				BundleData = null;
@@ -3589,6 +3669,554 @@ namespace KS.SceneActions
 		
 		public override uint Deserialize(byte[] s, uint offset = 0)
 		{
+			return offset;
+		}
+	}
+	
+	public enum EAmbientMode
+	{
+		Skybox = 0,
+		Trilight = 1,
+		Flat = 3,
+		Custom = 4,
+	}
+	
+	public enum EDefaultReflectionMode
+	{
+		Skybox = 0,
+		Custom = 1,
+	}
+	
+	public enum EFogMode
+	{
+		Linear = 1,
+		Exponential = 2,
+		ExponentialSquared = 3,
+	}
+	
+	public partial class ChangeRenderSettings : KSObject
+	{
+		public Vector4 AmbientEquatorColor { get; set; }
+		public Vector4 AmbientGroundColor { get; set; }
+		public float? AmbientIntensity { get; set; }
+		public Vector4 AmbientLight { get; set; }
+		public EAmbientMode? AmbientMode { get; set; }
+		public Vector4 AmbientSkyColor { get; set; }
+		public Asset CustomReflectionAsset { get; set; }
+		public EDefaultReflectionMode? DefaultReflectionMode { get; set; }
+		public int? DefaultReflectionResolution { get; set; }
+		public float? FlareFadeSpeed { get; set; }
+		public float? FlareStrength { get; set; }
+		public bool? HasFog { get; set; }
+		public EFogMode? FogMode { get; set; }
+		public Vector4 FogColor { get; set; }
+		public float? FogDensity { get; set; }
+		public float? FogStartDistance { get; set; }
+		public float? FogEndDistance { get; set; }
+		public float? HaloStrength { get; set; }
+		public int? ReflectionBounces { get; set; }
+		public float? ReflectionIntensity { get; set; }
+		public Asset SkyboxAsset { get; set; }
+		public Vector4 SubtractiveShadowColor { get; set; }
+		public int? SunRef { get; set; }
+		public string SunChildRef { get; set; }
+		
+
+		public ChangeRenderSettings()
+		{
+		}
+		
+		public new const string NameStatic = "ChangeRenderSettings";
+		
+		public override string Name() => "ChangeRenderSettings";
+		
+		public override byte[] Serialize()
+		{
+			List<byte> s = new List<byte>();
+			
+			// serialize AmbientEquatorColor
+			s.Add((byte)((AmbientEquatorColor == null) ? 0 : 1));
+			if (AmbientEquatorColor != null)
+			{
+				s.AddRange(AmbientEquatorColor.Serialize());
+			}
+			
+			// serialize AmbientGroundColor
+			s.Add((byte)((AmbientGroundColor == null) ? 0 : 1));
+			if (AmbientGroundColor != null)
+			{
+				s.AddRange(AmbientGroundColor.Serialize());
+			}
+			
+			// serialize AmbientIntensity
+			s.Add((byte)((AmbientIntensity == null) ? 0 : 1));
+			if (AmbientIntensity != null)
+			{
+				s.AddRange(BitConverter.GetBytes((float)AmbientIntensity));
+			}
+			
+			// serialize AmbientLight
+			s.Add((byte)((AmbientLight == null) ? 0 : 1));
+			if (AmbientLight != null)
+			{
+				s.AddRange(AmbientLight.Serialize());
+			}
+			
+			// serialize AmbientMode
+			s.Add((byte)((AmbientMode == null) ? 0 : 1));
+			if (AmbientMode != null)
+			{
+				s.Add((byte)((sbyte)AmbientMode));
+			}
+			
+			// serialize AmbientSkyColor
+			s.Add((byte)((AmbientSkyColor == null) ? 0 : 1));
+			if (AmbientSkyColor != null)
+			{
+				s.AddRange(AmbientSkyColor.Serialize());
+			}
+			
+			// serialize CustomReflectionAsset
+			s.Add((byte)((CustomReflectionAsset == null) ? 0 : 1));
+			if (CustomReflectionAsset != null)
+			{
+				s.AddRange(CustomReflectionAsset.Serialize());
+			}
+			
+			// serialize DefaultReflectionMode
+			s.Add((byte)((DefaultReflectionMode == null) ? 0 : 1));
+			if (DefaultReflectionMode != null)
+			{
+				s.Add((byte)((sbyte)DefaultReflectionMode));
+			}
+			
+			// serialize DefaultReflectionResolution
+			s.Add((byte)((DefaultReflectionResolution == null) ? 0 : 1));
+			if (DefaultReflectionResolution != null)
+			{
+				s.AddRange(BitConverter.GetBytes((int)DefaultReflectionResolution));
+			}
+			
+			// serialize FlareFadeSpeed
+			s.Add((byte)((FlareFadeSpeed == null) ? 0 : 1));
+			if (FlareFadeSpeed != null)
+			{
+				s.AddRange(BitConverter.GetBytes((float)FlareFadeSpeed));
+			}
+			
+			// serialize FlareStrength
+			s.Add((byte)((FlareStrength == null) ? 0 : 1));
+			if (FlareStrength != null)
+			{
+				s.AddRange(BitConverter.GetBytes((float)FlareStrength));
+			}
+			
+			// serialize HasFog
+			s.Add((byte)((HasFog == null) ? 0 : 1));
+			if (HasFog != null)
+			{
+				s.AddRange(BitConverter.GetBytes((bool)HasFog));
+			}
+			
+			// serialize FogMode
+			s.Add((byte)((FogMode == null) ? 0 : 1));
+			if (FogMode != null)
+			{
+				s.Add((byte)((sbyte)FogMode));
+			}
+			
+			// serialize FogColor
+			s.Add((byte)((FogColor == null) ? 0 : 1));
+			if (FogColor != null)
+			{
+				s.AddRange(FogColor.Serialize());
+			}
+			
+			// serialize FogDensity
+			s.Add((byte)((FogDensity == null) ? 0 : 1));
+			if (FogDensity != null)
+			{
+				s.AddRange(BitConverter.GetBytes((float)FogDensity));
+			}
+			
+			// serialize FogStartDistance
+			s.Add((byte)((FogStartDistance == null) ? 0 : 1));
+			if (FogStartDistance != null)
+			{
+				s.AddRange(BitConverter.GetBytes((float)FogStartDistance));
+			}
+			
+			// serialize FogEndDistance
+			s.Add((byte)((FogEndDistance == null) ? 0 : 1));
+			if (FogEndDistance != null)
+			{
+				s.AddRange(BitConverter.GetBytes((float)FogEndDistance));
+			}
+			
+			// serialize HaloStrength
+			s.Add((byte)((HaloStrength == null) ? 0 : 1));
+			if (HaloStrength != null)
+			{
+				s.AddRange(BitConverter.GetBytes((float)HaloStrength));
+			}
+			
+			// serialize ReflectionBounces
+			s.Add((byte)((ReflectionBounces == null) ? 0 : 1));
+			if (ReflectionBounces != null)
+			{
+				s.AddRange(BitConverter.GetBytes((int)ReflectionBounces));
+			}
+			
+			// serialize ReflectionIntensity
+			s.Add((byte)((ReflectionIntensity == null) ? 0 : 1));
+			if (ReflectionIntensity != null)
+			{
+				s.AddRange(BitConverter.GetBytes((float)ReflectionIntensity));
+			}
+			
+			// serialize SkyboxAsset
+			s.Add((byte)((SkyboxAsset == null) ? 0 : 1));
+			if (SkyboxAsset != null)
+			{
+				s.AddRange(SkyboxAsset.Serialize());
+			}
+			
+			// serialize SubtractiveShadowColor
+			s.Add((byte)((SubtractiveShadowColor == null) ? 0 : 1));
+			if (SubtractiveShadowColor != null)
+			{
+				s.AddRange(SubtractiveShadowColor.Serialize());
+			}
+			
+			// serialize SunRef
+			s.Add((byte)((SunRef == null) ? 0 : 1));
+			if (SunRef != null)
+			{
+				s.AddRange(BitConverter.GetBytes((int)SunRef));
+			}
+			
+			// serialize SunChildRef
+			s.Add((byte)((SunChildRef == null) ? 0 : 1));
+			if (SunChildRef != null)
+			{
+				List<byte> tmp189 = new List<byte>();
+				tmp189.AddRange(BitConverter.GetBytes((uint)SunChildRef.Count()));
+				while (tmp189.Count > 0 && tmp189.Last() == 0)
+					tmp189.RemoveAt(tmp189.Count - 1);
+				s.Add((byte)tmp189.Count);
+				s.AddRange(tmp189);
+				
+				s.AddRange(System.Text.Encoding.GetEncoding("ISO-8859-1").GetBytes(SunChildRef));
+			}
+			
+			return s.ToArray();
+		}
+		
+		public override uint Deserialize(byte[] s, uint offset = 0)
+		{
+			// deserialize AmbientEquatorColor
+			byte tmp190;
+			tmp190 = (byte)s[(int)offset];
+			offset += sizeof(byte);
+			if (tmp190 == 1)
+			{
+				AmbientEquatorColor = new Vector4();
+				offset = AmbientEquatorColor.Deserialize(s, offset);
+			}
+			else
+				AmbientEquatorColor = null;
+			
+			// deserialize AmbientGroundColor
+			byte tmp191;
+			tmp191 = (byte)s[(int)offset];
+			offset += sizeof(byte);
+			if (tmp191 == 1)
+			{
+				AmbientGroundColor = new Vector4();
+				offset = AmbientGroundColor.Deserialize(s, offset);
+			}
+			else
+				AmbientGroundColor = null;
+			
+			// deserialize AmbientIntensity
+			byte tmp192;
+			tmp192 = (byte)s[(int)offset];
+			offset += sizeof(byte);
+			if (tmp192 == 1)
+			{
+				AmbientIntensity = BitConverter.ToSingle(s, (int)offset);
+				offset += sizeof(float);
+			}
+			else
+				AmbientIntensity = null;
+			
+			// deserialize AmbientLight
+			byte tmp193;
+			tmp193 = (byte)s[(int)offset];
+			offset += sizeof(byte);
+			if (tmp193 == 1)
+			{
+				AmbientLight = new Vector4();
+				offset = AmbientLight.Deserialize(s, offset);
+			}
+			else
+				AmbientLight = null;
+			
+			// deserialize AmbientMode
+			byte tmp194;
+			tmp194 = (byte)s[(int)offset];
+			offset += sizeof(byte);
+			if (tmp194 == 1)
+			{
+				sbyte tmp195;
+				tmp195 = (sbyte)s[(int)offset];
+				offset += sizeof(sbyte);
+				AmbientMode = (EAmbientMode)tmp195;
+			}
+			else
+				AmbientMode = null;
+			
+			// deserialize AmbientSkyColor
+			byte tmp196;
+			tmp196 = (byte)s[(int)offset];
+			offset += sizeof(byte);
+			if (tmp196 == 1)
+			{
+				AmbientSkyColor = new Vector4();
+				offset = AmbientSkyColor.Deserialize(s, offset);
+			}
+			else
+				AmbientSkyColor = null;
+			
+			// deserialize CustomReflectionAsset
+			byte tmp197;
+			tmp197 = (byte)s[(int)offset];
+			offset += sizeof(byte);
+			if (tmp197 == 1)
+			{
+				CustomReflectionAsset = new Asset();
+				offset = CustomReflectionAsset.Deserialize(s, offset);
+			}
+			else
+				CustomReflectionAsset = null;
+			
+			// deserialize DefaultReflectionMode
+			byte tmp198;
+			tmp198 = (byte)s[(int)offset];
+			offset += sizeof(byte);
+			if (tmp198 == 1)
+			{
+				sbyte tmp199;
+				tmp199 = (sbyte)s[(int)offset];
+				offset += sizeof(sbyte);
+				DefaultReflectionMode = (EDefaultReflectionMode)tmp199;
+			}
+			else
+				DefaultReflectionMode = null;
+			
+			// deserialize DefaultReflectionResolution
+			byte tmp200;
+			tmp200 = (byte)s[(int)offset];
+			offset += sizeof(byte);
+			if (tmp200 == 1)
+			{
+				DefaultReflectionResolution = BitConverter.ToInt32(s, (int)offset);
+				offset += sizeof(int);
+			}
+			else
+				DefaultReflectionResolution = null;
+			
+			// deserialize FlareFadeSpeed
+			byte tmp201;
+			tmp201 = (byte)s[(int)offset];
+			offset += sizeof(byte);
+			if (tmp201 == 1)
+			{
+				FlareFadeSpeed = BitConverter.ToSingle(s, (int)offset);
+				offset += sizeof(float);
+			}
+			else
+				FlareFadeSpeed = null;
+			
+			// deserialize FlareStrength
+			byte tmp202;
+			tmp202 = (byte)s[(int)offset];
+			offset += sizeof(byte);
+			if (tmp202 == 1)
+			{
+				FlareStrength = BitConverter.ToSingle(s, (int)offset);
+				offset += sizeof(float);
+			}
+			else
+				FlareStrength = null;
+			
+			// deserialize HasFog
+			byte tmp203;
+			tmp203 = (byte)s[(int)offset];
+			offset += sizeof(byte);
+			if (tmp203 == 1)
+			{
+				HasFog = BitConverter.ToBoolean(s, (int)offset);
+				offset += sizeof(bool);
+			}
+			else
+				HasFog = null;
+			
+			// deserialize FogMode
+			byte tmp204;
+			tmp204 = (byte)s[(int)offset];
+			offset += sizeof(byte);
+			if (tmp204 == 1)
+			{
+				sbyte tmp205;
+				tmp205 = (sbyte)s[(int)offset];
+				offset += sizeof(sbyte);
+				FogMode = (EFogMode)tmp205;
+			}
+			else
+				FogMode = null;
+			
+			// deserialize FogColor
+			byte tmp206;
+			tmp206 = (byte)s[(int)offset];
+			offset += sizeof(byte);
+			if (tmp206 == 1)
+			{
+				FogColor = new Vector4();
+				offset = FogColor.Deserialize(s, offset);
+			}
+			else
+				FogColor = null;
+			
+			// deserialize FogDensity
+			byte tmp207;
+			tmp207 = (byte)s[(int)offset];
+			offset += sizeof(byte);
+			if (tmp207 == 1)
+			{
+				FogDensity = BitConverter.ToSingle(s, (int)offset);
+				offset += sizeof(float);
+			}
+			else
+				FogDensity = null;
+			
+			// deserialize FogStartDistance
+			byte tmp208;
+			tmp208 = (byte)s[(int)offset];
+			offset += sizeof(byte);
+			if (tmp208 == 1)
+			{
+				FogStartDistance = BitConverter.ToSingle(s, (int)offset);
+				offset += sizeof(float);
+			}
+			else
+				FogStartDistance = null;
+			
+			// deserialize FogEndDistance
+			byte tmp209;
+			tmp209 = (byte)s[(int)offset];
+			offset += sizeof(byte);
+			if (tmp209 == 1)
+			{
+				FogEndDistance = BitConverter.ToSingle(s, (int)offset);
+				offset += sizeof(float);
+			}
+			else
+				FogEndDistance = null;
+			
+			// deserialize HaloStrength
+			byte tmp210;
+			tmp210 = (byte)s[(int)offset];
+			offset += sizeof(byte);
+			if (tmp210 == 1)
+			{
+				HaloStrength = BitConverter.ToSingle(s, (int)offset);
+				offset += sizeof(float);
+			}
+			else
+				HaloStrength = null;
+			
+			// deserialize ReflectionBounces
+			byte tmp211;
+			tmp211 = (byte)s[(int)offset];
+			offset += sizeof(byte);
+			if (tmp211 == 1)
+			{
+				ReflectionBounces = BitConverter.ToInt32(s, (int)offset);
+				offset += sizeof(int);
+			}
+			else
+				ReflectionBounces = null;
+			
+			// deserialize ReflectionIntensity
+			byte tmp212;
+			tmp212 = (byte)s[(int)offset];
+			offset += sizeof(byte);
+			if (tmp212 == 1)
+			{
+				ReflectionIntensity = BitConverter.ToSingle(s, (int)offset);
+				offset += sizeof(float);
+			}
+			else
+				ReflectionIntensity = null;
+			
+			// deserialize SkyboxAsset
+			byte tmp213;
+			tmp213 = (byte)s[(int)offset];
+			offset += sizeof(byte);
+			if (tmp213 == 1)
+			{
+				SkyboxAsset = new Asset();
+				offset = SkyboxAsset.Deserialize(s, offset);
+			}
+			else
+				SkyboxAsset = null;
+			
+			// deserialize SubtractiveShadowColor
+			byte tmp214;
+			tmp214 = (byte)s[(int)offset];
+			offset += sizeof(byte);
+			if (tmp214 == 1)
+			{
+				SubtractiveShadowColor = new Vector4();
+				offset = SubtractiveShadowColor.Deserialize(s, offset);
+			}
+			else
+				SubtractiveShadowColor = null;
+			
+			// deserialize SunRef
+			byte tmp215;
+			tmp215 = (byte)s[(int)offset];
+			offset += sizeof(byte);
+			if (tmp215 == 1)
+			{
+				SunRef = BitConverter.ToInt32(s, (int)offset);
+				offset += sizeof(int);
+			}
+			else
+				SunRef = null;
+			
+			// deserialize SunChildRef
+			byte tmp216;
+			tmp216 = (byte)s[(int)offset];
+			offset += sizeof(byte);
+			if (tmp216 == 1)
+			{
+				byte tmp217;
+				tmp217 = (byte)s[(int)offset];
+				offset += sizeof(byte);
+				byte[] tmp218 = new byte[sizeof(uint)];
+				Array.Copy(s, offset, tmp218, 0, tmp217);
+				offset += tmp217;
+				uint tmp219;
+				tmp219 = BitConverter.ToUInt32(tmp218, (int)0);
+				
+				SunChildRef = System.Text.Encoding.GetEncoding("ISO-8859-1").GetString(s.Skip((int)offset).Take((int)tmp219).ToArray());
+				offset += tmp219;
+			}
+			else
+				SunChildRef = null;
+			
 			return offset;
 		}
 	}
