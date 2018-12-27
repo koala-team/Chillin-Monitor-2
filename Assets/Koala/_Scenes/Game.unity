@@ -602,7 +602,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 153072664}
-        m_MethodName: Play
+        m_MethodName: PlayForward
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
