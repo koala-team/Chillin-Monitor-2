@@ -66,7 +66,7 @@ namespace Koala
 		}
 
 		// Return itself so you can do things like (await new WWW(url)).bytes
-		public static SimpleCoroutineAwaiter<WWW> GetAwaiter(this WWW instruction)
+		public static SimpleCoroutineAwaiter<UnityEngine.Networking.UnityWebRequest> GetAwaiter(this UnityEngine.Networking.UnityWebRequest instruction)
 		{
 			return GetAwaiterReturnSelf(instruction);
 		}

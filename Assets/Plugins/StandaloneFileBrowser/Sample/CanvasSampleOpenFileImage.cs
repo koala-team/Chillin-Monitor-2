@@ -5,9 +5,7 @@ using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
-#if UNITY_2018_3
 using UnityEngine.Networking;
-#endif
 using SFB;
 
 [RequireComponent(typeof(Button))]
@@ -49,14 +47,8 @@ public class CanvasSampleOpenFileImage : MonoBehaviour, IPointerDownHandler {
 #endif
 
     private IEnumerator OutputRoutine(string url) {
-#if UNITY_2018_3
         var loader = UnityWebRequestTexture.GetTexture(url);
         yield return loader.SendWebRequest();
         output.texture = ((DownloadHandlerTexture)loader.downloadHandler).texture;
-#else
-        var loader = new WWW(url);
-        yield return loader;
-        output.texture = loader.texture;
-#endif
     }
 }

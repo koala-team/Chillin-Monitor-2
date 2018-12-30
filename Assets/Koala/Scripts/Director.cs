@@ -41,9 +41,9 @@ namespace Koala
 				{ ChangeLine.NameStatic,             false },
 				{ ChangeLight.NameStatic,            false },
 				{ ChangeCamera.NameStatic,           false },
-				{ StoreBundleData.NameStatic,        true },
 				{ ClearScene.NameStatic,             true },
 				{ EndCycle.NameStatic,               true },
+				{ ChangeRenderSettings.NameStatic,   true },
 				{ AgentJoined.NameStatic,            true },
 				{ AgentLeft.NameStatic,              true },
 				{ EndGame.NameStatic,                true },
@@ -92,19 +92,12 @@ namespace Koala
 					occurrenceType = Helper.Assembly.GetType("Koala.InstantiateOccurrence");
 					break;
 
-				case StoreBundleData.NameStatic:
-					var bundleData = (StoreBundleData)action;
-					
-					AssetBundle bundle = AssetBundle.LoadFromMemory(bundleData.BundleData.GetBytes());
-					BundleManager.Instance.AddBundle(bundleData.BundleName, bundle);
-					return;
-
 				case EndCycle.NameStatic:
 					Helper.MaxCycle += 1;
 					return;
 
-				case KS.SceneActions.ChangeRenderSettings.NameStatic:
-					ChangeRenderSettings((ChangeRenderSettings)action);
+				case ChangeRenderSettings.NameStatic:
+					((ChangeRenderSettings)action).DoAction();
 					return;
 			}
 
@@ -117,83 +110,6 @@ namespace Koala
 
 			var doActionMethod = _doActionMethodInfo.MakeGenericMethod(occurrenceType, actionType);
 			doActionMethod.Invoke(this, new object[] { castMethod.Invoke(null, new object[] { action }), onlySuddenChanges });
-		}
-
-		private void ChangeRenderSettings(ChangeRenderSettings settings)
-		{
-			if (settings.AmbientEquatorColor != null)
-				RenderSettings.ambientEquatorColor = RenderSettings.ambientEquatorColor.ApplyKSVector4(settings.AmbientEquatorColor);
-
-			if (settings.AmbientGroundColor != null)
-				RenderSettings.ambientGroundColor = RenderSettings.ambientGroundColor.ApplyKSVector4(settings.AmbientGroundColor);
-
-			if (settings.AmbientIntensity.HasValue)
-				RenderSettings.ambientIntensity = settings.AmbientIntensity.Value;
-
-			if (settings.AmbientLight != null)
-				RenderSettings.ambientLight = RenderSettings.ambientLight.ApplyKSVector4(settings.AmbientLight);
-
-			if (settings.AmbientMode.HasValue)
-				RenderSettings.ambientMode = (UnityEngine.Rendering.AmbientMode)settings.AmbientMode.Value;
-
-			if (settings.AmbientSkyColor != null)
-				RenderSettings.ambientSkyColor = RenderSettings.ambientSkyColor.ApplyKSVector4(settings.AmbientSkyColor);
-
-			Cubemap customReflection = BundleManager.Instance.LoadAsset<Cubemap>(settings.CustomReflectionAsset);
-			if (customReflection != null)
-				RenderSettings.customReflection = customReflection;
-
-			if (settings.DefaultReflectionMode.HasValue)
-				RenderSettings.defaultReflectionMode = (UnityEngine.Rendering.DefaultReflectionMode)settings.DefaultReflectionMode.Value;
-
-			if (settings.DefaultReflectionResolution.HasValue)
-				RenderSettings.defaultReflectionResolution = settings.DefaultReflectionResolution.Value;
-
-			if (settings.FlareFadeSpeed.HasValue)
-				RenderSettings.flareFadeSpeed = settings.FlareFadeSpeed.Value;
-
-			if (settings.FlareStrength.HasValue)
-				RenderSettings.flareStrength = settings.FlareStrength.Value;
-
-			if (settings.HasFog.HasValue)
-				RenderSettings.fog = settings.HasFog.Value;
-
-			if (settings.FogMode.HasValue)
-				RenderSettings.fogMode = (FogMode)settings.FogMode.Value;
-
-			if (settings.FogColor != null)
-				RenderSettings.fogColor = RenderSettings.fogColor.ApplyKSVector4(settings.FogColor);
-
-			if (settings.FogDensity.HasValue)
-				RenderSettings.fogDensity = settings.FogDensity.Value;
-
-			if (settings.FogStartDistance.HasValue)
-				RenderSettings.fogStartDistance = settings.FogStartDistance.Value;
-
-			if (settings.FogEndDistance.HasValue)
-				RenderSettings.fogEndDistance = settings.FogEndDistance.Value;
-
-			if (settings.HaloStrength.HasValue)
-				RenderSettings.haloStrength = settings.HaloStrength.Value;
-
-			if (settings.ReflectionBounces.HasValue)
-				RenderSettings.reflectionBounces = settings.ReflectionBounces.Value;
-
-			if (settings.ReflectionIntensity.HasValue)
-				RenderSettings.reflectionIntensity = settings.ReflectionIntensity.Value;
-
-			Material skybox = BundleManager.Instance.LoadAsset<Material>(settings.SkyboxAsset);
-			if (skybox != null)
-				RenderSettings.skybox = skybox;
-
-			if (settings.SubtractiveShadowColor != null)
-				RenderSettings.subtractiveShadowColor = RenderSettings.subtractiveShadowColor.ApplyKSVector4(settings.SubtractiveShadowColor);
-
-			if (settings.SunRef.HasValue)
-			{
-				string fullRef = settings.SunRef.ToString() + (settings.SunChildRef != null ? "/" + settings.SunChildRef : "");
-				RenderSettings.sun = References.Instance.GetGameObject(fullRef).GetComponent<Light>();
-			}
 		}
 	}
 }

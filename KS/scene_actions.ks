@@ -388,15 +388,7 @@ min_position = Vector3
 max_position = Vector3
 min_rotation = Vector2
 max_rotation = Vector2
-post_processing_profile_asset = Asset
-
-##########################################################
-##########################################################
-
-[StoreBundleData]
-_def = class
-bundle_name = string
-bundle_data = string
+post_process_profile_asset = Asset
 
 ##########################################################
 ##########################################################

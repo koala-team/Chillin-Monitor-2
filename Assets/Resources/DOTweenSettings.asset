@@ -3,8 +3,9 @@
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
@@ -31,11 +32,11 @@ MonoBehaviour:
   storeSettingsLocation: 0
   modules:
     showPanel: 0
-    audioEnabled: 1
-    physicsEnabled: 1
-    physics2DEnabled: 1
-    spriteEnabled: 1
-    uiEnabled: 1
+    audioEnabled: 0
+    physicsEnabled: 0
+    physics2DEnabled: 0
+    spriteEnabled: 0
+    uiEnabled: 0
     textMeshProEnabled: 0
     tk2DEnabled: 0
   showPlayingTweens: 0

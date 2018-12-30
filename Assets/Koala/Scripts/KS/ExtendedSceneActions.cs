@@ -1,7 +1,6 @@
 ﻿using Koala;
-using System;
 using UnityEngine;
-using UnityEngine.PostProcessing;
+using UnityEngine.Rendering.PostProcessing;
 
 namespace KS.SceneActions
 {
@@ -255,7 +254,7 @@ namespace KS.SceneActions
 
 	public partial class ChangeCamera
 	{
-		public PostProcessingProfile PostProcessingProfile { get; set; }
+		public PostProcessProfile PostProcessProfile { get; set; }
 
 
 		public override void Prepare()
@@ -265,7 +264,87 @@ namespace KS.SceneActions
 			Ref = Helper.MainCameraRef;
 			ChildRef = null;
 
-			PostProcessingProfile = BundleManager.Instance.LoadAsset<PostProcessingProfile>(PostProcessingProfileAsset);
+			PostProcessProfile = BundleManager.Instance.LoadAsset<PostProcessProfile>(PostProcessProfileAsset);
+		}
+	}
+
+	public partial class ChangeRenderSettings
+	{
+		public void DoAction()
+		{
+			if (AmbientEquatorColor != null)
+				RenderSettings.ambientEquatorColor = RenderSettings.ambientEquatorColor.ApplyKSVector4(AmbientEquatorColor);
+
+			if (AmbientGroundColor != null)
+				RenderSettings.ambientGroundColor = RenderSettings.ambientGroundColor.ApplyKSVector4(AmbientGroundColor);
+
+			if (AmbientIntensity.HasValue)
+				RenderSettings.ambientIntensity = AmbientIntensity.Value;
+
+			if (AmbientLight != null)
+				RenderSettings.ambientLight = RenderSettings.ambientLight.ApplyKSVector4(AmbientLight);
+
+			if (AmbientMode.HasValue)
+				RenderSettings.ambientMode = (UnityEngine.Rendering.AmbientMode)AmbientMode.Value;
+
+			if (AmbientSkyColor != null)
+				RenderSettings.ambientSkyColor = RenderSettings.ambientSkyColor.ApplyKSVector4(AmbientSkyColor);
+
+			Cubemap customReflection = BundleManager.Instance.LoadAsset<Cubemap>(CustomReflectionAsset);
+			if (customReflection != null)
+				RenderSettings.customReflection = customReflection;
+
+			if (DefaultReflectionMode.HasValue)
+				RenderSettings.defaultReflectionMode = (UnityEngine.Rendering.DefaultReflectionMode)DefaultReflectionMode.Value;
+
+			if (DefaultReflectionResolution.HasValue)
+				RenderSettings.defaultReflectionResolution = DefaultReflectionResolution.Value;
+
+			if (FlareFadeSpeed.HasValue)
+				RenderSettings.flareFadeSpeed = FlareFadeSpeed.Value;
+
+			if (FlareStrength.HasValue)
+				RenderSettings.flareStrength = FlareStrength.Value;
+
+			if (HasFog.HasValue)
+				RenderSettings.fog = HasFog.Value;
+
+			if (FogMode.HasValue)
+				RenderSettings.fogMode = (FogMode)FogMode.Value;
+
+			if (FogColor != null)
+				RenderSettings.fogColor = RenderSettings.fogColor.ApplyKSVector4(FogColor);
+
+			if (FogDensity.HasValue)
+				RenderSettings.fogDensity = FogDensity.Value;
+
+			if (FogStartDistance.HasValue)
+				RenderSettings.fogStartDistance = FogStartDistance.Value;
+
+			if (FogEndDistance.HasValue)
+				RenderSettings.fogEndDistance = FogEndDistance.Value;
+
+			if (HaloStrength.HasValue)
+				RenderSettings.haloStrength = HaloStrength.Value;
+
+			if (ReflectionBounces.HasValue)
+				RenderSettings.reflectionBounces = ReflectionBounces.Value;
+
+			if (ReflectionIntensity.HasValue)
+				RenderSettings.reflectionIntensity = ReflectionIntensity.Value;
+
+			Material skybox = BundleManager.Instance.LoadAsset<Material>(SkyboxAsset);
+			if (skybox != null)
+				RenderSettings.skybox = skybox;
+
+			if (SubtractiveShadowColor != null)
+				RenderSettings.subtractiveShadowColor = RenderSettings.subtractiveShadowColor.ApplyKSVector4(SubtractiveShadowColor);
+
+			if (SunRef.HasValue)
+			{
+				string fullRef = SunRef.ToString() + (SunChildRef != null ? "/" + SunChildRef : "");
+				RenderSettings.sun = References.Instance.GetGameObject(fullRef).GetComponent<Light>();
+			}
 		}
 	}
 

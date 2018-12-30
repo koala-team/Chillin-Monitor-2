@@ -1,7 +1,7 @@
 ﻿using DG.Tweening;
 using UnityEngine;
 using KS.SceneActions;
-using UnityEngine.PostProcessing;
+using UnityEngine.Rendering.PostProcessing;
 
 namespace Koala
 {
@@ -9,7 +9,7 @@ namespace Koala
 	{
 		private Camera _camera;
 		private CameraController _cameraController;
-		private PostProcessingBehaviour _postProcessingBehaviour;
+		private PostProcessVolume _postProcessVolume;
 
 
 		public ChangeCameraOccurrence() { }
@@ -18,12 +18,12 @@ namespace Koala
 		{
 			var camera = GetCamera();
 			var cameraController = GetCameraController();
-			var postProcessingBehaviour = GetPostProcessingBehaviour();
+			var postProcessVolume = GetPostProcessVolume();
 
 			var oldConfig = new ChangeCamera
 			{
-				PostProcessingProfileAsset = _newConfig.PostProcessingProfileAsset,
-				PostProcessingProfile = postProcessingBehaviour.profile,
+				PostProcessProfileAsset = _newConfig.PostProcessProfileAsset,
+				PostProcessProfile = postProcessVolume.profile,
 			};
 
 			if (_newConfig.ClearFlag.HasValue)
@@ -59,8 +59,8 @@ namespace Koala
 			if (_newConfig.MaxRotation != null)
 				oldConfig.MaxRotation = cameraController.MaxRotation.ToKSVector2();
 
-			if (_newConfig.PostProcessingProfileAsset != null)
-				oldConfig.PostProcessingProfile = postProcessingBehaviour.profile;
+			if (_newConfig.PostProcessProfileAsset != null)
+				oldConfig.PostProcessProfile = postProcessVolume.profile;
 
 			return oldConfig;
 		}
@@ -155,7 +155,7 @@ namespace Koala
 		protected override void ManageSuddenChanges(ChangeCamera config, bool isForward)
 		{
 			var camera = GetCamera();
-			var postProcessingBehaviour = GetPostProcessingBehaviour();
+			var postProcessVolume = GetPostProcessVolume();
 
 			if (config.ClearFlag.HasValue)
 				camera.clearFlags = (CameraClearFlags)config.ClearFlag.Value;
@@ -163,8 +163,8 @@ namespace Koala
 			if (config.IsOrthographic.HasValue)
 				camera.orthographic = config.IsOrthographic.Value;
 
-			if (config.PostProcessingProfileAsset != null)
-				postProcessingBehaviour.profile = config.PostProcessingProfile;
+			if (config.PostProcessProfileAsset != null)
+				postProcessVolume.profile = config.PostProcessProfile;
 		}
 
 		private Camera GetCamera()
@@ -181,11 +181,11 @@ namespace Koala
 			return _cameraController;
 		}
 
-		private PostProcessingBehaviour GetPostProcessingBehaviour()
+		private PostProcessVolume GetPostProcessVolume()
 		{
-			if (_postProcessingBehaviour == null)
-				_postProcessingBehaviour = References.Instance.GetGameObject(_reference).GetComponent<PostProcessingBehaviour>();
-			return _postProcessingBehaviour;
+			if (_postProcessVolume == null)
+				_postProcessVolume = References.Instance.GetGameObject(_reference).GetComponent<PostProcessVolume>();
+			return _postProcessVolume;
 		}
 	}
 }

@@ -522,16 +522,16 @@ namespace IngameDebugConsole
 		// Debug window is being resized,
 		// Set the sizeDelta property of the window accordingly while
 		// preventing window dimensions from going below the minimum dimensions
-		public void Resize( BaseEventData dat )
+		public void Resize(BaseEventData dat)
 		{
-			PointerEventData eventData = (PointerEventData) dat;
-			
+			PointerEventData eventData = (PointerEventData)dat;
+
 			float newHeight = eventData.position.y / canvasTR.localScale.y;
-			if( newHeight < minimumHeight )
+			if (newHeight < minimumHeight)
 				newHeight = minimumHeight;
 
 			Vector2 anchorMax = logWindowTR.anchorMax;
-			anchorMax.y = Mathf.Min( 1f, newHeight / canvasTR.sizeDelta.y );
+			anchorMax.y = Mathf.Min(1f, newHeight / canvasTR.sizeDelta.y);
 			logWindowTR.anchorMax = anchorMax;
 
 			// Update the recycled list view

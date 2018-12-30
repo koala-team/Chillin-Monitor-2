@@ -18,8 +18,6 @@ public class NotificationExample : MonoBehaviour {
 	public string animationNameIn;
 	public string animationNameOut;
 
-	private bool isPlayed = false;
-
 	void Start()
 	{
 		//notificationObject.SetActive (false);

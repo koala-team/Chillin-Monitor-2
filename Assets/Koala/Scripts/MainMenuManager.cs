@@ -6,7 +6,7 @@ using SFB;
 #if UNITY_WEBGL && !UNITY_EDITOR
 using System.Runtime.InteropServices;
 #endif
-#if UNITY_2018_3_OR_NEWER
+#if false
 using UnityEngine.Networking;
 #endif
 
@@ -160,7 +160,7 @@ namespace Koala
 		{
 			if (uri != null && uri.Length > 0)
 			{
-#if UNITY_2018_3_OR_NEWER
+#if false
 				var req = UnityWebRequest.Get(uri);
 #else
 				var req = new WWW(uri);
@@ -168,7 +168,7 @@ namespace Koala
 				
 				while (!req.isDone)
 				{
-#if UNITY_2018_3_OR_NEWER
+#if false
 					m_loadReplayProgress.value = req.downloadProgress;
 #else
 					m_loadReplayProgress.value = req.progress;
@@ -176,7 +176,7 @@ namespace Koala
 					yield return new WaitForEndOfFrame();
 				}
 
-#if UNITY_2018_3_OR_NEWER
+#if false
 				if (req.isHttpError || req.isNetworkError)
 #else
 				if (req.error != null && req.error.Length > 0)
@@ -188,7 +188,7 @@ namespace Koala
 				{
 					m_loadReplayProgress.gameObject.SetActive(false);
 					Helper.ReplayMode = true;
-#if UNITY_2018_3_OR_NEWER
+#if false
 					Helper.ReplayBytes = req.downloadHandler.data;
 #else
 					Helper.ReplayBytes = req.bytes;
@@ -215,8 +215,7 @@ namespace Koala
 
 		public void ChangePort()
 		{
-			int port;
-			if (int.TryParse(m_portInputText.text, out port))
+			if (int.TryParse(m_portInputText.text, out int port))
 				PlayerConfigs.Port = port;
 			else
 				PlayerConfigs.Port = 0;
