@@ -196,14 +196,14 @@ namespace Koala
 				{
 					var recvTask = ReplayStream.Receive();
 					yield return recvTask.WaitUntilComplete();
-
+					
 					var processTask = Helper.ProcessBuffer(recvTask.Result);
 					yield return processTask.WaitUntilComplete();
-
+					
 					ParseMessage(processTask.Result);
 				}
 			}
-
+			
 			Helper.ReplayBytes = new byte[0];
 		}
 
@@ -324,14 +324,14 @@ namespace Koala
 			yield return null;
 			Pause();
 
+			TextMeshProUGUI text = m_startGamePanel.GetComponentInChildren<TextMeshProUGUI>();
 			DateTime baseTime = new DateTime(1970, 1, 1);
 
 			while (true)
 			{
 				double remainingTime = startTime - DateTime.UtcNow.Subtract(baseTime).TotalSeconds;
-				TextMeshProUGUI text = m_startGamePanel.GetComponentInChildren<TextMeshProUGUI>();
 				if (remainingTime > 0)
-					text.text = string.Format("Game Starts in:<br/>{0}", remainingTime.TruncateDecimal(2));
+					text.text = string.Format("Game Starts in<br/>{0}", remainingTime.TruncateDecimal(2));
 				else
 					break;
 			}

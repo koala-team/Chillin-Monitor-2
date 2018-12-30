@@ -93,10 +93,12 @@ namespace Koala
 
 		public static async Task<KS.KSObject> ProcessBuffer(byte[] buffer)
 		{
+#if !UNITY_WEBGL
 			await new WaitForBackgroundThread();
 
 			return await Task.Run<KS.KSObject>(() =>
 			{
+#endif
 				Message message = new Message();
 				message.Deserialize(buffer);
 
@@ -117,7 +119,9 @@ namespace Koala
 				}
 
 				return baseMessage;
+#if !UNITY_WEBGL
 			});
+#endif
 		}
 	}
 }

@@ -184,7 +184,9 @@ namespace Koala
 		#region Stream
 		public static async Task<byte[]> Receive(this Stream stream)
 		{
+#if !UNITY_WEBGL
 			await new WaitForBackgroundThread();
+#endif
 
 			try
 			{
@@ -214,7 +216,9 @@ namespace Koala
 			}
 			catch (Exception e)
 			{
+#if !UNITY_WEBGL
 				await new WaitForMainThread();
+#endif
 				Debug.LogError(e.Message);
 				return null;
 			}
@@ -222,7 +226,9 @@ namespace Koala
 
 		public static async Task Send(this Stream stream, byte[] data)
 		{
+#if !UNITY_WEBGL
 			await new WaitForBackgroundThread();
+#endif
 
 			try
 			{
@@ -233,7 +239,9 @@ namespace Koala
 			}
 			catch (Exception e)
 			{
+#if !UNITY_WEBGL
 				await new WaitForMainThread();
+#endif
 				Debug.LogError(e.Message);
 			}
 		}

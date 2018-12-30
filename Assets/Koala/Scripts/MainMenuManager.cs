@@ -3,7 +3,9 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using SFB;
-using System.Threading.Tasks;
+#if UNITY_WEBGL && !UNITY_EDITOR
+using System.Runtime.InteropServices;
+#endif
 #if UNITY_2018_3_OR_NEWER
 using UnityEngine.Networking;
 #endif
@@ -150,6 +152,8 @@ namespace Koala
 #elif UNITY_WEBGL
 			UploadFile(gameObject.name, "OnFileUpload", ".cr", false);
 #endif
+
+			yield return null;
 		}
 
 		private IEnumerator DownloadReplay(string uri)
