@@ -49,9 +49,6 @@ namespace Koala
 			References.Instance.ResetMaps();
 			References.Instance.AddGameObject(Helper.MainCameraRef.ToString(), m_mainCamera.gameObject); // "MainCamera"
 
-			// Reset Bundle Manager
-			BundleManager.Instance.Reset();
-
 			// set Helpers value
 			Helper.CycleDuration = 0;
 			Helper.RootGameObject = m_rootGameObject;
@@ -61,6 +58,7 @@ namespace Koala
 			Helper.PlayersBoard = m_playersBoard;
 			Helper.GameStarted = false;
 			Helper.MaxCycle = 0;
+			Helper.GameName = null;
 
 			// Config Tweens
 			TweensManager.Instance.Reset();
@@ -216,6 +214,7 @@ namespace Koala
 				case GameInfo.NameStatic:
 					var gameInfo = (GameInfo)message;
 					Helper.CycleDuration = gameInfo.GuiCycleDuration.Value;
+					Helper.GameName = gameInfo.GameName;
 					m_playersBoard.Init(gameInfo.Sides, gameInfo.GuiSideColors);
 					break;
 

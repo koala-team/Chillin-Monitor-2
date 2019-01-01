@@ -9,7 +9,7 @@ namespace KS
 		{
 			var baseActionType = Helper.Assembly.GetType("KS.SceneActions." + type);
 			var baseAction = Activator.CreateInstance(baseActionType) as KSObject;
-			baseAction.Deserialize(data.GetBytes());
+			baseAction.Deserialize(data.ISOGetBytes());
 
 			return baseAction;
 		}

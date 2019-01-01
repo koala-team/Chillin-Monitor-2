@@ -21,6 +21,7 @@ namespace Koala
 		public static bool ReplayMode { get; set; }
 		public static bool GameStarted { get; set; }
 		public static float MaxCycle { get; set; }
+		public static string GameName { get; set; }
 		public static byte[] ReplayBytes { get; set; }
 
 		private static readonly Assembly _asm = Assembly.GetExecutingAssembly();
@@ -102,7 +103,7 @@ namespace Koala
 
 				var baseMessageType = Helper.Assembly.GetType("KS.Messages." + message.Type);
 				KS.KSObject baseMessage = Activator.CreateInstance(baseMessageType) as KS.KSObject;
-				baseMessage.Deserialize(message.Payload.GetBytes());
+				baseMessage.Deserialize(message.Payload.ISOGetBytes());
 
 				if (baseMessage.Name() == SceneActions.NameStatic)
 				{

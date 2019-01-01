@@ -31,7 +31,7 @@ namespace Koala
 		{
 			await new WaitForBackgroundThread();
 
-			await _network.Send(PlayerConfigs.Token.GetBytes());
+			await _network.Send(PlayerConfigs.Token.ISOGetBytes());
 			Auth auth = (Auth)await RecvMessage();
 
 			return auth.Authenticated.Value;

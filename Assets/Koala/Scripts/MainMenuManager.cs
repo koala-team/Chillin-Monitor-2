@@ -3,11 +3,11 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using SFB;
+using TMPro;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.IO;
 #if UNITY_WEBGL && !UNITY_EDITOR
 using System.Runtime.InteropServices;
-#endif
-#if false
-using UnityEngine.Networking;
 #endif
 
 namespace Koala
@@ -25,6 +25,10 @@ namespace Koala
 		public Button m_cancelButton;
 		public Button m_loadReplayButton;
 		public Slider m_loadReplayProgress;
+		public Button m_addAssetBundleButton;
+		public GameObject m_assetBundlesList;
+		public GameObject m_assetBundlesGame;
+		public GameObject m_assetBundlesItem;
 
 
 #if UNITY_WEBGL && !UNITY_EDITOR
@@ -35,14 +39,20 @@ namespace Koala
 		private static extern void UploadFile(string gameObjectName, string methodName, string filter, bool multiple);
 
 		// Called from browser
-		public void OnFileUpload(string url) {
+		public void OnReplayUpload(string url) {
 			StartCoroutine(DownloadReplay(url));
+		}
+
+		// Called from browser
+		public void OnAssetBundleUpload(string url) {
+			StartCoroutine(DownloadAssetBundle(url));
 		}
 #endif
 
 		public void Start()
 		{
-			PlayerConfigs.Init();
+			BundleManager.Instance.Init(PlayerConfigs.AssetBundlesCache);
+			RerenderAssetBundlesPanel();
 
 			m_ipInputText.text = PlayerConfigs.IP;
 			m_portInputText.text = PlayerConfigs.Port.ToString();
@@ -122,12 +132,12 @@ namespace Koala
 			TryConnect = false;
 		}
 
-		public void ShowLoadReplayDialog()
+		public void LoadReplay()
 		{
-			StartCoroutine(GetReplayBytes());
+			StartCoroutine(ShowReplayDialog());
 		}
 
-		private IEnumerator GetReplayBytes()
+		private IEnumerator ShowReplayDialog()
 		{
 			m_connectButton.gameObject.SetActive(false);
 			m_loadReplayButton.gameObject.SetActive(false);
@@ -150,7 +160,7 @@ namespace Koala
 			yield return new WaitUntil(() => isDone);
 			StartCoroutine(DownloadReplay(uri));
 #elif UNITY_WEBGL
-			UploadFile(gameObject.name, "OnFileUpload", ".cr", false);
+			UploadFile(gameObject.name, "OnReplayUpload", ".cr", false);
 #endif
 
 			yield return null;
@@ -160,27 +170,17 @@ namespace Koala
 		{
 			if (uri != null && uri.Length > 0)
 			{
-#if false
-				var req = UnityWebRequest.Get(uri);
-#else
+#pragma warning disable CS0618 // Type or member is obsolete
 				var req = new WWW(uri);
-#endif
-				
+#pragma warning restore CS0618 // Type or member is obsolete
+
 				while (!req.isDone)
 				{
-#if false
-					m_loadReplayProgress.value = req.downloadProgress;
-#else
 					m_loadReplayProgress.value = req.progress;
-#endif
 					yield return new WaitForEndOfFrame();
 				}
 
-#if false
-				if (req.isHttpError || req.isNetworkError)
-#else
 				if (req.error != null && req.error.Length > 0)
-#endif
 				{
 					Debug.LogError(req.error);
 				}
@@ -188,11 +188,7 @@ namespace Koala
 				{
 					m_loadReplayProgress.gameObject.SetActive(false);
 					Helper.ReplayMode = true;
-#if false
-					Helper.ReplayBytes = req.downloadHandler.data;
-#else
 					Helper.ReplayBytes = req.bytes;
-#endif
 					StartCoroutine(LoadGameScene());
 					yield break;
 				}
@@ -201,6 +197,140 @@ namespace Koala
 			m_connectButton.gameObject.SetActive(true);
 			m_loadReplayButton.gameObject.SetActive(true);
 			m_loadReplayProgress.gameObject.SetActive(false);
+		}
+
+		public void AddNewAssetBundle()
+		{
+			StartCoroutine(ShowAssetBundleDialog());
+		}
+
+		private IEnumerator ShowAssetBundleDialog()
+		{
+			m_addAssetBundleButton.gameObject.SetActive(true);
+
+#if UNITY_EDITOR || UNITY_STANDALONE
+			bool isDone = false;
+			string uri = null;
+
+			StandaloneFileBrowser.OpenFilePanelAsync("Asset Bundle", "", "", false, (string[] paths) =>
+			{
+				if (paths.Length > 0)
+				{
+					uri = new System.Uri(paths[0]).AbsoluteUri;
+				}
+
+				isDone = true;
+			});
+
+			yield return new WaitUntil(() => isDone);
+			StartCoroutine(DownloadAssetBundle(uri));
+#elif UNITY_WEBGL
+			UploadFile(gameObject.name, "OnAssetBundleUpload", "", false);
+#endif
+
+			yield return null;
+		}
+
+		private IEnumerator DownloadAssetBundle(string uri)
+		{
+			if (uri != null && uri.Length > 0)
+			{
+#pragma warning disable CS0618 // Type or member is obsolete
+				var req = new WWW(uri);
+#pragma warning restore CS0618 // Type or member is obsolete
+
+				yield return new WaitUntil(() => req.isDone);
+
+				if (req.error != null && req.error.Length > 0)
+				{
+					Debug.LogError(req.error);
+				}
+				else
+				{
+					AddAssetBundle(req.bytes);
+				}
+			}
+
+			m_addAssetBundleButton.gameObject.SetActive(true);
+		}
+
+		private void AddAssetBundle(byte[] bytes)
+		{
+			try
+			{
+				var bundle = AssetBundle.LoadFromMemory(bytes);
+				BundleInfo bundleInfo = bundle.LoadAsset<BundleInfo>("BundleInfo");
+
+				BundleManager.Instance.AddBundle(bundleInfo.gameName, bundleInfo.bundleName, bytes, bundle);
+				UpdateAssetBundlesCache();
+				RerenderAssetBundlesPanel();
+			}
+			catch (System.Exception e)
+			{
+				Debug.LogError(e.Message);
+			}
+		}
+
+		private void RemoveAssetBundle(string gameName, string bundleName)
+		{
+			try
+			{
+				BundleManager.Instance.RemoveBundle(gameName, bundleName);
+				UpdateAssetBundlesCache();
+				RerenderAssetBundlesPanel();
+			}
+			catch (System.Exception e)
+			{
+				Debug.LogError(e.Message);
+			}
+		}
+
+		private void UpdateAssetBundlesCache()
+		{
+			try
+			{
+				using (MemoryStream stream = new MemoryStream())
+				{
+					BinaryFormatter formatter = new BinaryFormatter();
+					formatter.Serialize(stream, BundleManager.Instance.Cache);
+					PlayerConfigs.AssetBundlesCache = stream.ReadToEnd().Base64GetString();
+				}
+			}
+			catch (System.Exception e)
+			{
+				Debug.LogError(e.Message);
+			}
+		}
+
+		private void RerenderAssetBundlesPanel()
+		{
+			// Remove all childs
+			foreach (Transform child in m_assetBundlesList.transform)
+				GameObject.Destroy(child.gameObject);
+
+			foreach (string gameName in BundleManager.Instance.Bundles.Keys)
+			{
+				var newGame = GameObject.Instantiate(m_assetBundlesGame, m_assetBundlesList.transform, false);
+				newGame.transform.Find("GameName").GetComponent<TextMeshProUGUI>().text = gameName;
+
+				foreach (string bundleName in BundleManager.Instance.Bundles[gameName].Keys)
+				{
+					var newBundle = GameObject.Instantiate(m_assetBundlesItem, newGame.transform, false);
+					newBundle.transform.Find("BundleName").GetComponent<TextMeshProUGUI>().text = bundleName;
+					newBundle.transform.Find("RemoveButton").GetComponent<Button>().onClick.AddListener(
+						() => RemoveAssetBundle(gameName, bundleName)
+					);
+				}
+			}
+
+			StartCoroutine(FixAssetBundlesPanel());
+		}
+
+		private IEnumerator FixAssetBundlesPanel()
+		{
+			LayoutRebuilder.ForceRebuildLayoutImmediate(m_assetBundlesList.GetComponent<RectTransform>());
+			yield return new WaitForEndOfFrame();
+			LayoutRebuilder.ForceRebuildLayoutImmediate(m_assetBundlesList.transform.parent.GetComponent<RectTransform>());
 		}
 
 		public void Quit()
