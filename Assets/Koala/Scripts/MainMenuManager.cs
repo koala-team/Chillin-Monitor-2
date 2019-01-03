@@ -51,7 +51,8 @@ namespace Koala
 
 		public void Start()
 		{
-			BundleManager.Instance.Init(PlayerConfigs.AssetBundlesCache);
+			if (!BundleManager.Instance.IsInitiated)
+				BundleManager.Instance.Init(PlayerConfigs.AssetBundlesCache);
 			RerenderAssetBundlesPanel();
 
 			m_ipInputText.text = PlayerConfigs.IP;
@@ -147,15 +148,24 @@ namespace Koala
 			bool isDone = false;
 			string uri = null;
 
+#if UNITY_STANDALONE_LINUX && !UNITY_EDITOR
+			var paths = new string[0];
+			var intPtrPath = TinyFileDialogs.tinyfd_openFileDialog("Select Replay", null, 1, new string[1] { "*.cr" }, "Chillin Replay", 0);
+			string path = System.Runtime.InteropServices.Marshal.PtrToStringAnsi(intPtrPath);
+			if (path != null && path.Length > 0) paths = new string[1] { path };
+#else
 			StandaloneFileBrowser.OpenFilePanelAsync("Select Replay", "", Extensions, false, (string[] paths) =>
 			{
+#endif
 				if (paths.Length > 0)
 				{
 					uri = new System.Uri(paths[0]).AbsoluteUri;
 				}
 
 				isDone = true;
+#if !UNITY_STANDALONE_LINUX || UNITY_EDITOR
 			});
+#endif
 
 			yield return new WaitUntil(() => isDone);
 			StartCoroutine(DownloadReplay(uri));
@@ -212,15 +222,24 @@ namespace Koala
 			bool isDone = false;
 			string uri = null;
 
-			StandaloneFileBrowser.OpenFilePanelAsync("Asset Bundle", "", "", false, (string[] paths) =>
+#if UNITY_STANDALONE_LINUX && !UNITY_EDITOR
+			var paths = new string[0];
+			var intPtrPath = TinyFileDialogs.tinyfd_openFileDialog("Select Asset Bundle", null, 0, new string[0], "", 0);
+			string path = System.Runtime.InteropServices.Marshal.PtrToStringAnsi(intPtrPath);
+			if (path != null && path.Length > 0) paths = new string[1] { path };
+#else
+			StandaloneFileBrowser.OpenFilePanelAsync("Select Asset Bundle", "", "", false, (string[] paths) =>
 			{
+#endif
 				if (paths.Length > 0)
 				{
 					uri = new System.Uri(paths[0]).AbsoluteUri;
 				}
 
 				isDone = true;
+#if !UNITY_STANDALONE_LINUX || UNITY_EDITOR
 			});
+#endif
 
 			yield return new WaitUntil(() => isDone);
 			StartCoroutine(DownloadAssetBundle(uri));

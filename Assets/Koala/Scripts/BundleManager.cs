@@ -31,6 +31,7 @@ namespace Koala
 
 		public Dictionary<string, Dictionary<string, AssetBundle>> Bundles { get; private set; } = new Dictionary<string, Dictionary<string, AssetBundle>>();
 		public Dictionary<string, Dictionary<string, string>> Cache { get; private set; } = new Dictionary<string, Dictionary<string, string>>();
+		public bool IsInitiated { get; private set; } = false;
 
 
 		public void Init(string bytesString)
@@ -54,6 +55,8 @@ namespace Koala
 			{
 				Cache = new Dictionary<string, Dictionary<string, string>>();
 			}
+
+			IsInitiated = true;
 		}
 
 		public void AddBundle(string gameName, string bundleName, byte[] bytes, AssetBundle bundle = null)
