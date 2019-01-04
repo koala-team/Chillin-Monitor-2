@@ -18,14 +18,14 @@ namespace Koala
 		{
 			TweensManager.Instance.AddTween(tween, isForward);
 
-			TweenCallback endCallback = () =>
+			void EndCallback()
 			{
 				TweensManager.Instance.RemoveTween(tween, isForward);
 				tween = null;
-			};
+			}
 
-			tween.OnKill(endCallback);
-			tween.OnComplete(endCallback);
+			tween.OnKill(EndCallback);
+			tween.OnComplete(EndCallback);
 
 			tween.Goto(Math.Abs(Timeline.Instance.Time - startTime), true);
 

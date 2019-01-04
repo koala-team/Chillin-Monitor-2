@@ -39,6 +39,7 @@ w = float
 _def = class
 bundle_name = string
 asset_name = string
+index = int
 
 ##########################################################
 ##########################################################
@@ -57,9 +58,17 @@ _def = class(BaseCreation)
 ##########################################################
 ##########################################################
 
+[EDefaultParent]
+_def = enum <byte>
+	{
+		RootObject,
+		RootCanvas
+	}
+
 [InstantiateBundleAsset]
 _def = class(BaseCreation)
 asset = Asset
+default_parent = EDefaultParent
 
 ##########################################################
 ##########################################################
@@ -88,6 +97,7 @@ _def = enum <byte>
 		Canvas,
 		Text,
 		Slider,
+		Image,
 		RawImage,
 		Panel
 	}
@@ -248,6 +258,15 @@ min_value = float
 direction = ESliderDirection
 background_color = Vector4
 fill_color = Vector4
+
+##########################################################
+##########################################################
+
+[ChangeImage]
+_def = class(BaseAction)
+sprite_asset = Asset
+color = Vector4
+material_asset = Asset
 
 ##########################################################
 ##########################################################

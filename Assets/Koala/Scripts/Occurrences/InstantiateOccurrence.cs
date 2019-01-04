@@ -5,7 +5,8 @@ namespace Koala
 {
 	public class InstantiateOccurrence : BaseOccurrence<InstantiateOccurrence, BaseCreation>
 	{
-		private GameObject _createdGO;
+		private GameObject _createdGO = null;
+		private GameObject _parent = null;
 
 
 		public InstantiateOccurrence() { }
@@ -19,22 +20,29 @@ namespace Koala
 		{
 			if (isForward)
 			{
-				GameObject parent = config.ParentRef.HasValue
-					? References.Instance.GetGameObject(config.FullParentRef)
-					: config.DefaultParent;
-
-				if (config.GameObject == null)
+				if (_createdGO == null)
 				{
-					_createdGO = new GameObject(_newConfig.Ref.ToString());
-					_createdGO.transform.parent = parent.transform;
+					_parent = config.ParentRef.HasValue
+						? References.Instance.GetGameObject(config.FullParentRef)
+						: config.DefaultParent;
+
+					if (config.GameObject == null)
+					{
+						_createdGO = new GameObject(config.Ref.ToString());
+						_createdGO.transform.parent = _parent.transform;
+					}
+					else
+					{
+						_createdGO = GameObject.Instantiate(config.GameObject, _parent.transform);
+						_createdGO.name = config.Ref.ToString();
+					}
+
+					References.Instance.AddGameObject(config.Ref.ToString(), _createdGO);
 				}
 				else
 				{
-					_createdGO = GameObject.Instantiate(config.GameObject, parent.transform);
-					_createdGO.name = _newConfig.Ref.ToString();
+					DestroyOccurrence.Restore(_createdGO, _parent.transform, config.Ref.ToString(), true);
 				}
-
-				References.Instance.AddGameObject(_newConfig.Ref.ToString(), _createdGO);
 
 				Helper.SetAnimatorsTimeScale(_createdGO);
 				Helper.SetAudioSourcesTimeScale(_createdGO);
@@ -42,8 +50,7 @@ namespace Koala
 			}
 			else
 			{
-				GameObject.Destroy(_createdGO);
-				References.Instance.RemoveGameObject(_newConfig.Ref.ToString());
+				DestroyOccurrence.Destroy(_createdGO, _newConfig.Ref.ToString(), true);
 			}
 		}
 	}

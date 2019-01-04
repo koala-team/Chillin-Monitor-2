@@ -105,7 +105,13 @@ namespace Koala
 				return null;
 
 			if (asset != null && asset.BundleName != null && asset.AssetName != null)
-				return GetBundle(Helper.GameName, asset.BundleName).LoadAsset<T>(asset.AssetName);
+			{
+				var bundle = GetBundle(Helper.GameName, asset.BundleName);
+				if (asset.Index.HasValue)
+					return bundle.LoadAssetWithSubAssets<T>(asset.AssetName)[asset.Index.Value];
+				else
+					return bundle.LoadAsset<T>(asset.AssetName);
+			}
 			return null;
 		}
 	}

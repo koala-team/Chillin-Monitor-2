@@ -65,7 +65,8 @@ namespace Koala
 			DOTween.Init();
 			DOTween.defaultEaseType = Ease.Linear;
 			DOTween.defaultUpdateType = UpdateType.Manual;
-			DOTween.useSafeMode = false;
+			DOTween.useSafeMode = true;
+			DOTween.SetTweensCapacity(200, 50);
 
 			// Start Proper HandleMessages
 			if (Helper.ReplayMode)

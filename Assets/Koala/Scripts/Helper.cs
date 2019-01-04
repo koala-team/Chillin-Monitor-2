@@ -27,7 +27,7 @@ namespace Koala
 		private static readonly Assembly _asm = Assembly.GetExecutingAssembly();
 		public static Assembly Assembly => _asm;
 
-		public static int MainCameraRef => int.MinValue;
+		public static int MainCameraRef => 0;
 
 
 		public static float GetCycleTime(float cycle)

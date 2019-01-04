@@ -62,8 +62,7 @@ namespace Koala
 
 			action.Prepare();
 
-			float startTime, endTime, duration;
-			Helper.GetCyclesDurationTime(action.Cycle.Value, action.DurationCycles.Value, out startTime, out endTime, out duration);
+			Helper.GetCyclesDurationTime(action.Cycle.Value, action.DurationCycles.Value, out float startTime, out float endTime, out float duration);
 
 			T forwardOccurrence = new T();
 			forwardOccurrence.Init(action.FullRef, startTime, endTime, action, true, null);

@@ -85,6 +85,7 @@ namespace KS.SceneActions
 			base.Prepare();
 
 			GameObject = BundleManager.Instance.LoadAsset<GameObject>(Asset);
+			base.DefaultParent = (DefaultParent ?? EDefaultParent.RootObject) == EDefaultParent.RootObject ? Helper.RootGameObject : Helper.UserCanvasGameObject;
 		}
 	}
 
@@ -121,6 +122,7 @@ namespace KS.SceneActions
 				case EUIElementType.Canvas:
 				case EUIElementType.Text:
 				case EUIElementType.Slider:
+				case EUIElementType.Image:
 				case EUIElementType.RawImage:
 				case EUIElementType.Panel:
 					GameObject = Resources.Load("UIElements/" + Type.ToString()) as GameObject;
@@ -182,6 +184,21 @@ namespace KS.SceneActions
 			{
 				Font = Helper.GetFont(FontName.ToLower());
 			}
+		}
+	}
+
+	public partial class ChangeImage
+	{
+		public Sprite Sprite { get; set; }
+		public Material Material { get; set; }
+
+
+		public override void Prepare()
+		{
+			base.Prepare();
+
+			Sprite = BundleManager.Instance.LoadAsset<Sprite>(SpriteAsset);
+			Material = BundleManager.Instance.LoadAsset<Material>(MaterialAsset);
 		}
 	}
 
