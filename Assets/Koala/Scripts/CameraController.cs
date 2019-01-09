@@ -1,17 +1,21 @@
 ﻿using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace Koala
 {
 	public class CameraController : MonoBehaviour
 	{
+		private const float MIN_BOUNDRY = -10000;
+		private const float MAX_BOUNDRY = +10000;
+
 		// wasd : basic movement
 		// shift : Makes camera accelerate
 		// space : Moves camera on X and Z axis only.  So camera doesn't gain any height*/
 
-		public Vector3 MinPosition { get; set; } = new Vector3(float.MinValue, float.MinValue, float.MinValue);
-		public Vector3 MaxPosition { get; set; } = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
-		public Vector2 MinRotation { get; set; } = new Vector2(float.MinValue, float.MinValue);
-		public Vector2 MaxRotation { get; set; } = new Vector2(float.MaxValue, float.MaxValue);
+		public Vector3 MinPosition { get; set; } = new Vector3(MIN_BOUNDRY, MIN_BOUNDRY, MIN_BOUNDRY);
+		public Vector3 MaxPosition { get; set; } = new Vector3(MAX_BOUNDRY, MAX_BOUNDRY, MAX_BOUNDRY);
+		public Vector2 MinRotation { get; set; } = new Vector2(MIN_BOUNDRY, MIN_BOUNDRY);
+		public Vector2 MaxRotation { get; set; } = new Vector2(MAX_BOUNDRY, MAX_BOUNDRY);
 
 		// camera movements
 		private const float MAIN_SPEED = 5.0f; // regular speed
@@ -25,15 +29,15 @@ namespace Koala
 			if (!Helper.GameStarted) return;
 
 			// Mouse
-			if (Input.GetMouseButton(0))
+			if (Input.GetMouseButton(0) && !EventSystem.current.IsPointerOverGameObject())
 			{
 				transform.Rotate(new Vector3(-Input.GetAxis("Mouse Y") * CAM_SENS, Input.GetAxis("Mouse X") * CAM_SENS, 0), Space.World);
-				transform.rotation = Quaternion.Euler(
-					Mathf.Clamp(transform.rotation.eulerAngles.x, MinRotation.x, MaxRotation.x),
-					Mathf.Clamp(transform.rotation.eulerAngles.y, MinRotation.y, MaxRotation.y),
-					0
-				);
 			}
+			transform.rotation = Quaternion.Euler(
+				Mathf.Clamp(transform.rotation.eulerAngles.x, MinRotation.x, MaxRotation.x),
+				Mathf.Clamp(transform.rotation.eulerAngles.y, MinRotation.y, MaxRotation.y),
+				0
+			);
 
 			//Keyboard commands
 			Vector3 p = GetBaseInput();
@@ -54,11 +58,7 @@ namespace Koala
 			p = p * Time.deltaTime;
 			var newPosition = transform.position + p;
 
-			transform.position = new Vector3(
-				Mathf.Clamp(newPosition.x, MinPosition.x, MaxPosition.x),
-				Mathf.Clamp(newPosition.y, MinPosition.y, MaxPosition.y),
-				Mathf.Clamp(newPosition.z, MinPosition.z, MaxPosition.z)
-			);
+			transform.position = newPosition.Clamp(MinPosition, MaxPosition);
 
 			//if (Input.GetKey(KeyCode.Space)) // If player wants to move on X and Z axis only
 			//{

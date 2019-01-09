@@ -38,6 +38,8 @@ namespace Koala
 					}
 
 					References.Instance.AddGameObject(config.Ref.ToString(), _createdGO);
+
+					Helper.AddParticleSystemManager(_createdGO);
 				}
 				else
 				{
@@ -46,7 +48,6 @@ namespace Koala
 
 				Helper.SetAnimatorsTimeScale(_createdGO);
 				Helper.SetAudioSourcesTimeScale(_createdGO);
-				Helper.AddParticleSystemManager(_createdGO);
 			}
 			else
 			{

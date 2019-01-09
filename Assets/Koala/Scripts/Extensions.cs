@@ -308,5 +308,15 @@ namespace Koala
 				}
 			}
 		}
+
+		public static Vector2 Clamp(this Vector2 v, Vector2 min, Vector2 max)
+		{
+			return Vector2.Min(max, Vector2.Max(min, v));
+		}
+
+		public static Vector3 Clamp(this Vector3 v, Vector3 min, Vector3 max)
+		{
+			return Vector3.Min(max, Vector3.Max(min, v));
+		}
 	}
 }

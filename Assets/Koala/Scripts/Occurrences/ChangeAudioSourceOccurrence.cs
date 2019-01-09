@@ -23,7 +23,7 @@ namespace Koala
 			if (_newConfig.AudioClip != null)
 				oldConfig.AudioClip = audioSource.clip;
 
-			if (_newConfig.Time.HasValue)
+			if (_newConfig.Time.HasValue || _newConfig.Stop.HasValue)
 				oldConfig.Time = audioSource.time;
 
 			if (_newConfig.Mute.HasValue)
@@ -41,7 +41,7 @@ namespace Koala
 			if (_newConfig.SpatialBlend.HasValue)
 				oldConfig.SpatialBlend = audioSource.spatialBlend;
 
-			if (_newConfig.Play.HasValue)
+			if (_newConfig.Play.HasValue || _newConfig.Stop.HasValue)
 				oldConfig.Play = audioSource.isPlaying;
 
 			return oldConfig;

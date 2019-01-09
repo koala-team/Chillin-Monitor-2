@@ -34,7 +34,7 @@ namespace Koala
 		private int _occurrencesIndex;
 
 		public float Time { get; private set; }
-		public float TimeScale { get; set; }
+		public float TimeScale { get; private set; }
 
 		public void Reset()
 		{
@@ -47,7 +47,7 @@ namespace Koala
 			_occurrencesIndex = 1;
 
 			Time = -0.00001f;
-			TimeScale = 0;
+			TimeScale = 1;
 		}
 
 		public void Schedule(float time, Occurrence occurrence)
@@ -60,16 +60,20 @@ namespace Koala
 			_occurrences[convertedTime].AddLast(occurrence);
 		}
 
-		public void Update(float unscaledDeltaTime, float maxTime)
+		// return true if force pause
+		public bool Update(float unscaledDeltaTime, float maxTime)
 		{
 			// Check time don't go behind zero and above maxTime
-			if (Time <= 0 && TimeScale < 0) return;
-			if (Time >= maxTime && TimeScale > 0) return;
+			if ((Time <= 0 && TimeScale < 0) || (Time >= maxTime && TimeScale > 0))
+			{
+				ChangeTimeScale(-TimeScale);
+				return true;
+			}
 
 			float deltaTime = unscaledDeltaTime * TimeScale;
 			float newTime = Time + deltaTime;
 
-			if (deltaTime == 0) return;
+			if (deltaTime == 0) return false;
 
 			// Check new time don't go behind zero and above maxTime
 			if (newTime < 0 && TimeScale < 0) newTime = 0;
@@ -102,6 +106,16 @@ namespace Koala
 				}
 
 			}
+
+			return false;
+		}
+
+		public void ChangeTimeScale(float amount)
+		{
+			TimeScale += amount;
+
+			Helper.SetAnimatorsTimeScale(Helper.RootGameObject);
+			Helper.SetAudioSourcesTimeScale(Helper.RootGameObject);
 		}
 
 		private bool CheckIsTimeBetween(int prevTime, int checkTime, int newTime)

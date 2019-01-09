@@ -43,7 +43,6 @@ namespace Koala
 		{
 			// Setup timeline
 			Timeline.Instance.Reset();
-			Timeline.Instance.TimeScale = 1;
 
 			// Reset references map
 			References.Instance.ResetMaps();
@@ -78,7 +77,10 @@ namespace Koala
 		public void FixedUpdate()
 		{
 			if (Helper.CycleDuration != 0)
-				Timeline.Instance.Update(Time.fixedDeltaTime, Helper.MaxCycle * Helper.CycleDuration);
+			{
+				if (Timeline.Instance.Update(Time.fixedDeltaTime, Helper.MaxCycle * Helper.CycleDuration))
+					ShowPauseOrPlay(false);
+			}
 		}
 
 		public void Update()
@@ -120,19 +122,11 @@ namespace Koala
 			}
 		}
 
-		private void ChangeTimeScale(float amount)
-		{
-			Timeline.Instance.TimeScale += amount;
-
-			Helper.SetAnimatorsTimeScale(m_rootGameObject);
-			Helper.SetAudioSourcesTimeScale(m_rootGameObject);
-		}
-
 		public void Pause()
 		{
 			if (Timeline.Instance.TimeScale == 0) return;
 
-			ChangeTimeScale(-Timeline.Instance.TimeScale);
+			Timeline.Instance.ChangeTimeScale(-Timeline.Instance.TimeScale);
 			ShowPauseOrPlay(false);
 		}
 
@@ -140,7 +134,7 @@ namespace Koala
 		{
 			if (Timeline.Instance.TimeScale == 1) return;
 
-			ChangeTimeScale(1);
+			Timeline.Instance.ChangeTimeScale(1);
 			ShowPauseOrPlay(true);
 		}
 
@@ -148,19 +142,19 @@ namespace Koala
 		{
 			if (Timeline.Instance.TimeScale == -1) return;
 
-			ChangeTimeScale(-1);
+			Timeline.Instance.ChangeTimeScale(-1);
 			ShowPauseOrPlay(true);
 		}
 
 		public void IncSpeed()
 		{
-			ChangeTimeScale(TIME_SCALE_DELTA);
+			Timeline.Instance.ChangeTimeScale(TIME_SCALE_DELTA);
 			ShowPauseOrPlay(Timeline.Instance.TimeScale != 0);
 		}
 
 		public void DecSpeed()
 		{
-			ChangeTimeScale(-TIME_SCALE_DELTA);
+			Timeline.Instance.ChangeTimeScale(-TIME_SCALE_DELTA);
 			ShowPauseOrPlay(Timeline.Instance.TimeScale != 0);
 		}
 
