@@ -127,6 +127,7 @@ _def = class(BaseAction)
 position = Vector3
 rotation = Vector3
 scale = Vector3
+change_local = boolean
 
 ##########################################################
 ##########################################################

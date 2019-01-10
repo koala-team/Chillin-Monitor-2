@@ -15,38 +15,64 @@ namespace Koala
 		{
 			Transform transform = GetTransform();
 
-			var currentConfig = new ChangeTransform();
+			var oldConfig = new ChangeTransform
+			{
+				ChangeLocal = _newConfig.ChangeLocal,
+			};
 
 			if (_newConfig.Position != null)
-				currentConfig.Position = transform.position.ToKSVector3();
+				oldConfig.Position = _newConfig.ChangeLocal.Value ? transform.localPosition.ToKSVector3() : transform.position.ToKSVector3();
 			if (_newConfig.Rotation != null)
-				currentConfig.Rotation = transform.eulerAngles.ToKSVector3();
+				oldConfig.Rotation = _newConfig.ChangeLocal.Value ? transform.localEulerAngles.ToKSVector3() : transform.eulerAngles.ToKSVector3();
 			if (_newConfig.Scale != null)
-				currentConfig.Scale = transform.localScale.ToKSVector3();
+				oldConfig.Scale = transform.localScale.ToKSVector3();
 
-			return currentConfig;
+			return oldConfig;
 		}
 
 		protected override void ManageTweens(ChangeTransform config, bool isForward)
 		{
 			Transform transform = GetTransform();
 
-			if (config.Position != null)
+			if (config.ChangeLocal.Value)
 			{
-				DOTween.To(
-					() => transform.localPosition,
-					x => transform.localPosition = x,
-					transform.localPosition.ApplyKSVector3(config.Position),
-					_duration).RegisterInTimeline(_startTime, isForward);
-			}
+				if (config.Position != null)
+				{
+					DOTween.To(
+						() => transform.localPosition,
+						x => transform.localPosition = x,
+						transform.localPosition.ApplyKSVector3(config.Position),
+						_duration).RegisterInTimeline(_startTime, isForward);
+				}
 
-			if (config.Rotation != null)
+				if (config.Rotation != null)
+				{
+					DOTween.To(
+						() => transform.localEulerAngles,
+						x => transform.localEulerAngles = x,
+						transform.localEulerAngles.ApplyKSVector3(config.Rotation),
+						_duration).RegisterInTimeline(_startTime, isForward);
+				}
+			}
+			else
 			{
-				DOTween.To(
-					() => transform.localRotation.eulerAngles,
-					x => transform.localEulerAngles = x,
-					transform.localEulerAngles.ApplyKSVector3(config.Rotation),
-					_duration).RegisterInTimeline(_startTime, isForward);
+				if (config.Position != null)
+				{
+					DOTween.To(
+						() => transform.position,
+						x => transform.position = x,
+						transform.position.ApplyKSVector3(config.Position),
+						_duration).RegisterInTimeline(_startTime, isForward);
+				}
+
+				if (config.Rotation != null)
+				{
+					DOTween.To(
+						() => transform.eulerAngles,
+						x => transform.eulerAngles = x,
+						transform.eulerAngles.ApplyKSVector3(config.Rotation),
+						_duration).RegisterInTimeline(_startTime, isForward);
+				}
 			}
 
 			if (config.Scale != null)

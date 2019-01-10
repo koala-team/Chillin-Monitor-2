@@ -140,6 +140,16 @@ namespace KS.SceneActions
 		public bool[] ChildsIsVisible { get; set; } // use when referenced gameobject hasn't renderer
 	}
 
+	public partial class ChangeTransform
+	{
+		public override void Prepare()
+		{
+			base.Prepare();
+
+			ChangeLocal = ChangeLocal ?? true;
+		}
+	}
+
 	public partial class ChangeAnimatorState
 	{
 		public int? StateHash { get; set; }
