@@ -134,6 +134,16 @@ namespace KS.SceneActions
 		}
 	}
 
+	public partial class ChangeIsActive
+	{
+		public override void Prepare()
+		{
+			base.Prepare();
+
+			IsActive = IsActive ?? true;
+		}
+	}
+
 	public partial class ChangeVisibility
 	{
 		public Renderer[] ChildsRenderer { get; set; } // use when referenced gameobject hasn't renderer

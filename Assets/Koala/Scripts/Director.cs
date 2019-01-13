@@ -23,6 +23,7 @@ namespace Koala
 				{ CreateBasicObject.NameStatic,      true },
 				{ CreateUIElement.NameStatic,        true },
 				{ Destroy.NameStatic,                true },
+				{ ChangeIsActive.NameStatic,         true },
 				{ ChangeVisibility.NameStatic,       true },
 				{ ChangeTransform.NameStatic,        false },
 				{ ChangeAnimatorVariable.NameStatic, false },
