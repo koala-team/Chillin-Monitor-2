@@ -16,13 +16,23 @@ namespace Koala
 		public Vector3 MaxPosition { get; set; } = new Vector3(MAX_BOUNDRY, MAX_BOUNDRY, MAX_BOUNDRY);
 		public Vector2 MinRotation { get; set; } = new Vector2(MIN_BOUNDRY, MIN_BOUNDRY);
 		public Vector2 MaxRotation { get; set; } = new Vector2(MAX_BOUNDRY, MAX_BOUNDRY);
+		public float MinZoom { get; set; } = MIN_BOUNDRY;
+		public float MaxZoom { get; set; } = MAX_BOUNDRY;
 
 		// camera movements
 		private const float MAIN_SPEED = 5.0f; // regular speed
 		private const float SHIFT_ADD = 50.0f; // multiplied by how long shift is held. Basically running
 		private const float MAX_SHIFT = 1000.0f; // Maximum speed when holding shift
 		private const float CAM_SENS = 2.5f; // How sensitive it with mouse
-		private float totalRun = 1.0f;
+		private const float SCROLL_SPEED = 0.5f;
+
+		private float _totalRun = 1.0f;
+		private Camera _camera;
+
+		void Start()
+		{
+			_camera = GetComponent<Camera>();
+		}
 
 		void Update()
 		{
@@ -39,19 +49,28 @@ namespace Koala
 				0
 			);
 
+			var scrollDelta = Input.mouseScrollDelta.y * SCROLL_SPEED;
+			if (scrollDelta != 0)
+			{
+				if (_camera.orthographic)
+					_camera.orthographicSize = Mathf.Clamp(_camera.orthographicSize - scrollDelta, MinZoom, MaxZoom);
+				else
+					_camera.fieldOfView = Mathf.Clamp(_camera.fieldOfView - scrollDelta * 3, MinZoom, MaxZoom);
+			}
+
 			//Keyboard commands
 			Vector3 p = GetBaseInput();
 			if (Input.GetKey(KeyCode.LeftShift))
 			{
-				totalRun += Time.deltaTime;
-				p = p * totalRun * SHIFT_ADD;
+				_totalRun += Time.deltaTime;
+				p = p * _totalRun * SHIFT_ADD;
 				p.x = Mathf.Clamp(p.x, -MAX_SHIFT, MAX_SHIFT);
 				p.y = Mathf.Clamp(p.y, -MAX_SHIFT, MAX_SHIFT);
 				p.z = Mathf.Clamp(p.z, -MAX_SHIFT, MAX_SHIFT);
 			}
 			else
 			{
-				totalRun = Mathf.Clamp(totalRun * 0.5f, 1f, MAX_SHIFT);
+				_totalRun = Mathf.Clamp(_totalRun * 0.5f, 1f, MAX_SHIFT);
 				p = p * MAIN_SPEED;
 			}
 

@@ -59,6 +59,12 @@ namespace Koala
 			if (_newConfig.MaxRotation != null)
 				oldConfig.MaxRotation = cameraController.MaxRotation.ToKSVector2();
 
+			if (_newConfig.MinZoom.HasValue)
+				oldConfig.MinZoom = cameraController.MinZoom;
+
+			if (_newConfig.MaxZoom.HasValue)
+				oldConfig.MaxZoom = cameraController.MaxZoom;
+
 			if (_newConfig.PostProcessProfileAsset != null)
 				oldConfig.PostProcessProfile = postProcessVolume.profile;
 
@@ -148,6 +154,24 @@ namespace Koala
 					() => cameraController.MaxRotation,
 					x => cameraController.MaxRotation = x,
 					cameraController.MaxRotation.ApplyKSVector2(config.MaxRotation),
+					_duration).RegisterInTimeline(_startTime, isForward);
+			}
+
+			if (config.MinZoom.HasValue)
+			{
+				DOTween.To(
+					() => cameraController.MinZoom,
+					x => cameraController.MinZoom = x,
+					cameraController.MinZoom,
+					_duration).RegisterInTimeline(_startTime, isForward);
+			}
+
+			if (config.MaxZoom.HasValue)
+			{
+				DOTween.To(
+					() => cameraController.MaxZoom,
+					x => cameraController.MaxZoom = x,
+					cameraController.MaxZoom,
 					_duration).RegisterInTimeline(_startTime, isForward);
 			}
 		}
