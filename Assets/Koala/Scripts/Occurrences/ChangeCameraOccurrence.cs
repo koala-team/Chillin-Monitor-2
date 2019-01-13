@@ -162,7 +162,7 @@ namespace Koala
 				DOTween.To(
 					() => cameraController.MinZoom,
 					x => cameraController.MinZoom = x,
-					cameraController.MinZoom,
+					config.MinZoom.Value,
 					_duration).RegisterInTimeline(_startTime, isForward);
 			}
 
@@ -171,7 +171,7 @@ namespace Koala
 				DOTween.To(
 					() => cameraController.MaxZoom,
 					x => cameraController.MaxZoom = x,
-					cameraController.MaxZoom,
+					config.MaxZoom.Value,
 					_duration).RegisterInTimeline(_startTime, isForward);
 			}
 		}

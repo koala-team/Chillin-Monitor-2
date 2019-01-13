@@ -13,7 +13,6 @@ namespace Koala
 		where T : BaseOccurrence<T, C>
 		where C : KS.SceneActions.BaseAction
 	{
-		private static readonly float MIN_DURATION = 0.1e-6f;
 		protected float _duration;
 
 		protected string _reference;
@@ -38,7 +37,7 @@ namespace Koala
 			_isForward = isForward;
 			_forwardOccurrence = forwardOccurrence;
 
-			_duration = Math.Max(MIN_DURATION, Math.Abs(_endTime - _startTime));
+			_duration = Math.Abs(_endTime - _startTime);
 		}
 
 		public override void Forward()

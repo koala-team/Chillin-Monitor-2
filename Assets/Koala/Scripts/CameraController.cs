@@ -99,11 +99,11 @@ namespace Koala
 
 			if (Input.GetKey(KeyCode.W))
 			{
-				p_Velocity += Vector3.forward;
+				p_Velocity += _camera.orthographic ? Vector3.up : Vector3.forward;
 			}
 			if (Input.GetKey(KeyCode.S))
 			{
-				p_Velocity += Vector3.back;
+				p_Velocity += _camera.orthographic ? Vector3.down : Vector3.back;
 			}
 			if (Input.GetKey(KeyCode.A))
 			{
@@ -113,11 +113,11 @@ namespace Koala
 			{
 				p_Velocity += Vector3.right;
 			}
-			if (Input.GetKey(KeyCode.E))
+			if (!_camera.orthographic && Input.GetKey(KeyCode.E))
 			{
 				p_Velocity += Vector3.up;
 			}
-			if (Input.GetKey(KeyCode.Q))
+			if (!_camera.orthographic && Input.GetKey(KeyCode.Q))
 			{
 				p_Velocity += Vector3.down;
 			}

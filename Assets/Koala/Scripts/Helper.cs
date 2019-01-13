@@ -29,6 +29,8 @@ namespace Koala
 
 		public static int MainCameraRef => 0;
 
+		private static readonly float MIN_OCCURRENCE_DURATION = 2.0f * Mathf.Pow(10, -Timeline.TIME_TRUNCATE_DECIMALS);
+
 
 		public static float GetCycleTime(float cycle)
 		{
@@ -41,6 +43,12 @@ namespace Koala
 			startTime = GetCycleTime(startCycle + MaxCycle);
 			endTime = GetCycleTime(startCycle + durationCycles + MaxCycle);
 			duration =  endTime - startTime;
+
+			if (duration < MIN_OCCURRENCE_DURATION)
+			{
+				duration = MIN_OCCURRENCE_DURATION;
+				endTime = startTime + duration;
+			}
 		}
 
 		public static void SetAnimatorsTimeScale(GameObject root)
