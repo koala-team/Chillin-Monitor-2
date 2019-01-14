@@ -12,24 +12,31 @@ namespace Koala
 		public static readonly Encoding _encoding = Encoding.GetEncoding("ISO-8859-1");
 		public const int NUM_LENGTH_BYTES = 4;
 		public const int MAX_RECEIVE = 1024;
+		public const float MIN_TWEEN_POSITION = 1e-4f;
 
 
-		public static Tween RegisterInTimeline(this Tween tween, float startTime, bool isForward)
+		public static void RegisterInTimeline(this Tween tween, float startTime, bool isForward)
 		{
 			TweensManager.Instance.AddTween(tween, isForward);
 
 			void EndCallback()
 			{
 				TweensManager.Instance.RemoveTween(tween, isForward);
-				tween = null;
+			}
+
+			void OnUpdate()
+			{
+				if (tween.isBackwards && tween.position < MIN_TWEEN_POSITION)
+					tween.Kill();
 			}
 
 			tween.OnKill(EndCallback);
 			tween.OnComplete(EndCallback);
+			tween.OnUpdate(OnUpdate);
 
 			tween.Goto(Math.Abs(Timeline.Instance.Time - startTime), true);
-
-			return tween;
+			if (tween.position >= tween.Duration())
+				tween.Kill();
 		}
 
 		public static float GetFractionalPart(this float number)
