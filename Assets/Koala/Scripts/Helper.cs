@@ -29,7 +29,7 @@ namespace Koala
 
 		public static int MainCameraRef => 0;
 
-		private static readonly float MIN_OCCURRENCE_DURATION = 2.0f * Mathf.Pow(10, -Timeline.TIME_TRUNCATE_DECIMALS);
+		private static readonly float MIN_OCCURRENCE_DURATION = 1.0f * Mathf.Pow(10, -6);
 
 
 		public static float GetCycleTime(float cycle)
