@@ -15,8 +15,11 @@ namespace Koala
 	public class MainMenuManager : MonoBehaviour
 	{
 		private bool TryConnect { get; set; } = false;
-		private ExtensionFilter[] Extensions { get; set; } = new[] {
+		private ExtensionFilter[] ReplayExtensions { get; set; } = new[] {
 			new ExtensionFilter("Chillin Replay", "cr" ),
+		};
+		private ExtensionFilter[] BundleExtensions { get; set; } = new[] {
+			new ExtensionFilter("Chillin Bundle", "cb" ),
 		};
 
 		public InputField m_ipInputText;
@@ -154,7 +157,7 @@ namespace Koala
 			string path = System.Runtime.InteropServices.Marshal.PtrToStringAnsi(intPtrPath);
 			if (path != null && path.Length > 0) paths = new string[1] { path };
 #else
-			StandaloneFileBrowser.OpenFilePanelAsync("Select Replay", "", Extensions, false, (string[] paths) =>
+			StandaloneFileBrowser.OpenFilePanelAsync("Select Replay", "", ReplayExtensions, false, (string[] paths) =>
 			{
 #endif
 				if (paths.Length > 0)
@@ -224,11 +227,11 @@ namespace Koala
 
 #if UNITY_STANDALONE_LINUX && !UNITY_EDITOR
 			var paths = new string[0];
-			var intPtrPath = TinyFileDialogs.tinyfd_openFileDialog("Select Asset Bundle", null, 0, new string[0], "", 0);
+			var intPtrPath = TinyFileDialogs.tinyfd_openFileDialog("Select Asset Bundle", null, 1, new string[1] { "*.cb" }, "Chillin Bundle", 0);
 			string path = System.Runtime.InteropServices.Marshal.PtrToStringAnsi(intPtrPath);
 			if (path != null && path.Length > 0) paths = new string[1] { path };
 #else
-			StandaloneFileBrowser.OpenFilePanelAsync("Select Asset Bundle", "", "", false, (string[] paths) =>
+			StandaloneFileBrowser.OpenFilePanelAsync("Select Asset Bundle", "", BundleExtensions, false, (string[] paths) =>
 			{
 #endif
 				if (paths.Length > 0)
@@ -244,7 +247,7 @@ namespace Koala
 			yield return new WaitUntil(() => isDone);
 			StartCoroutine(DownloadAssetBundle(uri));
 #elif UNITY_WEBGL
-			UploadFile(gameObject.name, "OnAssetBundleUpload", "", false);
+			UploadFile(gameObject.name, "OnAssetBundleUpload", ".cb", false);
 #endif
 
 			yield return null;
