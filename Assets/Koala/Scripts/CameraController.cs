@@ -96,6 +96,8 @@ namespace Koala
 					Mathf.Clamp(transform.rotation.eulerAngles.y, MinRotation.y, MaxRotation.y),
 					0
 				);
+
+				_rotationBoundryChanged = false;
 			}
 
 			if (scrollDelta != 0 || _zoomBoundryChanged)
@@ -130,6 +132,8 @@ namespace Koala
 				var newPosition = transform.position + p;
 
 				transform.position = newPosition.Clamp(MinPosition, MaxPosition);
+
+				_positionBoundryChanged = false;
 			}
 
 			//if (Input.GetKey(KeyCode.Space)) // If player wants to move on X and Z axis only
