@@ -74,6 +74,11 @@ namespace Koala
 				StartCoroutine(HandleOnlineMessages());
 		}
 
+		void OnDestroy()
+		{
+			DOTween.KillAll(false);
+		}
+
 		public void FixedUpdate()
 		{
 			if (Helper.CycleDuration != 0)
@@ -319,15 +324,17 @@ namespace Koala
 			Pause();
 
 			TextMeshProUGUI text = m_startGamePanel.GetComponentInChildren<TextMeshProUGUI>();
-			DateTime baseTime = new DateTime(1970, 1, 1);
+			DateTime baseTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
 			while (true)
 			{
 				double remainingTime = startTime - DateTime.UtcNow.Subtract(baseTime).TotalSeconds;
 				if (remainingTime > 0)
-					text.text = string.Format("Game Starts in<br/>{0}", remainingTime.TruncateDecimal(2));
+					text.text = string.Format("Game Starts in<br>{0}", remainingTime.TruncateDecimal(1));
 				else
 					break;
+
+				yield return new WaitForEndOfFrame();
 			}
 
 			Helper.GameStarted = true;
