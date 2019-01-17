@@ -47,10 +47,15 @@ namespace Koala
 
 				if (config.Rotation != null)
 				{
+					var q = new Quaternion
+					{
+						eulerAngles = transform.localEulerAngles.ApplyKSVector3(config.Rotation)
+					};
+
 					DOTween.To(
-						() => transform.localEulerAngles,
-						x => transform.localEulerAngles = x,
-						transform.localEulerAngles.ApplyKSVector3(config.Rotation),
+						() => transform.localRotation,
+						x => transform.localRotation = x,
+						q.eulerAngles,
 						_duration).RegisterInTimeline(_startTime, isForward);
 				}
 			}
@@ -67,10 +72,15 @@ namespace Koala
 
 				if (config.Rotation != null)
 				{
+					var q = new Quaternion
+					{
+						eulerAngles = transform.eulerAngles.ApplyKSVector3(config.Rotation)
+					};
+
 					DOTween.To(
-						() => transform.eulerAngles,
-						x => transform.eulerAngles = x,
-						transform.eulerAngles.ApplyKSVector3(config.Rotation),
+						() => transform.rotation,
+						x => transform.rotation = x,
+						q.eulerAngles,
 						_duration).RegisterInTimeline(_startTime, isForward);
 				}
 			}
