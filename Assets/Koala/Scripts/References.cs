@@ -72,13 +72,22 @@ namespace Koala
 
 		public GameObject GetGameObject(string fullReference)
 		{
-			if (fullReference.Contains("/"))
+			try
 			{
-				var parts = fullReference.Split(_referenceSeparator, 2);
-				return _gameObjectsMap[parts[0]].transform.Find(parts[1]).gameObject;
-			}
+				if (fullReference.Contains("/"))
+				{
+					var parts = fullReference.Split(_referenceSeparator, 2);
+					return _gameObjectsMap[parts[0]].transform.Find(parts[1]).gameObject;
+				}
 
-			return _gameObjectsMap[fullReference];
+				return _gameObjectsMap[fullReference];
+			}
+			catch (System.Exception e)
+			{
+				Debug.LogErrorFormat("Error for full reference: {0}", fullReference);
+				Debug.LogError(e.Message);
+				return null;
+			}
 		}
 	}
 }

@@ -106,11 +106,23 @@ namespace Koala
 
 			if (asset != null && asset.BundleName != null && asset.AssetName != null)
 			{
-				var bundle = GetBundle(Helper.GameName, asset.BundleName);
-				if (asset.Index.HasValue)
-					return bundle.LoadAssetWithSubAssets<T>(asset.AssetName)[asset.Index.Value];
-				else
-					return bundle.LoadAsset<T>(asset.AssetName);
+				try
+				{
+					var bundle = GetBundle(Helper.GameName, asset.BundleName);
+					if (asset.Index.HasValue)
+						return bundle.LoadAssetWithSubAssets<T>(asset.AssetName)[asset.Index.Value];
+					else
+						return bundle.LoadAsset<T>(asset.AssetName);
+				}
+				catch (System.Exception e)
+				{
+					if (asset.Index.HasValue)
+						Debug.LogErrorFormat("Error for load asset {0}[{1}] from {2}", asset.AssetName, asset.Index.Value, asset.BundleName);
+					else
+						Debug.LogErrorFormat("Error for load asset {0} from {1}", asset.AssetName, asset.BundleName);
+					Debug.LogError(e.Message);
+					return null;
+				}
 			}
 			return null;
 		}
