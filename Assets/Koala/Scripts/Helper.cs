@@ -132,5 +132,13 @@ namespace Koala
 			});
 #endif
 		}
+
+		public static float WrapAngle(float x)
+		{
+			while (x >= 360) x -= 360;
+			while (x < 0) x += 360;
+
+			return x;
+		}
 	}
 }

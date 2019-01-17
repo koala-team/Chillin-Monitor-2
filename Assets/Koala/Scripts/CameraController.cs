@@ -62,10 +62,12 @@ namespace Koala
 
 		private float _totalRun = 1.0f;
 		private Camera _camera;
+		private Vector3 _rotation;
 
 		void Start()
 		{
 			_camera = GetComponent<Camera>();
+			_rotation = transform.eulerAngles;
 		}
 
 		void Update()
@@ -82,7 +84,10 @@ namespace Koala
 				if (Input.GetMouseButton(0))
 				{
 					rotated = true;
-					transform.Rotate(new Vector3(-Input.GetAxis("Mouse Y") * CAM_SENS, Input.GetAxis("Mouse X") * CAM_SENS, 0), Space.World);
+					_rotation += new Vector3(-Input.GetAxis("Mouse Y") * CAM_SENS, Input.GetAxis("Mouse X") * CAM_SENS, 0);
+					_rotation.x = Helper.WrapAngle(_rotation.x);
+					_rotation.y = Helper.WrapAngle(_rotation.y);
+					_rotation.z = Helper.WrapAngle(_rotation.z);
 				}
 
 				// Zoom
@@ -91,11 +96,11 @@ namespace Koala
 
 			if (rotated || _rotationBoundryChanged)
 			{
-				transform.rotation = Quaternion.Euler(
-					Mathf.Clamp(transform.rotation.eulerAngles.x, MinRotation.x, MaxRotation.x),
-					Mathf.Clamp(transform.rotation.eulerAngles.y, MinRotation.y, MaxRotation.y),
+				UnityEditor.TransformUtils.SetInspectorRotation(transform, new Vector3(
+					Mathf.Clamp(_rotation.x, MinRotation.x, MaxRotation.x),
+					Mathf.Clamp(_rotation.y, MinRotation.y, MaxRotation.y),
 					0
-				);
+				));
 
 				_rotationBoundryChanged = false;
 			}
@@ -156,27 +161,27 @@ namespace Koala
 
 			if (Input.GetKey(KeyCode.W))
 			{
-				p_Velocity += _camera.orthographic ? Vector3.up : Vector3.forward;
+				p_Velocity += _camera.orthographic ? transform.up : transform.forward;
 			}
 			if (Input.GetKey(KeyCode.S))
 			{
-				p_Velocity += _camera.orthographic ? Vector3.down : Vector3.back;
+				p_Velocity += _camera.orthographic ? -transform.up : -transform.forward;
 			}
 			if (Input.GetKey(KeyCode.A))
 			{
-				p_Velocity += Vector3.left;
+				p_Velocity += -transform.right;
 			}
 			if (Input.GetKey(KeyCode.D))
 			{
-				p_Velocity += Vector3.right;
+				p_Velocity += transform.right;
 			}
 			if (!_camera.orthographic && Input.GetKey(KeyCode.E))
 			{
-				p_Velocity += Vector3.up;
+				p_Velocity += transform.up;
 			}
 			if (!_camera.orthographic && Input.GetKey(KeyCode.Q))
 			{
-				p_Velocity += Vector3.down;
+				p_Velocity += -transform.up;
 			}
 
 			return p_Velocity;
