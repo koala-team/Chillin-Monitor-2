@@ -74,6 +74,16 @@ namespace Koala
 		{
 			if (!Helper.GameStarted) return;
 
+			var inspectorRotation = UnityEditor.TransformUtils.GetInspectorRotation(transform);
+			if (_rotation.x != inspectorRotation.x || _rotation.y != inspectorRotation.y)
+			{
+				_rotation = new Vector3(
+					Mathf.Clamp(inspectorRotation.x, MinRotation.x, MaxRotation.x),
+					Mathf.Clamp(inspectorRotation.y, MinRotation.y, MaxRotation.y),
+					0
+				);
+			}
+
 			// Mouse
 			float scrollDelta = 0;
 			bool rotated = false;
@@ -96,11 +106,12 @@ namespace Koala
 
 			if (rotated || _rotationBoundryChanged)
 			{
-				UnityEditor.TransformUtils.SetInspectorRotation(transform, new Vector3(
+				_rotation = new Vector3(
 					Mathf.Clamp(_rotation.x, MinRotation.x, MaxRotation.x),
 					Mathf.Clamp(_rotation.y, MinRotation.y, MaxRotation.y),
 					0
-				));
+				);
+				UnityEditor.TransformUtils.SetInspectorRotation(transform, _rotation);
 
 				_rotationBoundryChanged = false;
 			}
