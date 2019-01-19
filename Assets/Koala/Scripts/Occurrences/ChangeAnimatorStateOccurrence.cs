@@ -19,7 +19,7 @@ namespace Koala
 			{
 				StateHash = currentAnimatorStateInfo.shortNameHash,
 				Layer = _newConfig.Layer,
-				NormalizedTime = currentAnimatorStateInfo.normalizedTime.GetFractionalPart(),
+				NormalizedTime = currentAnimatorStateInfo.normalizedTime,
 			};
 
 			return oldConfig;
