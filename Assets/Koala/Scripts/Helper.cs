@@ -54,7 +54,7 @@ namespace Koala
 		public static void SetAnimatorsTimeScale(GameObject root)
 		{
 			float timeScale = Timeline.Instance.TimeScale;
-			foreach (var animator in root.GetComponentsInChildren<Animator>())
+			foreach (var animator in root.GetComponentsInChildren<Animator>(false))
 			{
 				try
 				{
@@ -68,7 +68,7 @@ namespace Koala
 
 		public static void KeepAnimatorControllerStateOnDisable(GameObject root)
 		{
-			foreach (var animator in root.GetComponentsInChildren<Animator>())
+			foreach (var animator in root.GetComponentsInChildren<Animator>(true))
 			{
 				try
 				{
@@ -83,7 +83,7 @@ namespace Koala
 		public static void SetAudioSourcesTimeScale(GameObject root)
 		{
 			float timeScale = Timeline.Instance.TimeScale;
-			foreach (var audioSource in root.GetComponentsInChildren<AudioSource>())
+			foreach (var audioSource in root.GetComponentsInChildren<AudioSource>(false))
 			{
 				try
 				{
@@ -110,7 +110,7 @@ namespace Koala
 
 		public static void AddParticleSystemManager(GameObject go)
 		{
-			foreach (var component in go.GetComponentsInChildren<ParticleSystem>())
+			foreach (var component in go.GetComponentsInChildren<ParticleSystem>(true))
 				component.gameObject.AddComponent<ParticleSystemManager>();
 		}
 

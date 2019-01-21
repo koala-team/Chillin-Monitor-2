@@ -10,19 +10,25 @@ namespace Koala
 		private float _lastUpdateTime;
 
 
-		void Awake()
+		void OnEnable()
 		{
-			_particleSystem = GetComponent<ParticleSystem>();
-			_particleSystem.Pause();
-			_particleSystem.useAutoRandomSeed = false;
-			_particleSystem.randomSeed = 6;
-			_startTime = Timeline.Instance.Time;
-			_lastUpdateTime = _startTime;
-			_particleSystem.Simulate(0, true, true);
+			if (Timeline.Instance.TimeScale > 0)
+			{
+				_particleSystem = GetComponent<ParticleSystem>();
+				_particleSystem.Pause();
+				_particleSystem.useAutoRandomSeed = false;
+				_particleSystem.randomSeed = 6;
+				_startTime = Timeline.Instance.Time;
+				_lastUpdateTime = _startTime;
+				_particleSystem.Simulate(0, true, true);
+			}
 		}
 
 		void Update()
 		{
+			if (!_particleSystem.main.loop && Timeline.Instance.Time - _startTime > _particleSystem.main.duration)
+				return;
+
 			if (Timeline.Instance.Time - _startTime > 0 && Timeline.Instance.TimeScale != 0)
 			{
 				if (Timeline.Instance.TimeScale > 0)
