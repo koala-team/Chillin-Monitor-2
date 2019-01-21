@@ -39,6 +39,7 @@ namespace Koala
 
 					References.Instance.AddGameObject(config.Ref.ToString(), _createdGO);
 
+					Helper.KeepAnimatorControllerStateOnDisable(_createdGO);
 					Helper.AddParticleSystemManager(_createdGO);
 				}
 				else

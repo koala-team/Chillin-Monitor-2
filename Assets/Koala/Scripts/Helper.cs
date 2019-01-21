@@ -66,6 +66,20 @@ namespace Koala
 			}
 		}
 
+		public static void KeepAnimatorControllerStateOnDisable(GameObject root)
+		{
+			foreach (var animator in root.GetComponentsInChildren<Animator>())
+			{
+				try
+				{
+					animator.keepAnimatorControllerStateOnDisable = true;
+				}
+				catch
+				{
+				}
+			}
+		}
+
 		public static void SetAudioSourcesTimeScale(GameObject root)
 		{
 			float timeScale = Timeline.Instance.TimeScale;
