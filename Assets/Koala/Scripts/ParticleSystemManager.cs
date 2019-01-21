@@ -14,7 +14,8 @@ namespace Koala
 		{
 			_particleSystem = GetComponent<ParticleSystem>();
 			_particleSystem.Pause();
-			_particleSystem.randomSeed = 1;
+			_particleSystem.useAutoRandomSeed = false;
+			_particleSystem.randomSeed = 6;
 			_startTime = Timeline.Instance.Time;
 			_lastUpdateTime = _startTime;
 			_particleSystem.Simulate(0, true, true);
