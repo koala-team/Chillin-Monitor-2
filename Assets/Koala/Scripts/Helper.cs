@@ -21,6 +21,7 @@ namespace Koala
 		public static bool ReplayMode { get; set; }
 		public static bool GameStarted { get; set; }
 		public static float MaxCycle { get; set; }
+		public static float MaxEndTime { get; set; }
 		public static string GameName { get; set; }
 		public static byte[] ReplayBytes { get; set; }
 
@@ -56,13 +57,7 @@ namespace Koala
 			float timeScale = Timeline.Instance.TimeScale;
 			foreach (var animator in root.GetComponentsInChildren<Animator>(false))
 			{
-				try
-				{
-					animator.SetFloat("monitorTimeScale", timeScale / CycleDuration);
-				}
-				catch
-				{
-				}
+				animator.SetFloat("monitorTimeScale", timeScale / CycleDuration);
 			}
 		}
 
@@ -70,29 +65,23 @@ namespace Koala
 		{
 			foreach (var animator in root.GetComponentsInChildren<Animator>(true))
 			{
-				try
-				{
-					animator.keepAnimatorControllerStateOnDisable = true;
-				}
-				catch
-				{
-				}
+				animator.keepAnimatorControllerStateOnDisable = true;
 			}
 		}
 
 		public static void SetAudioSourcesTimeScale(GameObject root)
 		{
 			float timeScale = Timeline.Instance.TimeScale;
-			foreach (var audioSource in root.GetComponentsInChildren<AudioSource>(false))
+			foreach (var audioSource in root.GetComponentsInChildren<AudioSource>(true))
 			{
-				try
-				{
-					audioSource.pitch = timeScale;
-				}
-				catch
-				{
-				}
+				audioSource.pitch = timeScale;
 			}
+		}
+
+		public static void AddParticleSystemManager(GameObject go)
+		{
+			foreach (var component in go.GetComponentsInChildren<ParticleSystem>(true))
+				component.gameObject.AddComponent<ParticleSystemManager>();
 		}
 
 		public static TMP_FontAsset GetFont(string name)
@@ -106,12 +95,6 @@ namespace Koala
 		public static T Cast<T>(object o)
 		{
 			return (T)o;
-		}
-
-		public static void AddParticleSystemManager(GameObject go)
-		{
-			foreach (var component in go.GetComponentsInChildren<ParticleSystem>(true))
-				component.gameObject.AddComponent<ParticleSystemManager>();
 		}
 
 		public static async Task<KS.KSObject> ProcessBuffer(byte[] buffer)

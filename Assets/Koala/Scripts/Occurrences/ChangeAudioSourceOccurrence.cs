@@ -23,7 +23,7 @@ namespace Koala
 			if (_newConfig.AudioClip != null)
 				oldConfig.AudioClip = audioSource.clip;
 
-			if (_newConfig.Time.HasValue || _newConfig.Stop.HasValue)
+			if (_newConfig.Time.HasValue || _newConfig.Play.HasValue || _newConfig.Stop.HasValue)
 				oldConfig.Time = audioSource.time;
 
 			if (_newConfig.Mute.HasValue)

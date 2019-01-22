@@ -65,6 +65,10 @@ namespace Koala
 
 			Helper.GetCyclesDurationTime(action.Cycle.Value, action.DurationCycles.Value, out float startTime, out float endTime, out float duration);
 
+			// Update max end time
+			if (endTime > Helper.MaxEndTime)
+				Helper.MaxEndTime = endTime;
+
 			T forwardOccurrence = new T();
 			forwardOccurrence.Init(action.FullRef, startTime, endTime, action, true, null);
 			Timeline.Instance.Schedule(startTime, forwardOccurrence);

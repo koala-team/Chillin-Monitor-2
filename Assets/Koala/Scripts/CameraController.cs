@@ -74,12 +74,12 @@ namespace Koala
 		{
 			if (!Helper.GameStarted) return;
 
-			var inspectorRotation = UnityEditor.TransformUtils.GetInspectorRotation(transform);
-			if (_rotation.x != inspectorRotation.x || _rotation.y != inspectorRotation.y)
+			var rotation = transform.eulerAngles;
+			if (_rotation.x != rotation.x || _rotation.y != rotation.y)
 			{
 				_rotation = new Vector3(
-					Mathf.Clamp(inspectorRotation.x, MinRotation.x, MaxRotation.x),
-					Mathf.Clamp(inspectorRotation.y, MinRotation.y, MaxRotation.y),
+					Mathf.Clamp(rotation.x, MinRotation.x, MaxRotation.x),
+					Mathf.Clamp(rotation.y, MinRotation.y, MaxRotation.y),
 					0
 				);
 			}
@@ -111,7 +111,7 @@ namespace Koala
 					Mathf.Clamp(_rotation.y, MinRotation.y, MaxRotation.y),
 					0
 				);
-				UnityEditor.TransformUtils.SetInspectorRotation(transform, _rotation);
+				transform.rotation = Quaternion.Euler(_rotation);
 
 				_rotationBoundryChanged = false;
 			}

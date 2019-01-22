@@ -16,11 +16,14 @@ namespace Koala
 			{
 				_particleSystem = GetComponent<ParticleSystem>();
 				_particleSystem.Pause();
-				_particleSystem.useAutoRandomSeed = false;
-				_particleSystem.randomSeed = 6;
+				if (_particleSystem.useAutoRandomSeed)
+				{
+					_particleSystem.useAutoRandomSeed = false;
+					_particleSystem.randomSeed = (uint)Random.Range(1, 1000);
+				}
 				_startTime = Timeline.Instance.Time;
 				_lastUpdateTime = _startTime;
-				_particleSystem.Simulate(0, true, true);
+				_particleSystem.Simulate(0, false, true);
 			}
 		}
 
@@ -32,9 +35,9 @@ namespace Koala
 			if (Timeline.Instance.Time - _startTime > 0 && Timeline.Instance.TimeScale != 0)
 			{
 				if (Timeline.Instance.TimeScale > 0)
-					_particleSystem.Simulate(Timeline.Instance.Time - _lastUpdateTime, true, false);
+					_particleSystem.Simulate(Timeline.Instance.Time - _lastUpdateTime, false, false);
 				else
-					_particleSystem.Simulate(Timeline.Instance.Time - _startTime, true, true);
+					_particleSystem.Simulate(Timeline.Instance.Time - _startTime, false, true);
 				_lastUpdateTime = Timeline.Instance.Time;
 			}
 		}

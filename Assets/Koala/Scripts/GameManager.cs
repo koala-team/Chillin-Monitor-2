@@ -20,6 +20,8 @@ namespace Koala
 		private Director Director { get; set; } = new Director();
 		private bool GameEnded { get; set; } = false;
 		private MemoryStream ReplayStream { get; set; }
+		private bool ForcePause { get; set; } = false;
+		private float LastTimeScale { get; set; } = 0;
 
 		public GameObject m_rootGameObject;
 		public GameObject m_rootDestroyedGameObject;
@@ -57,6 +59,7 @@ namespace Koala
 			Helper.PlayersBoard = m_playersBoard;
 			Helper.GameStarted = false;
 			Helper.MaxCycle = 0;
+			Helper.MaxEndTime = 0;
 			Helper.GameName = null;
 
 			// Config Tweens
@@ -81,10 +84,19 @@ namespace Koala
 
 		public void FixedUpdate()
 		{
+			float maxTime = Helper.MaxCycle * Helper.CycleDuration;
+			if (ForcePause && LastTimeScale > 0 && Timeline.Instance.Time < maxTime)
+				PlayForward(); // exit force pause
+
 			if (Helper.CycleDuration != 0)
 			{
-				if (Timeline.Instance.Update(Time.fixedDeltaTime, Helper.MaxCycle * Helper.CycleDuration))
+				float oldTimeScale = Timeline.Instance.TimeScale;
+				if (Timeline.Instance.Update(Time.fixedDeltaTime, maxTime))
+				{
+					ForcePause = true;
+					LastTimeScale = oldTimeScale;
 					ShowPauseOrPlay(false);
+				}
 			}
 		}
 
@@ -129,6 +141,7 @@ namespace Koala
 
 		public void Pause()
 		{
+			ForcePause = false;
 			if (Timeline.Instance.TimeScale == 0) return;
 
 			Timeline.Instance.ChangeTimeScale(-Timeline.Instance.TimeScale);
@@ -137,6 +150,7 @@ namespace Koala
 
 		public void PlayForward()
 		{
+			ForcePause = false;
 			if (Timeline.Instance.TimeScale == 1) return;
 
 			Timeline.Instance.ChangeTimeScale(1);
@@ -145,6 +159,7 @@ namespace Koala
 
 		public void PlayBackward()
 		{
+			ForcePause = false;
 			if (Timeline.Instance.TimeScale == -1) return;
 
 			Timeline.Instance.ChangeTimeScale(-1);
@@ -153,12 +168,14 @@ namespace Koala
 
 		public void IncSpeed()
 		{
+			ForcePause = false;
 			Timeline.Instance.ChangeTimeScale(TIME_SCALE_DELTA);
 			ShowPauseOrPlay(Timeline.Instance.TimeScale != 0);
 		}
 
 		public void DecSpeed()
 		{
+			ForcePause = false;
 			Timeline.Instance.ChangeTimeScale(-TIME_SCALE_DELTA);
 			ShowPauseOrPlay(Timeline.Instance.TimeScale != 0);
 		}
@@ -227,6 +244,10 @@ namespace Koala
 						Side = agentJoined.SideName,
 						AgentName = agentJoined.AgentName,
 					});
+					if (!Helper.GameStarted)
+					{
+						Helper.MaxCycle += 1;
+					}
 					break;
 
 				case AgentLeft.NameStatic:
@@ -247,13 +268,19 @@ namespace Koala
 
 				case EndGame.NameStatic:
 					var endGame = (EndGame)message;
+
 					FillEndGamePanel(endGame.WinnerSidename, endGame.Details);
 					Director.Action(new KS.SceneActions.EndGame
 					{
 						Cycle = 1f - 0.01f,
 						EndGamePanel = m_endGamePanel,
 					});
+
+					// Ensure everythings showed
+					while (Helper.MaxCycle * Helper.CycleDuration < Helper.MaxEndTime)
+						Helper.MaxCycle += 1;
 					Helper.MaxCycle += 1;
+
 					GameEnded = true;
 					break;
 
@@ -321,7 +348,6 @@ namespace Koala
 		private IEnumerator StartGameCounter(int startTime)
 		{
 			yield return null;
-			Pause();
 
 			TextMeshProUGUI text = m_startGamePanel.GetComponentInChildren<TextMeshProUGUI>();
 			DateTime baseTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
@@ -338,7 +364,6 @@ namespace Koala
 			}
 
 			Helper.GameStarted = true;
-			PlayForward();
 			Destroy(m_startGamePanel);
 		}
 
