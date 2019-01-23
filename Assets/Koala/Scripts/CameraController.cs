@@ -3,17 +3,25 @@ using UnityEngine.EventSystems;
 
 namespace Koala
 {
+	// wasd : basic movement
+	// shift : Makes camera accelerate
 	public class CameraController : MonoBehaviour
 	{
-		private const float MIN_BOUNDRY = -10000;
-		private const float MAX_BOUNDRY = +10000;
+		// camera movements
+		private const float MAIN_SPEED = 10.0f; // regular speed
+		private const float SHIFT_ADD = 50.0f; // multiplied by how long shift is held. Basically running
+		private const float MAX_SHIFT = 1000.0f; // Maximum speed when holding shift
+		private const float CAM_SENS = 4.5f; // How sensitive it with mouse
+		private const float SCROLL_SPEED = 0.5f;
+		private const float MOVE_LERP_T = 0.5f;
+		private const float ROTATE_LERP_T = 0.4f;
+		private const float ZOOM_LERP_T = 0.4f;
 
-		// wasd : basic movement
-		// shift : Makes camera accelerate
+		public Transform m_dummy;
 
 		private bool _positionBoundryChanged = false;
-		private Vector3 _minPosition = new Vector3(MIN_BOUNDRY, MIN_BOUNDRY, MIN_BOUNDRY);
-		private Vector3 _maxPosition = new Vector3(MAX_BOUNDRY, MAX_BOUNDRY, MAX_BOUNDRY);
+		private Vector3 _minPosition = new Vector3(-1000, -1000, -1000);
+		private Vector3 _maxPosition = new Vector3(1000, 1000, 1000);
 		public Vector3 MinPosition
 		{
 			get { return _minPosition; }
@@ -26,8 +34,8 @@ namespace Koala
 		}
 
 		private bool _rotationBoundryChanged = false;
-		private Vector2 _minRotation = new Vector2(MIN_BOUNDRY, MIN_BOUNDRY);
-		private Vector2 _maxRotation = new Vector2(MAX_BOUNDRY, MAX_BOUNDRY);
+		private Vector2 _minRotation = new Vector2(-89.9f, -361);
+		private Vector2 _maxRotation = new Vector2(89.9f, 361);
 		public Vector2 MinRotation
 		{
 			get { return _minRotation; }
@@ -40,8 +48,8 @@ namespace Koala
 		}
 
 		private bool _zoomBoundryChanged = false;
-		private float _minZoom = MIN_BOUNDRY;
-		private float _maxZoom = MAX_BOUNDRY;
+		private float _minZoom = 1;
+		private float _maxZoom = 100;
 		public float MinZoom
 		{
 			get { return _minZoom; }
@@ -53,21 +61,14 @@ namespace Koala
 			set { _zoomBoundryChanged = true; _maxZoom = value; }
 		}
 
-		// camera movements
-		private const float MAIN_SPEED = 5.0f; // regular speed
-		private const float SHIFT_ADD = 50.0f; // multiplied by how long shift is held. Basically running
-		private const float MAX_SHIFT = 1000.0f; // Maximum speed when holding shift
-		private const float CAM_SENS = 2.5f; // How sensitive it with mouse
-		private const float SCROLL_SPEED = 0.5f;
-
 		private float _totalRun = 1.0f;
 		private Camera _camera;
-		private Vector3 _rotation;
 
 		void Start()
 		{
 			_camera = GetComponent<Camera>();
-			_rotation = transform.eulerAngles;
+			m_dummy.position = transform.position;
+			m_dummy.rotation = transform.rotation;
 		}
 
 		void Update()
@@ -75,18 +76,16 @@ namespace Koala
 			if (!Helper.GameStarted) return;
 
 			var rotation = transform.eulerAngles;
-			if (_rotation.x != rotation.x || _rotation.y != rotation.y)
+			if (transform.hasChanged)
 			{
-				_rotation = new Vector3(
-					Mathf.Clamp(rotation.x, MinRotation.x, MaxRotation.x),
-					Mathf.Clamp(rotation.y, MinRotation.y, MaxRotation.y),
-					0
-				);
+				m_dummy.position = transform.position;
+				m_dummy.rotation = transform.rotation;
 			}
 
 			// Mouse
 			float scrollDelta = 0;
 			bool rotated = false;
+			Vector3 rotationChange = Vector3.zero;
 
 			if (!EventSystem.current.IsPointerOverGameObject())
 			{
@@ -94,10 +93,8 @@ namespace Koala
 				if (Input.GetMouseButton(0))
 				{
 					rotated = true;
-					_rotation += new Vector3(-Input.GetAxis("Mouse Y") * CAM_SENS, Input.GetAxis("Mouse X") * CAM_SENS, 0);
-					_rotation.x = Helper.WrapAngle(_rotation.x);
-					_rotation.y = Helper.WrapAngle(_rotation.y);
-					_rotation.z = Helper.WrapAngle(_rotation.z);
+					rotationChange = new Vector3(-Input.GetAxis("Mouse Y") * CAM_SENS, Input.GetAxis("Mouse X") * CAM_SENS, 0);
+					
 				}
 
 				// Zoom
@@ -106,12 +103,10 @@ namespace Koala
 
 			if (rotated || _rotationBoundryChanged)
 			{
-				_rotation = new Vector3(
-					Mathf.Clamp(_rotation.x, MinRotation.x, MaxRotation.x),
-					Mathf.Clamp(_rotation.y, MinRotation.y, MaxRotation.y),
-					0
-				);
-				transform.rotation = Quaternion.Euler(_rotation);
+				Vector3 newRotation = Helper.WrapAngles(m_dummy.eulerAngles + rotationChange).Clamp(MinRotation, MaxRotation);
+
+				m_dummy.transform.RotateAround(m_dummy.transform.position, m_dummy.transform.right, newRotation.x - m_dummy.eulerAngles.x);
+				m_dummy.transform.RotateAround(m_dummy.transform.position, Vector3.up, newRotation.y - m_dummy.eulerAngles.y);
 
 				_rotationBoundryChanged = false;
 			}
@@ -144,26 +139,18 @@ namespace Koala
 
 			if (p != Vector3.zero || _positionBoundryChanged)
 			{
-				p = p * Time.deltaTime;
-				var newPosition = transform.position + p;
+				if (Input.GetKey(KeyCode.LeftControl)) // If player wants to move on X and Z axis only
+					p.y = 0;
 
-				transform.position = newPosition.Clamp(MinPosition, MaxPosition);
+				m_dummy.position = (transform.position + p * Time.deltaTime).Clamp(MinPosition, MaxPosition);
 
 				_positionBoundryChanged = false;
 			}
 
-			//if (Input.GetKey(KeyCode.Space)) // If player wants to move on X and Z axis only
-			//{
-			//	Vector3 newPosition = transform.position;
-			//	transform.Translate(p);
-			//	newPosition.x = transform.position.x;
-			//	newPosition.z = transform.position.z;
-			//	transform.position = newPosition;
-			//}
-			//else
-			//{
-			//	transform.Translate(p);
-			//}
+			transform.rotation = Quaternion.Lerp(transform.rotation, m_dummy.rotation, ROTATE_LERP_T);
+			transform.position = Vector3.Lerp(transform.position, m_dummy.position, MOVE_LERP_T);
+
+			transform.hasChanged = false;
 		}
 
 		private Vector3 GetBaseInput() // returns the basic values, if it's 0 than it's not active.

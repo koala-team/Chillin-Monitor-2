@@ -133,10 +133,15 @@ namespace Koala
 
 		public static float WrapAngle(float x)
 		{
-			while (x >= 360) x -= 360;
-			while (x < 0) x += 360;
+			while (x >= 180) x -= 360;
+			while (x < -180) x += 360;
 
 			return x;
+		}
+
+		public static Vector3 WrapAngles(Vector3 v)
+		{
+			return new Vector3(WrapAngle(v.x), WrapAngle(v.y), WrapAngle(v.z));
 		}
 	}
 }
