@@ -6,6 +6,8 @@ using SFB;
 using TMPro;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
+using RestSharp.Contrib;
+using System;
 #if UNITY_WEBGL && !UNITY_EDITOR
 using System.Runtime.InteropServices;
 #endif
@@ -56,10 +58,31 @@ namespace Koala
 		{
 			if (!BundleManager.Instance.IsInitiated)
 				BundleManager.Instance.Init(PlayerConfigs.AssetBundlesCache);
+
+#if UNITY_WEBGL && !UNITY_EDITOR
+			if (!Helper.WebGLLoadReplayLoaded)
+			{
+				// Check for webgl instant see replay
+				var uri = new Uri(Application.absoluteURL);
+				if (uri.Query.Length > 0)
+				{
+					var queries = HttpUtility.ParseQueryString(uri.Query, System.Text.Encoding.ASCII);
+					if (queries.Get("replay") != null)
+						SceneManager.LoadScene("WebGLLoadReplay");
+				}
+			}
+#endif
+
 			RerenderAssetBundlesPanel();
 
 			m_ipInputText.text = PlayerConfigs.IP;
 			m_portInputText.text = PlayerConfigs.Port.ToString();
+
+#if UNITY_WEBGL && !UNITY_EDITOR
+			m_ipInputText.gameObject.SetActive(false);
+			m_portInputText.gameObject.SetActive(false);
+			m_connectButton.gameObject.SetActive(false);
+#endif
 		}
 
 		public void Connect()
@@ -143,7 +166,7 @@ namespace Koala
 
 		private IEnumerator ShowReplayDialog()
 		{
-			m_connectButton.gameObject.SetActive(false);
+			SetConnectButtonIsActive(false);
 			m_loadReplayButton.gameObject.SetActive(false);
 			m_loadReplayProgress.gameObject.SetActive(true);
 
@@ -162,7 +185,7 @@ namespace Koala
 #endif
 				if (paths.Length > 0)
 				{
-					uri = new System.Uri(paths[0]).AbsoluteUri;
+					uri = new Uri(paths[0]).AbsoluteUri;
 				}
 
 				isDone = true;
@@ -207,7 +230,7 @@ namespace Koala
 				}
 			}
 
-			m_connectButton.gameObject.SetActive(true);
+			SetConnectButtonIsActive(true);
 			m_loadReplayButton.gameObject.SetActive(true);
 			m_loadReplayProgress.gameObject.SetActive(false);
 		}
@@ -236,7 +259,7 @@ namespace Koala
 #endif
 				if (paths.Length > 0)
 				{
-					uri = new System.Uri(paths[0]).AbsoluteUri;
+					uri = new Uri(paths[0]).AbsoluteUri;
 				}
 
 				isDone = true;
@@ -283,11 +306,12 @@ namespace Koala
 				var bundle = AssetBundle.LoadFromMemory(bytes);
 				BundleInfo bundleInfo = bundle.LoadAsset<BundleInfo>("BundleInfo");
 
-				BundleManager.Instance.AddBundle(bundleInfo.gameName, bundleInfo.bundleName, bytes, bundle);
-				UpdateAssetBundlesCache();
-				RerenderAssetBundlesPanel();
+				if (BundleManager.Instance.AddBundle(bundleInfo.gameName, bundleInfo.bundleName, bytes, bundle))
+				{
+					RerenderAssetBundlesPanel();
+				}
 			}
-			catch (System.Exception e)
+			catch (Exception e)
 			{
 				Debug.LogError(e.Message);
 			}
@@ -298,27 +322,9 @@ namespace Koala
 			try
 			{
 				BundleManager.Instance.RemoveBundle(gameName, bundleName);
-				UpdateAssetBundlesCache();
 				RerenderAssetBundlesPanel();
 			}
-			catch (System.Exception e)
-			{
-				Debug.LogError(e.Message);
-			}
-		}
-
-		private void UpdateAssetBundlesCache()
-		{
-			try
-			{
-				using (MemoryStream stream = new MemoryStream())
-				{
-					BinaryFormatter formatter = new BinaryFormatter();
-					formatter.Serialize(stream, BundleManager.Instance.Cache);
-					PlayerConfigs.AssetBundlesCache = stream.ReadToEnd().Base64GetString();
-				}
-			}
-			catch (System.Exception e)
+			catch (Exception e)
 			{
 				Debug.LogError(e.Message);
 			}
@@ -371,6 +377,13 @@ namespace Koala
 				PlayerConfigs.Port = port;
 			else
 				PlayerConfigs.Port = 0;
+		}
+
+		private void SetConnectButtonIsActive(bool isActive)
+		{
+#if !UNITY_WEBGL || UNITY_EDITOR
+			m_connectButton.gameObject.SetActive(isActive);
+#endif
 		}
 	}
 }

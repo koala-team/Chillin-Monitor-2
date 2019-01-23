@@ -59,8 +59,18 @@ namespace Koala
 			IsInitiated = true;
 		}
 
-		public void AddBundle(string gameName, string bundleName, byte[] bytes, AssetBundle bundle = null)
+		public bool AddBundle(string gameName, string bundleName, byte[] bytes, AssetBundle bundle = null)
 		{
+			if (bundle == null)
+			{
+				bundle = AssetBundle.LoadFromMemory(bytes);
+				if (bundle == null)
+				{
+					Debug.LogErrorFormat("Error while loading bundle {0} for {1} game", bundleName, gameName);
+					return false;
+				}
+			}
+
 			if (!Bundles.ContainsKey(gameName))
 			{
 				Bundles.Add(gameName, new Dictionary<string, AssetBundle>());
@@ -68,28 +78,47 @@ namespace Koala
 			}
 			if (Bundles[gameName].ContainsKey(bundleName)) RemoveBundle(gameName, bundleName);
 
-			if (bundle == null)
-				bundle = AssetBundle.LoadFromMemory(bytes);
-
 			Bundles[gameName].Add(bundleName, bundle);
 			Cache[gameName].Add(bundleName, bytes.Base64GetString());
+
+			UpdateAssetBundlesCache();
+			return true;
 		}
 
 		public void RemoveBundle(string gameName, string bundleName)
 		{
-			if (Bundles[gameName].ContainsKey(bundleName))
+			if (!Bundles.ContainsKey(gameName)) return;
+			if (!Bundles[gameName].ContainsKey(bundleName)) return;
+
+			AssetBundle assetBundle = GetBundle(gameName, bundleName);
+			assetBundle.Unload(false);
+
+			Bundles[gameName].Remove(bundleName);
+			Cache[gameName].Remove(bundleName);
+
+			if (Bundles[gameName].Count == 0)
 			{
-				AssetBundle assetBundle = GetBundle(gameName, bundleName);
-				assetBundle.Unload(false);
+				Bundles.Remove(gameName);
+				Cache.Remove(gameName);
+			}
 
-				Bundles[gameName].Remove(bundleName);
-				Cache[gameName].Remove(bundleName);
+			UpdateAssetBundlesCache();
+		}
 
-				if (Bundles[gameName].Count == 0)
+		private void UpdateAssetBundlesCache()
+		{
+			try
+			{
+				using (MemoryStream stream = new MemoryStream())
 				{
-					Bundles.Remove(gameName);
-					Cache.Remove(gameName);
+					BinaryFormatter formatter = new BinaryFormatter();
+					formatter.Serialize(stream, Cache);
+					PlayerConfigs.AssetBundlesCache = stream.ReadToEnd().Base64GetString();
 				}
+			}
+			catch (System.Exception e)
+			{
+				Debug.LogError(e.Message);
 			}
 		}
 

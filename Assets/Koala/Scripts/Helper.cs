@@ -24,6 +24,7 @@ namespace Koala
 		public static float MaxEndTime { get; set; }
 		public static string GameName { get; set; }
 		public static byte[] ReplayBytes { get; set; }
+		public static bool WebGLLoadReplayLoaded { get; set; } = false;
 
 		private static readonly Assembly _asm = Assembly.GetExecutingAssembly();
 		public static Assembly Assembly => _asm;
