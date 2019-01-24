@@ -166,17 +166,13 @@ namespace Koala
 
 		private IEnumerator ShowReplayDialog()
 		{
-			SetConnectButtonIsActive(false);
-			m_loadReplayButton.gameObject.SetActive(false);
-			m_loadReplayProgress.gameObject.SetActive(true);
-
 #if UNITY_EDITOR || UNITY_STANDALONE
 			bool isDone = false;
 			string uri = null;
 
 #if UNITY_STANDALONE_LINUX && !UNITY_EDITOR
 			var paths = new string[0];
-			var intPtrPath = TinyFileDialogs.tinyfd_openFileDialog("Select Replay", null, 1, new string[1] { "*.cr" }, "Chillin Replay", 0);
+			var intPtrPath = TinyFileDialogs.tinyfd_openFileDialog("Select Replay", PlayerConfigs.LastOpenFileAddress, 1, new string[1] { "*.cr" }, "Chillin Replay", 0);
 			string path = System.Runtime.InteropServices.Marshal.PtrToStringAnsi(intPtrPath);
 			if (path != null && path.Length > 0) paths = new string[1] { path };
 #else
@@ -186,6 +182,9 @@ namespace Koala
 				if (paths.Length > 0)
 				{
 					uri = new Uri(paths[0]).AbsoluteUri;
+#if UNITY_STANDALONE_LINUX && !UNITY_EDITOR
+					PlayerConfigs.LastOpenFileAddress = uri;
+#endif
 				}
 
 				isDone = true;
@@ -199,13 +198,17 @@ namespace Koala
 			UploadFile(gameObject.name, "OnReplayUpload", ".cr", false);
 #endif
 
-			yield return null;
+					yield return null;
 		}
 
 		private IEnumerator DownloadReplay(string uri)
 		{
 			if (uri != null && uri.Length > 0)
 			{
+				SetConnectButtonIsActive(false);
+				m_loadReplayButton.gameObject.SetActive(false);
+				m_loadReplayProgress.gameObject.SetActive(true);
+
 #pragma warning disable CS0618 // Type or member is obsolete
 				var req = new WWW(uri);
 #pragma warning restore CS0618 // Type or member is obsolete
@@ -250,7 +253,7 @@ namespace Koala
 
 #if UNITY_STANDALONE_LINUX && !UNITY_EDITOR
 			var paths = new string[0];
-			var intPtrPath = TinyFileDialogs.tinyfd_openFileDialog("Select Asset Bundle", null, 1, new string[1] { "*.cb" }, "Chillin Bundle", 0);
+			var intPtrPath = TinyFileDialogs.tinyfd_openFileDialog("Select Asset Bundle", PlayerConfigs.LastOpenFileAddress, 1, new string[1] { "*.cb" }, "Chillin Bundle", 0);
 			string path = System.Runtime.InteropServices.Marshal.PtrToStringAnsi(intPtrPath);
 			if (path != null && path.Length > 0) paths = new string[1] { path };
 #else
@@ -260,6 +263,9 @@ namespace Koala
 				if (paths.Length > 0)
 				{
 					uri = new Uri(paths[0]).AbsoluteUri;
+#if UNITY_STANDALONE_LINUX && !UNITY_EDITOR
+					PlayerConfigs.LastOpenFileAddress = uri;
+#endif
 				}
 
 				isDone = true;
@@ -273,7 +279,7 @@ namespace Koala
 			UploadFile(gameObject.name, "OnAssetBundleUpload", ".cb", false);
 #endif
 
-			yield return null;
+					yield return null;
 		}
 
 		private IEnumerator DownloadAssetBundle(string uri)
