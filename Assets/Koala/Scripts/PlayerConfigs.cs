@@ -31,7 +31,7 @@ namespace Koala
 			get { return PlayerPrefs.GetString("AssetBundlesCache", null); }
 			set { PlayerPrefs.SetString("AssetBundlesCache", value); }
 		}
-#if UNITY_STANDALONE_LINUX && !UNITY_EDITOR
+#if UNITY_STANDALONE_LINUX || UNITY_STANDALONE_OSX
 		public static string LastOpenFileAddress
 		{
 			get { return PlayerPrefs.GetString("LastOpenFileAddress", null); }

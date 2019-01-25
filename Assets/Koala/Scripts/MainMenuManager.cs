@@ -170,7 +170,7 @@ namespace Koala
 			bool isDone = false;
 			string uri = null;
 
-#if UNITY_STANDALONE_LINUX && !UNITY_EDITOR
+#if UNITY_STANDALONE_LINUX || UNITY_STANDALONE_OSX
 			var paths = new string[0];
 			var intPtrPath = TinyFileDialogs.tinyfd_openFileDialog("Select Replay", PlayerConfigs.LastOpenFileAddress, 1, new string[1] { "*.cr" }, "Chillin Replay", 0);
 			string path = System.Runtime.InteropServices.Marshal.PtrToStringAnsi(intPtrPath);
@@ -182,13 +182,13 @@ namespace Koala
 				if (paths.Length > 0)
 				{
 					uri = new Uri(paths[0]).AbsoluteUri;
-#if UNITY_STANDALONE_LINUX && !UNITY_EDITOR
+#if UNITY_STANDALONE_LINUX || UNITY_STANDALONE_OSX
 					PlayerConfigs.LastOpenFileAddress = uri;
 #endif
 				}
 
 				isDone = true;
-#if !UNITY_STANDALONE_LINUX || UNITY_EDITOR
+#if !UNITY_STANDALONE_LINUX && !UNITY_STANDALONE_OSX
 			});
 #endif
 
@@ -198,7 +198,7 @@ namespace Koala
 			UploadFile(gameObject.name, "OnReplayUpload", ".cr", false);
 #endif
 
-					yield return null;
+			yield return null;
 		}
 
 		private IEnumerator DownloadReplay(string uri)
@@ -251,7 +251,7 @@ namespace Koala
 			bool isDone = false;
 			string uri = null;
 
-#if UNITY_STANDALONE_LINUX && !UNITY_EDITOR
+#if UNITY_STANDALONE_LINUX || UNITY_STANDALONE_OSX
 			var paths = new string[0];
 			var intPtrPath = TinyFileDialogs.tinyfd_openFileDialog("Select Asset Bundle", PlayerConfigs.LastOpenFileAddress, 1, new string[1] { "*.cb" }, "Chillin Bundle", 0);
 			string path = System.Runtime.InteropServices.Marshal.PtrToStringAnsi(intPtrPath);
@@ -263,13 +263,13 @@ namespace Koala
 				if (paths.Length > 0)
 				{
 					uri = new Uri(paths[0]).AbsoluteUri;
-#if UNITY_STANDALONE_LINUX && !UNITY_EDITOR
+#if UNITY_STANDALONE_LINUX || UNITY_STANDALONE_OSX
 					PlayerConfigs.LastOpenFileAddress = uri;
 #endif
 				}
 
 				isDone = true;
-#if !UNITY_STANDALONE_LINUX || UNITY_EDITOR
+#if !UNITY_STANDALONE_LINUX && !UNITY_STANDALONE_OSX
 			});
 #endif
 
@@ -279,7 +279,7 @@ namespace Koala
 			UploadFile(gameObject.name, "OnAssetBundleUpload", ".cb", false);
 #endif
 
-					yield return null;
+			yield return null;
 		}
 
 		private IEnumerator DownloadAssetBundle(string uri)
