@@ -32,14 +32,12 @@ namespace Koala
 		public static void Destroy(GameObject go, string reference, bool editReferences)
 		{
 			go.transform.SetParent(Helper.RootDestroyedGameObject.transform, true);
-			go.SetActive(false);
 			if (editReferences) References.Instance.RemoveGameObject(reference);
 		}
 
 		public static void Restore(GameObject go, Transform parent, string reference, bool editReferences)
 		{
 			go.transform.SetParent(parent, true);
-			go.SetActive(true);
 			if (editReferences) References.Instance.AddGameObject(reference, go);
 		}
 	}
