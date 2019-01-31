@@ -239,7 +239,7 @@ namespace Koala
 					var agentJoined = (AgentJoined)message;
 					Director.Action(new KS.SceneActions.AgentJoined
 					{
-						Cycle = Helper.MaxCycle,
+						Cycle = 0,
 						Team = agentJoined.TeamNickname,
 						Side = agentJoined.SideName,
 						AgentName = agentJoined.AgentName,
@@ -254,7 +254,7 @@ namespace Koala
 					var agentLeft = (AgentLeft)message;
 					Director.Action(new KS.SceneActions.AgentLeft
 					{
-						Cycle = Helper.MaxCycle,
+						Cycle = 0,
 						Side = agentLeft.SideName,
 						AgentName = agentLeft.AgentName,
 						IsLeft = true,
