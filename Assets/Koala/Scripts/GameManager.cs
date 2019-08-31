@@ -43,6 +43,10 @@ namespace Koala
 
 		public void Awake()
 		{
+			// Fix frame rate
+			QualitySettings.vSyncCount = 0;
+			Application.targetFrameRate = 30;
+
 			// Setup timeline
 			Timeline.Instance.Reset();
 

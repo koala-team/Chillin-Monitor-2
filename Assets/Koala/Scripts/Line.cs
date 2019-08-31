@@ -5,7 +5,6 @@ namespace Koala
 	public class Line : MonoBehaviour
 	{
 		private Vector3[] _vertices = new Vector3[0];
-		private Color _fillColor = Color.white;
 		private LineRenderer _lineRenderer;
 
 		public Vector3[] Vertices
@@ -23,8 +22,8 @@ namespace Koala
 			get { return _lineRenderer.startColor; }
 			set
 			{
-				_lineRenderer.startColor = _fillColor;
-				_lineRenderer.endColor = _fillColor;
+				_lineRenderer.startColor = value;
+				_lineRenderer.endColor = value;
 			}
 		}
 		public float Width

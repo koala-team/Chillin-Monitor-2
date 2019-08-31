@@ -2,12 +2,9 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using SFB;
 using TMPro;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.IO;
-using RestSharp.Contrib;
 using System;
+using SimpleFileBrowser;
 #if UNITY_WEBGL && !UNITY_EDITOR
 using System.Runtime.InteropServices;
 #endif
@@ -16,13 +13,10 @@ namespace Koala
 {
 	public class MainMenuManager : MonoBehaviour
 	{
+		private static readonly FileBrowser.Filter[] CHILLIN_REPLAY_EXTENSTIONS = new FileBrowser.Filter[1] { new FileBrowser.Filter("Chillin Replay", ".cr") };
+		private static readonly FileBrowser.Filter[] CHILLIN_BUNDLE_EXTENSTIONS = new FileBrowser.Filter[1] { new FileBrowser.Filter("Chillin Bundle", ".cb") };
+
 		private bool TryConnect { get; set; } = false;
-		private ExtensionFilter[] ReplayExtensions { get; set; } = new[] {
-			new ExtensionFilter("Chillin Replay", "cr" ),
-		};
-		private ExtensionFilter[] BundleExtensions { get; set; } = new[] {
-			new ExtensionFilter("Chillin Bundle", "cb" ),
-		};
 
 		public InputField m_ipInputText;
 		public InputField m_portInputText;
@@ -35,24 +29,11 @@ namespace Koala
 		public GameObject m_assetBundlesGame;
 		public GameObject m_assetBundlesItem;
 
-
-#if UNITY_WEBGL && !UNITY_EDITOR
-		//
-		// WebGL
-		//
-		[DllImport("__Internal")]
-		private static extern void UploadFile(string gameObjectName, string methodName, string filter, bool multiple);
-
-		// Called from browser
-		public void OnReplayUpload(string url) {
-			StartCoroutine(DownloadReplay(url));
+		void Awake()
+		{
+			QualitySettings.vSyncCount = 0;
+			Application.targetFrameRate = 30;
 		}
-
-		// Called from browser
-		public void OnAssetBundleUpload(string url) {
-			StartCoroutine(DownloadAssetBundle(url));
-		}
-#endif
 
 		public void Start()
 		{
@@ -166,37 +147,14 @@ namespace Koala
 
 		private IEnumerator ShowReplayDialog()
 		{
-#if UNITY_EDITOR || UNITY_STANDALONE
-			bool isDone = false;
-			string uri = null;
+            FileBrowser.SetFilters(false, CHILLIN_REPLAY_EXTENSTIONS);
+            yield return FileBrowser.WaitForLoadDialog(false, PlayerConfigs.LastFileBrowsed, "Load Replay", "Load");
+            string uri = FileBrowser.Result;
 
-#if UNITY_STANDALONE_LINUX || UNITY_STANDALONE_OSX
-			var paths = new string[0];
-			var intPtrPath = TinyFileDialogs.tinyfd_openFileDialog("Select Replay", PlayerConfigs.LastOpenFileAddress, 1, new string[1] { "*.cr" }, "Chillin Replay", 0);
-			string path = System.Runtime.InteropServices.Marshal.PtrToStringAnsi(intPtrPath);
-			if (path != null && path.Length > 0) paths = new string[1] { path };
-#else
-			StandaloneFileBrowser.OpenFilePanelAsync("Select Replay", "", ReplayExtensions, false, (string[] paths) =>
-			{
-#endif
-				if (paths.Length > 0)
-				{
-					uri = new Uri(paths[0]).AbsoluteUri;
-#if UNITY_STANDALONE_LINUX || UNITY_STANDALONE_OSX
-					PlayerConfigs.LastOpenFileAddress = uri;
-#endif
-				}
+            if (FileBrowser.Success)
+                PlayerConfigs.LastFileBrowsed = uri;
 
-				isDone = true;
-#if !UNITY_STANDALONE_LINUX && !UNITY_STANDALONE_OSX
-			});
-#endif
-
-			yield return new WaitUntil(() => isDone);
-			StartCoroutine(DownloadReplay(uri));
-#elif UNITY_WEBGL
-			UploadFile(gameObject.name, "OnReplayUpload", ".cr", false);
-#endif
+            StartCoroutine(DownloadReplay(uri));
 
 			yield return null;
 		}
@@ -210,7 +168,7 @@ namespace Koala
 				m_loadReplayProgress.gameObject.SetActive(true);
 
 #pragma warning disable CS0618 // Type or member is obsolete
-				var req = new WWW(uri);
+				var req = new WWW("file://" + uri);
 #pragma warning restore CS0618 // Type or member is obsolete
 
 				while (!req.isDone)
@@ -247,37 +205,14 @@ namespace Koala
 		{
 			m_addAssetBundleButton.gameObject.SetActive(true);
 
-#if UNITY_EDITOR || UNITY_STANDALONE
-			bool isDone = false;
-			string uri = null;
+            FileBrowser.SetFilters(false, CHILLIN_BUNDLE_EXTENSTIONS);
+            yield return FileBrowser.WaitForLoadDialog(false, PlayerConfigs.LastFileBrowsed, "Load Bundle", "Load");
+            string uri = FileBrowser.Result;
 
-#if UNITY_STANDALONE_LINUX || UNITY_STANDALONE_OSX
-			var paths = new string[0];
-			var intPtrPath = TinyFileDialogs.tinyfd_openFileDialog("Select Asset Bundle", PlayerConfigs.LastOpenFileAddress, 1, new string[1] { "*.cb" }, "Chillin Bundle", 0);
-			string path = System.Runtime.InteropServices.Marshal.PtrToStringAnsi(intPtrPath);
-			if (path != null && path.Length > 0) paths = new string[1] { path };
-#else
-			StandaloneFileBrowser.OpenFilePanelAsync("Select Asset Bundle", "", BundleExtensions, false, (string[] paths) =>
-			{
-#endif
-				if (paths.Length > 0)
-				{
-					uri = new Uri(paths[0]).AbsoluteUri;
-#if UNITY_STANDALONE_LINUX || UNITY_STANDALONE_OSX
-					PlayerConfigs.LastOpenFileAddress = uri;
-#endif
-				}
+            if (FileBrowser.Success)
+                PlayerConfigs.LastFileBrowsed = uri;
 
-				isDone = true;
-#if !UNITY_STANDALONE_LINUX && !UNITY_STANDALONE_OSX
-			});
-#endif
-
-			yield return new WaitUntil(() => isDone);
-			StartCoroutine(DownloadAssetBundle(uri));
-#elif UNITY_WEBGL
-			UploadFile(gameObject.name, "OnAssetBundleUpload", ".cb", false);
-#endif
+            StartCoroutine(DownloadAssetBundle(uri));
 
 			yield return null;
 		}
@@ -287,7 +222,7 @@ namespace Koala
 			if (uri != null && uri.Length > 0)
 			{
 #pragma warning disable CS0618 // Type or member is obsolete
-				var req = new WWW(uri);
+				var req = new WWW("file://" + uri);
 #pragma warning restore CS0618 // Type or member is obsolete
 
 				yield return new WaitUntil(() => req.isDone);

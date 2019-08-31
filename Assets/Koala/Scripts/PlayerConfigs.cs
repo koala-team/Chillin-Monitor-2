@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using System.Text.RegularExpressions;
 using UnityEngine;
 
 namespace Koala
@@ -31,16 +30,10 @@ namespace Koala
 			get { return PlayerPrefs.GetString("AssetBundlesCache", null); }
 			set { PlayerPrefs.SetString("AssetBundlesCache", value); }
 		}
-#if UNITY_STANDALONE_LINUX || UNITY_STANDALONE_OSX
-		public static string LastOpenFileAddress
-		{
-			get { return PlayerPrefs.GetString("LastOpenFileAddress", null); }
-			set
-			{
-				string s = value.StartsWith("file:") ? value.Substring(5) : value;
-				PlayerPrefs.SetString("LastOpenFileAddress", Path.GetDirectoryName(s) + "/");
-			}
-		}
-#endif
-	}
+        public static string LastFileBrowsed
+        {
+            get { return PlayerPrefs.GetString("LastFileBrowsed", null); }
+            set { PlayerPrefs.SetString("LastFileBrowsed", Path.GetDirectoryName(value)); }
+        }
+    }
 }
