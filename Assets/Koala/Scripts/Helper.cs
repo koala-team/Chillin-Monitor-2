@@ -1,11 +1,13 @@
 ﻿using KS.Messages;
 using System;
 using System.Collections.Generic;
-using System.IO;
+using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Rendering.PostProcessing;
 
 namespace Koala
 {
@@ -64,10 +66,40 @@ namespace Koala
 
 		public static void KeepAnimatorControllerStateOnDisable(GameObject root)
 		{
+            Queue<bool> activeStatues = new Queue<bool>(); ;
+
 			foreach (var animator in root.GetComponentsInChildren<Animator>(true))
-			{
-				animator.keepAnimatorControllerStateOnDisable = true;
-			}
+		    {
+                // TODO: Remove this when the error fixed
+                // https://trello.com/c/bLipTCpr
+                bool activeInHierarchy = animator.gameObject.activeInHierarchy;
+                if (!activeInHierarchy)
+                {
+                    // Active all parents til this object become active
+                    activeStatues = new Queue<bool>();
+                    GameObject go = animator.gameObject;
+                    while (!go.activeInHierarchy)
+                    {
+                        activeStatues.Enqueue(go.activeSelf);
+                        go.SetActive(true);
+                        go = go.transform.parent.gameObject;
+                    }
+                }
+
+                animator.keepAnimatorControllerStateOnDisable = true;
+
+                // Restore active statuses
+                if (!activeInHierarchy)
+                {
+                    GameObject go = animator.gameObject;
+                    while (activeStatues.Count > 0)
+                    {
+                        bool activeStatus = activeStatues.Dequeue();
+                        go.SetActive(activeStatus);
+                        go = go.transform.parent.gameObject;
+                    }
+                }
+            }
 		}
 
 		public static void SetAudioSourcesTimeScale(GameObject root)
@@ -81,8 +113,10 @@ namespace Koala
 
 		public static void AddParticleSystemManager(GameObject go)
 		{
-			foreach (var component in go.GetComponentsInChildren<ParticleSystem>(true))
-				component.gameObject.AddComponent<ParticleSystemManager>();
+            foreach (var component in go.GetComponentsInChildren<ParticleSystem>(true))
+            {
+                component.gameObject.AddComponent<ParticleSystemManager>();
+            }
 		}
 
 		public static TMP_FontAsset GetFont(string name)
@@ -143,5 +177,33 @@ namespace Koala
 		{
 			return new Vector3(WrapAngle(v.x), WrapAngle(v.y), WrapAngle(v.z));
 		}
-	}
+
+        public static void UpdatePostProcessState()
+        {
+            try
+            {
+                var volume = GameObject.Find("Main Camera").GetComponent<PostProcessVolume>();
+                volume.enabled = PlayerConfigs.IsPostProcessActive;
+            }
+            catch { }
+        }
+
+        public static string SplitOnCapitalLetters(string s)
+        {
+            var words =
+                Regex.Matches(s, @"([A-Z][a-z]+)")
+                .Cast<Match>()
+                .Select(m => m.Value);
+
+            return string.Join(" ", words);
+        }
+
+        public static void UpdateScreenResolution()
+        {
+            var resolution = Screen.resolutions[PlayerConfigs.ResolutionIndex];
+            var fullScreenMode = PlayerConfigs.FullScreenMode;
+
+            Screen.SetResolution(resolution.width, resolution.height, fullScreenMode);
+        }
+    }
 }

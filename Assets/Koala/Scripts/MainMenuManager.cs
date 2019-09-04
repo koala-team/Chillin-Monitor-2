@@ -18,12 +18,12 @@ namespace Koala
 
 		private bool TryConnect { get; set; } = false;
 
-		public InputField m_ipInputText;
-		public InputField m_portInputText;
+		public TMP_InputField m_ipInputText;
+		public TMP_InputField m_portInputText;
 		public Button m_connectButton;
 		public Button m_cancelButton;
 		public Button m_loadReplayButton;
-		public Slider m_loadReplayProgress;
+		public GameObject m_loadReplayProgress;
 		public Button m_addAssetBundleButton;
 		public GameObject m_assetBundlesList;
 		public GameObject m_assetBundlesGame;
@@ -32,7 +32,6 @@ namespace Koala
 		void Awake()
 		{
 			QualitySettings.vSyncCount = 0;
-			Application.targetFrameRate = 30;
 		}
 
 		public void Start()
@@ -54,19 +53,26 @@ namespace Koala
 			}
 #endif
 
-			RerenderAssetBundlesPanel();
+            StartCoroutine(SetupPage());
+		}
 
-			m_ipInputText.text = PlayerConfigs.IP;
-			m_portInputText.text = PlayerConfigs.Port.ToString();
+        private IEnumerator SetupPage()
+        {
+            yield return new WaitForEndOfFrame();
+
+            RerenderAssetBundlesPanel();
+
+            m_ipInputText.text = PlayerConfigs.IP;
+            m_portInputText.text = PlayerConfigs.Port.ToString();
 
 #if UNITY_WEBGL && !UNITY_EDITOR
 			m_ipInputText.gameObject.SetActive(false);
 			m_portInputText.gameObject.SetActive(false);
 			m_connectButton.gameObject.SetActive(false);
 #endif
-		}
+        }
 
-		public void Connect()
+        public void Connect()
 		{
 			StartCoroutine(TryConnectCoroutine());
 		}
@@ -165,19 +171,15 @@ namespace Koala
 			{
 				SetConnectButtonIsActive(false);
 				m_loadReplayButton.gameObject.SetActive(false);
-				m_loadReplayProgress.gameObject.SetActive(true);
+                m_loadReplayProgress.gameObject.SetActive(true);
 
 #pragma warning disable CS0618 // Type or member is obsolete
 				var req = new WWW("file://" + uri);
 #pragma warning restore CS0618 // Type or member is obsolete
 
-				while (!req.isDone)
-				{
-					m_loadReplayProgress.value = req.progress;
-					yield return new WaitForEndOfFrame();
-				}
+                yield return new WaitUntil(() => req.isDone);
 
-				if (req.error != null && req.error.Length > 0)
+                if (req.error != null && req.error.Length > 0)
 				{
 					Debug.LogError(req.error);
 				}
@@ -282,9 +284,10 @@ namespace Koala
 				var newGame = GameObject.Instantiate(m_assetBundlesGame, m_assetBundlesList.transform, false);
 				newGame.transform.Find("GameName").GetComponent<TextMeshProUGUI>().text = gameName;
 
-				foreach (string bundleName in BundleManager.Instance.Bundles[gameName].Keys)
+                Transform bundlesParent = newGame.transform.Find("Bundles");
+                foreach (string bundleName in BundleManager.Instance.Bundles[gameName].Keys)
 				{
-					var newBundle = GameObject.Instantiate(m_assetBundlesItem, newGame.transform, false);
+					var newBundle = GameObject.Instantiate(m_assetBundlesItem, bundlesParent, false);
 					newBundle.transform.Find("BundleName").GetComponent<TextMeshProUGUI>().text = bundleName;
 					newBundle.transform.Find("RemoveButton").GetComponent<Button>().onClick.AddListener(
 						() => RemoveAssetBundle(gameName, bundleName)
