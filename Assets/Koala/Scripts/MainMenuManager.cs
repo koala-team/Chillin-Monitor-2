@@ -26,7 +26,8 @@ namespace Koala
 		public GameObject m_loadReplayProgress;
 		public Button m_addAssetBundleButton;
 		public GameObject m_assetBundlesList;
-		public GameObject m_assetBundlesGame;
+        public float m_assetBundlesListMaxHeight;
+        public GameObject m_assetBundlesGame;
 		public GameObject m_assetBundlesItem;
 
 		void Awake()
@@ -300,10 +301,17 @@ namespace Koala
 
 		private IEnumerator FixAssetBundlesPanel()
 		{
-			LayoutRebuilder.ForceRebuildLayoutImmediate(m_assetBundlesList.GetComponent<RectTransform>());
-			yield return new WaitForEndOfFrame();
-			LayoutRebuilder.ForceRebuildLayoutImmediate(m_assetBundlesList.transform.parent.GetComponent<RectTransform>());
-		}
+            RectTransform listRect = m_assetBundlesList.GetComponent<RectTransform>();
+            RectTransform parentRect = m_assetBundlesList.transform.parent.GetComponent<RectTransform>();
+
+            LayoutRebuilder.ForceRebuildLayoutImmediate(listRect);
+
+            yield return new WaitForEndOfFrame();
+            LayoutRebuilder.ForceRebuildLayoutImmediate(parentRect);
+            yield return new WaitForEndOfFrame();
+
+            parentRect.sizeDelta = new Vector2(parentRect.sizeDelta.x, Mathf.Min(listRect.sizeDelta.y, m_assetBundlesListMaxHeight));
+        }
 
 		public void Quit()
 		{
