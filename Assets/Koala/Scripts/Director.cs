@@ -10,7 +10,6 @@ namespace Koala
 	public class Director
 	{
 		private readonly MethodInfo _doActionMethodInfo = typeof(Director).GetMethod("DoAction");
-		private readonly MethodInfo _castMethodInfo = typeof(Helper).GetMethod("Cast");
 		private readonly Dictionary<string, bool> _onlySuddenChanges;
 
 
@@ -43,8 +42,9 @@ namespace Koala
 				{ ChangeLight.NameStatic,            false },
 				{ ChangeCamera.NameStatic,           false },
 				{ ClearScene.NameStatic,             true },
-				{ EndCycle.NameStatic,               true },
 				{ ChangeRenderSettings.NameStatic,   true },
+				{ ChangeParadoxGraph.NameStatic,     true },
+				{ EndCycle.NameStatic,               true },
 				{ AgentJoined.NameStatic,            true },
 				{ AgentLeft.NameStatic,              true },
 				{ EndGame.NameStatic,                true },
@@ -110,10 +110,8 @@ namespace Koala
 			occurrenceType = occurrenceType ?? Helper.Assembly.GetType("Koala." + action.Name() + "Occurrence");
 
 			// Call method
-			var castMethod = _castMethodInfo.MakeGenericMethod(actionType);
-
-			var doActionMethod = _doActionMethodInfo.MakeGenericMethod(occurrenceType, actionType);
-			doActionMethod.Invoke(this, new object[] { castMethod.Invoke(null, new object[] { action }), onlySuddenChanges });
+			var doActionMethod = Helper.MakeGenericMethod(_doActionMethodInfo, occurrenceType, actionType);
+			doActionMethod.Invoke(this, new object[] { Helper.DynamicCast(action, actionType), onlySuddenChanges });
 		}
 	}
 }

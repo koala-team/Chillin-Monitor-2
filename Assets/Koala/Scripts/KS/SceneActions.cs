@@ -3822,31 +3822,6 @@ namespace KS.SceneActions
 		}
 	}
 	
-	public partial class EndCycle : KSObject
-	{
-		
-
-		public EndCycle()
-		{
-		}
-		
-		public new const string NameStatic = "EndCycle";
-		
-		public override string Name() => "EndCycle";
-		
-		public override byte[] Serialize()
-		{
-			List<byte> s = new List<byte>();
-			
-			return s.ToArray();
-		}
-		
-		public override uint Deserialize(byte[] s, uint offset = 0)
-		{
-			return offset;
-		}
-	}
-	
 	public enum EAmbientMode
 	{
 		Skybox = 0,
@@ -4391,6 +4366,171 @@ namespace KS.SceneActions
 			else
 				SunChildRef = null;
 			
+			return offset;
+		}
+	}
+	
+	public enum EParadoxGraphType
+	{
+		Flow = 0,
+		BehaviourTree = 1,
+		FSM = 2,
+	}
+	
+	public partial class ChangeParadoxGraph : BaseAction
+	{
+		public EParadoxGraphType? Type { get; set; }
+		public Asset GraphAsset { get; set; }
+		public bool? Play { get; set; }
+		public bool? Stop { get; set; }
+		public bool? Restart { get; set; }
+		
+
+		public ChangeParadoxGraph()
+		{
+		}
+		
+		public new const string NameStatic = "ChangeParadoxGraph";
+		
+		public override string Name() => "ChangeParadoxGraph";
+		
+		public override byte[] Serialize()
+		{
+			List<byte> s = new List<byte>();
+			
+			// serialize parents
+			s.AddRange(base.Serialize());
+			
+			// serialize Type
+			s.Add((byte)((Type == null) ? 0 : 1));
+			if (Type != null)
+			{
+				s.Add((byte)((sbyte)Type));
+			}
+			
+			// serialize GraphAsset
+			s.Add((byte)((GraphAsset == null) ? 0 : 1));
+			if (GraphAsset != null)
+			{
+				s.AddRange(GraphAsset.Serialize());
+			}
+			
+			// serialize Play
+			s.Add((byte)((Play == null) ? 0 : 1));
+			if (Play != null)
+			{
+				s.AddRange(BitConverter.GetBytes((bool)Play));
+			}
+			
+			// serialize Stop
+			s.Add((byte)((Stop == null) ? 0 : 1));
+			if (Stop != null)
+			{
+				s.AddRange(BitConverter.GetBytes((bool)Stop));
+			}
+			
+			// serialize Restart
+			s.Add((byte)((Restart == null) ? 0 : 1));
+			if (Restart != null)
+			{
+				s.AddRange(BitConverter.GetBytes((bool)Restart));
+			}
+			
+			return s.ToArray();
+		}
+		
+		public override uint Deserialize(byte[] s, uint offset = 0)
+		{
+			// deserialize parents
+			offset = base.Deserialize(s, offset);
+			
+			// deserialize Type
+			byte tmp221;
+			tmp221 = (byte)s[(int)offset];
+			offset += sizeof(byte);
+			if (tmp221 == 1)
+			{
+				sbyte tmp222;
+				tmp222 = (sbyte)s[(int)offset];
+				offset += sizeof(sbyte);
+				Type = (EParadoxGraphType)tmp222;
+			}
+			else
+				Type = null;
+			
+			// deserialize GraphAsset
+			byte tmp223;
+			tmp223 = (byte)s[(int)offset];
+			offset += sizeof(byte);
+			if (tmp223 == 1)
+			{
+				GraphAsset = new Asset();
+				offset = GraphAsset.Deserialize(s, offset);
+			}
+			else
+				GraphAsset = null;
+			
+			// deserialize Play
+			byte tmp224;
+			tmp224 = (byte)s[(int)offset];
+			offset += sizeof(byte);
+			if (tmp224 == 1)
+			{
+				Play = BitConverter.ToBoolean(s, (int)offset);
+				offset += sizeof(bool);
+			}
+			else
+				Play = null;
+			
+			// deserialize Stop
+			byte tmp225;
+			tmp225 = (byte)s[(int)offset];
+			offset += sizeof(byte);
+			if (tmp225 == 1)
+			{
+				Stop = BitConverter.ToBoolean(s, (int)offset);
+				offset += sizeof(bool);
+			}
+			else
+				Stop = null;
+			
+			// deserialize Restart
+			byte tmp226;
+			tmp226 = (byte)s[(int)offset];
+			offset += sizeof(byte);
+			if (tmp226 == 1)
+			{
+				Restart = BitConverter.ToBoolean(s, (int)offset);
+				offset += sizeof(bool);
+			}
+			else
+				Restart = null;
+			
+			return offset;
+		}
+	}
+	
+	public partial class EndCycle : KSObject
+	{
+		
+
+		public EndCycle()
+		{
+		}
+		
+		public new const string NameStatic = "EndCycle";
+		
+		public override string Name() => "EndCycle";
+		
+		public override byte[] Serialize()
+		{
+			List<byte> s = new List<byte>();
+			
+			return s.ToArray();
+		}
+		
+		public override uint Deserialize(byte[] s, uint offset = 0)
+		{
 			return offset;
 		}
 	}

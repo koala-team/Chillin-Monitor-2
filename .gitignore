@@ -39,3 +39,4 @@ sysinfo.txt
 # Custom
 KS/*
 !KS/*.ks
+!KS/generate.py

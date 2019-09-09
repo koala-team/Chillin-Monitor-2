@@ -1,4 +1,8 @@
 ﻿using Koala;
+using NodeCanvas.Framework;
+using NodeCanvas.StateMachines;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering.PostProcessing;
 
@@ -62,7 +66,7 @@ namespace KS.SceneActions
 	public partial class BaseCreation
 	{
 		public GameObject GameObject { get; set; }
-		public GameObject DefaultParent { get; set; }
+		public GameObject DefaultParentGO { get; set; }
 
 		public string FullParentRef
 		{
@@ -74,7 +78,7 @@ namespace KS.SceneActions
 		{
 			base.Prepare();
 
-			DefaultParent = Helper.RootGameObject;
+			DefaultParentGO = Helper.RootGameObject;
 		}
 	}
 
@@ -85,7 +89,7 @@ namespace KS.SceneActions
 			base.Prepare();
 
 			GameObject = BundleManager.Instance.LoadAsset<GameObject>(Asset);
-			base.DefaultParent = (DefaultParent ?? EDefaultParent.RootObject) == EDefaultParent.RootObject ? Helper.RootGameObject : Helper.UserCanvasGameObject;
+			DefaultParentGO = (DefaultParent ?? EDefaultParent.RootObject) == EDefaultParent.RootObject ? Helper.RootGameObject : Helper.UserCanvasGameObject;
 		}
 	}
 
@@ -130,7 +134,7 @@ namespace KS.SceneActions
 				default:
 					throw new System.NotSupportedException("type is not supported");
 			}
-			DefaultParent = Helper.UserCanvasGameObject;
+			DefaultParentGO = Helper.UserCanvasGameObject;
 		}
 	}
 
@@ -385,8 +389,39 @@ namespace KS.SceneActions
 		}
 	}
 
-	// New Actions
-	public class AgentJoined : BaseAction
+    public partial class ChangeParadoxGraph
+    {
+        private static readonly Dictionary<EParadoxGraphType, string> componentTypeName = new Dictionary<EParadoxGraphType, string>()
+        {
+            { EParadoxGraphType.Flow, "FlowCanvas.FlowScriptController" },
+            { EParadoxGraphType.BehaviourTree, "NodeCanvas.BehaviourTrees.BehaviourTreeOwner" },
+            { EParadoxGraphType.FSM, "NodeCanvas.StateMachines.FSMOwner" },
+        };
+        private static readonly Dictionary<EParadoxGraphType, string> graphTypeName = new Dictionary<EParadoxGraphType, string>()
+        {
+            { EParadoxGraphType.Flow, "FlowCanvas.FlowScript" },
+            { EParadoxGraphType.BehaviourTree, "NodeCanvas.BehaviourTrees.BehaviourTree" },
+            { EParadoxGraphType.FSM, "NodeCanvas.StateMachines.FSM" },
+        };
+
+        public Type ComponentType => Helper.Assembly.GetType(componentTypeName[Type.Value]);
+        public Type GraphType => Helper.Assembly.GetType(graphTypeName[Type.Value]);
+
+        public Graph Graph { get; set; }
+        public IState FSMState { get; set; }
+
+
+        public override void Prepare()
+        {
+            base.Prepare();
+
+            var loadAssetMethod = Helper.MakeGenericMethod(typeof(BundleManager), "LoadAsset", GraphType);
+            Graph = loadAssetMethod.Invoke(BundleManager.Instance, new object[] { GraphAsset }) as Graph;
+        }
+    }
+
+    // New Actions
+    public class AgentJoined : BaseAction
 	{
 		public new const string NameStatic = "AgentJoined";
 		public override string Name() => "AgentJoined";

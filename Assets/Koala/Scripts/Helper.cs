@@ -30,8 +30,9 @@ namespace Koala
 
 		private static readonly Assembly _asm = Assembly.GetExecutingAssembly();
 		public static Assembly Assembly => _asm;
+        private static readonly MethodInfo _genericCastMethodInfo = typeof(Helper).GetMethod("GenericCast");
 
-		public static int MainCameraRef => 0;
+        public static int MainCameraRef => 0;
 
 		private static readonly float MIN_OCCURRENCE_DURATION = 1.0f * Mathf.Pow(10, -6);
 
@@ -127,11 +128,6 @@ namespace Koala
 			return null;
 		}
 
-		public static T Cast<T>(object o)
-		{
-			return (T)o;
-		}
-
 		public static async Task<KS.KSObject> ProcessBuffer(byte[] buffer)
 		{
 #if !UNITY_WEBGL || UNITY_EDITOR
@@ -204,6 +200,27 @@ namespace Koala
             var fullScreenMode = PlayerConfigs.FullScreenMode;
 
             Screen.SetResolution(resolution.width, resolution.height, fullScreenMode);
+        }
+
+        public static MethodInfo MakeGenericMethod(MethodInfo method, params Type[] types)
+        {
+            return method.MakeGenericMethod(types);
+        }
+
+        public static MethodInfo MakeGenericMethod(Type classType, string methodName, params Type[] types)
+        {
+            return classType.GetMethod(methodName).MakeGenericMethod(types);
+        }
+
+        public static T GenericCast<T>(object o)
+        {
+            return (T)o;
+        }
+
+        public static object DynamicCast(object obj, Type type)
+        {
+            var castMethod = _genericCastMethodInfo.MakeGenericMethod(type);
+            return castMethod.Invoke(null, new object[] { obj });
         }
     }
 }

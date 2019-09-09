@@ -24,7 +24,7 @@ namespace Koala
 				{
 					_parent = config.ParentRef.HasValue
 						? References.Instance.GetGameObject(config.FullParentRef)
-						: config.DefaultParent;
+						: config.DefaultParentGO;
 
 					if (config.GameObject == null)
 					{

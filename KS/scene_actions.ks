@@ -428,12 +428,6 @@ _def = class(BaseAction)
 ##########################################################
 ##########################################################
 
-[EndCycle]
-_def = class
-
-##########################################################
-##########################################################
-
 [EAmbientMode]
 _def = enum <byte>
 	{
@@ -484,3 +478,28 @@ skybox_asset = Asset
 subtractive_shadow_color = Vector4
 sun_ref = int
 sun_child_ref = string
+
+##########################################################
+##########################################################
+
+[EParadoxGraphType]
+_def = enum <byte>
+	{
+		Flow (0),
+		BehaviourTree (1),
+		FSM (2)
+	}
+
+[ChangeParadoxGraph]
+_def = class(BaseAction)
+type = EParadoxGraphType
+graphAsset = Asset
+play = boolean
+stop = boolean
+restart = boolean
+
+##########################################################
+##########################################################
+
+[EndCycle]
+_def = class
