@@ -1,4 +1,4 @@
-﻿using Koala;
+using Koala;
 using NodeCanvas.Framework;
 using NodeCanvas.StateMachines;
 using System;
@@ -10,13 +10,14 @@ namespace KS.SceneActions
 {
 	public partial class BaseAction
 	{
-		public string FullRef
+		public string FullRef => References.GetFullRef(Ref, ChildRef);
+
+
+		public virtual void Prepare()
 		{
-			get { return Ref.ToString() + (ChildRef != null ? "/" + ChildRef : ""); }
+			Cycle = Cycle ?? 0;
+			DurationCycles = DurationCycles ?? 0;
 		}
-
-
-		public virtual void Prepare() { }
 	}
 
 	public partial class Vector2
@@ -63,15 +64,69 @@ namespace KS.SceneActions
 		}
 	}
 
+	public partial class Vector4
+	{
+		public static implicit operator UnityEngine.Vector2(Vector4 v4)
+		{
+			return new UnityEngine.Vector2
+			{
+				x = v4.X ?? 0,
+				y = v4.Y ?? 0,
+			};
+		}
+
+		public static implicit operator UnityEngine.Vector3(Vector4 v4)
+		{
+			return new UnityEngine.Vector3
+			{
+				x = v4.X ?? 0,
+				y = v4.Y ?? 0,
+				z = v4.Z ?? 0,
+			};
+		}
+
+		public static implicit operator UnityEngine.Vector4(Vector4 v4)
+		{
+			return new UnityEngine.Vector4
+			{
+				x = v4.X ?? 0,
+				y = v4.Y ?? 0,
+				z = v4.Z ?? 0,
+				w = v4.W ?? 0,
+			};
+		}
+
+		public static implicit operator Color(Vector4 v4)
+		{
+			return new Color
+			{
+				r = v4.X ?? 0,
+				g = v4.Y ?? 0,
+				b = v4.Z ?? 0,
+				a = v4.W ?? 0,
+			};
+		}
+	}
+
+	public partial class LayerMask
+	{
+		public UnityEngine.LayerMask Mask
+		{
+			get
+			{
+				if (MasksInt.HasValue)
+					return MasksInt.Value;
+				return UnityEngine.LayerMask.GetMask(MasksString.ToArray());
+			}
+		}
+	}
+
 	public partial class BaseCreation
 	{
 		public GameObject GameObject { get; set; }
 		public GameObject DefaultParentGO { get; set; }
 
-		public string FullParentRef
-		{
-			get { return ParentRef.ToString() + (ParentChildRef != null ? "/" + ParentChildRef : ""); }
-		}
+		public string FullParentRef => References.GetFullRef(ParentRef, ParentChildRef);
 
 
 		public override void Prepare()
@@ -383,7 +438,7 @@ namespace KS.SceneActions
 
 			if (SunRef.HasValue)
 			{
-				string fullRef = SunRef.ToString() + (SunChildRef != null ? "/" + SunChildRef : "");
+				string fullRef = References.GetFullRef(SunRef, SunChildRef);
 				RenderSettings.sun = References.Instance.GetGameObject(fullRef).GetComponent<Light>();
 			}
 		}
@@ -391,34 +446,38 @@ namespace KS.SceneActions
 
     public partial class ChangeParadoxGraph
     {
-        private static readonly Dictionary<EParadoxGraphType, string> componentTypeName = new Dictionary<EParadoxGraphType, string>()
+        private static readonly Dictionary<EParadoxGraphType, string> COMPONENT_TYPE_NAME = new Dictionary<EParadoxGraphType, string>()
         {
             { EParadoxGraphType.Flow, "FlowCanvas.FlowScriptController" },
             { EParadoxGraphType.BehaviourTree, "NodeCanvas.BehaviourTrees.BehaviourTreeOwner" },
             { EParadoxGraphType.FSM, "NodeCanvas.StateMachines.FSMOwner" },
         };
-        private static readonly Dictionary<EParadoxGraphType, string> graphTypeName = new Dictionary<EParadoxGraphType, string>()
+        private static readonly Dictionary<EParadoxGraphType, string> GRAPH_TYPE_NAME = new Dictionary<EParadoxGraphType, string>()
         {
             { EParadoxGraphType.Flow, "FlowCanvas.FlowScript" },
             { EParadoxGraphType.BehaviourTree, "NodeCanvas.BehaviourTrees.BehaviourTree" },
             { EParadoxGraphType.FSM, "NodeCanvas.StateMachines.FSM" },
         };
 
-        public Type ComponentType => Helper.Assembly.GetType(componentTypeName[Type.Value]);
-        public Type GraphType => Helper.Assembly.GetType(graphTypeName[Type.Value]);
+        public Type ComponentType => Helper.Assembly.GetType(COMPONENT_TYPE_NAME[Type.Value]);
+        public Type GraphType => Helper.Assembly.GetType(GRAPH_TYPE_NAME[Type.Value]);
 
         public Graph Graph { get; set; }
-        public IState FSMState { get; set; }
+        public List<FSMState> FSMStates { get; set; }
 
 
         public override void Prepare()
         {
             base.Prepare();
 
-            var loadAssetMethod = Helper.MakeGenericMethod(typeof(BundleManager), "LoadAsset", GraphType);
-            Graph = loadAssetMethod.Invoke(BundleManager.Instance, new object[] { GraphAsset }) as Graph;
+            Graph = BundleManager.Instance.LoadAsset<Graph>(GraphAsset);
         }
     }
+
+	public partial class ChangeParadoxBlackboard
+	{
+		public object EndValue { get; set; }
+	}
 
     // New Actions
     public class AgentJoined : BaseAction

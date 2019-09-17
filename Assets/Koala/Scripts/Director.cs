@@ -1,4 +1,4 @@
-﻿using KS.SceneActions;
+using KS.SceneActions;
 using System.Reflection;
 using System;
 using System.Collections.Generic;
@@ -17,37 +17,38 @@ namespace Koala
 		{
 			_onlySuddenChanges = new Dictionary<string, bool>()
 			{
-				{ CreateEmptyGameObject.NameStatic,  true },
-				{ InstantiateBundleAsset.NameStatic, true },
-				{ CreateBasicObject.NameStatic,      true },
-				{ CreateUIElement.NameStatic,        true },
-				{ Destroy.NameStatic,                true },
-				{ ChangeIsActive.NameStatic,         true },
-				{ ChangeVisibility.NameStatic,       true },
-				{ ChangeTransform.NameStatic,        false },
-				{ ChangeAnimatorVariable.NameStatic, false },
-				{ ChangeAnimatorState.NameStatic,    true },
-				{ ChangeAudioSource.NameStatic,      false },
-				{ ChangeRectTransform.NameStatic,    false },
-				{ ChangeText.NameStatic,             false },
-				{ ChangeSlider.NameStatic,           false },
-				{ ChangeRawImage.NameStatic,         false },
-				{ ChangeSiblingOrder.NameStatic,     true },
-				{ ManageComponent.NameStatic,        true },
-				{ ChangeSprite.NameStatic,           false },
-				{ ChangeMaterial.NameStatic,         true },
-				{ ChangeEllipse2D.NameStatic,        false },
-				{ ChangePolygon2D.NameStatic,        false },
-				{ ChangeLine.NameStatic,             false },
-				{ ChangeLight.NameStatic,            false },
-				{ ChangeCamera.NameStatic,           false },
-				{ ClearScene.NameStatic,             true },
-				{ ChangeRenderSettings.NameStatic,   true },
-				{ ChangeParadoxGraph.NameStatic,     true },
-				{ EndCycle.NameStatic,               true },
-				{ AgentJoined.NameStatic,            true },
-				{ AgentLeft.NameStatic,              true },
-				{ EndGame.NameStatic,                true },
+				{ CreateEmptyGameObject.NameStatic,   true },
+				{ InstantiateBundleAsset.NameStatic,  true },
+				{ CreateBasicObject.NameStatic,       true },
+				{ CreateUIElement.NameStatic,         true },
+				{ Destroy.NameStatic,                 true },
+				{ ChangeIsActive.NameStatic,          true },
+				{ ChangeVisibility.NameStatic,        true },
+				{ ChangeTransform.NameStatic,         false },
+				{ ChangeAnimatorVariable.NameStatic,  false },
+				{ ChangeAnimatorState.NameStatic,     true },
+				{ ChangeAudioSource.NameStatic,       false },
+				{ ChangeRectTransform.NameStatic,     false },
+				{ ChangeText.NameStatic,              false },
+				{ ChangeSlider.NameStatic,            false },
+				{ ChangeRawImage.NameStatic,          false },
+				{ ChangeSiblingOrder.NameStatic,      true },
+				{ ManageComponent.NameStatic,         true },
+				{ ChangeSprite.NameStatic,            false },
+				{ ChangeMaterial.NameStatic,          true },
+				{ ChangeEllipse2D.NameStatic,         false },
+				{ ChangePolygon2D.NameStatic,         false },
+				{ ChangeLine.NameStatic,              false },
+				{ ChangeLight.NameStatic,             false },
+				{ ChangeCamera.NameStatic,            false },
+				{ ClearScene.NameStatic,              true },
+				{ ChangeRenderSettings.NameStatic,    true },
+				{ ChangeParadoxGraph.NameStatic,      true },
+				{ ChangeParadoxBlackboard.NameStatic, false },
+				{ EndCycle.NameStatic,                true },
+				{ AgentJoined.NameStatic,             true },
+				{ AgentLeft.NameStatic,               true },
+				{ EndGame.NameStatic,                 true },
 			};
 		}
 
@@ -55,15 +56,11 @@ namespace Koala
 			where T : Occurrence, IBaseOccurrence<T, C>, new()
 			where C : BaseAction
 		{
-			action.Cycle = action.Cycle ?? 0;
-			action.DurationCycles = action.DurationCycles ?? 0;
-
-			if (action.Cycle.Value < 0) return;
-			if (action.DurationCycles.Value < 0) return;
-
 			action.Prepare();
 
-			Helper.GetCyclesDurationTime(action.Cycle.Value, action.DurationCycles.Value, out float startTime, out float endTime, out float duration);
+			if (action.Cycle.Value < 0) throw new ArgumentOutOfRangeException("Action.Cycle", "Cycle can't be lower than zero!");
+			if (action.DurationCycles.Value < 0) throw new ArgumentOutOfRangeException("Action.DurationCycles", "DurationCycles can't be lower than zero!");
+			Helper.GetCyclesDurationTime(action.Cycle.Value, action.DurationCycles.Value, out float startTime, out float endTime, out _);
 
 			// Update max end time
 			if (endTime > Helper.MaxEndTime)

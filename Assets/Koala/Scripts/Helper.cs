@@ -1,4 +1,4 @@
-﻿using KS.Messages;
+using KS.Messages;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,20 +13,47 @@ namespace Koala
 {
 	public static class Helper
 	{
-		public static float CycleDuration { get; set; }
+		private static string _gameName;
+		private static float _cycleDuration;
+		private static float _maxCycle;
+		private static float _maxEndTime;
+		private static bool _replayMode;
+
+		public static float CycleDuration
+		{
+			get { return _cycleDuration; }
+			set { _cycleDuration = value; GlobalBlackboard["CycleDuration"] = value; }
+		}
 		public static GameObject RootGameObject { get; set; }
 		public static GameObject RootDestroyedGameObject { get; set; }
 		public static GameObject UserCanvasGameObject { get; set; }
 		public static FontItem[] Fonts { get; set; }
 		public static PlayersBoard PlayersBoard { get; set; }
 		public static Protocol Protocol { get; set; }
-		public static bool ReplayMode { get; set; }
+		public static bool ReplayMode
+		{
+			get { return _replayMode; }
+			set { _replayMode = value; GlobalBlackboard["ReplayMode"] = value; }
+		}
 		public static bool GameStarted { get; set; }
-		public static float MaxCycle { get; set; }
-		public static float MaxEndTime { get; set; }
-		public static string GameName { get; set; }
+		public static float MaxCycle
+		{
+			get { return _maxCycle; }
+			set { _maxCycle = value; GlobalBlackboard["MaxCycle"] = value; }
+		}
+		public static float MaxEndTime
+		{
+			get { return _maxEndTime; }
+			set { _maxEndTime = value; GlobalBlackboard["MaxEndTime"] = value; }
+		}
+		public static string GameName
+		{
+			get { return _gameName; }
+			set { _gameName = value; GlobalBlackboard["GameName"] = value; }
+		}
 		public static byte[] ReplayBytes { get; set; }
 		public static bool WebGLLoadReplayLoaded { get; set; } = false;
+		public static NodeCanvas.Framework.Blackboard GlobalBlackboard { get; set; }
 
 		private static readonly Assembly _asm = Assembly.GetExecutingAssembly();
 		public static Assembly Assembly => _asm;
@@ -34,7 +61,7 @@ namespace Koala
 
         public static int MainCameraRef => 0;
 
-		private static readonly float MIN_OCCURRENCE_DURATION = 1.0f * Mathf.Pow(10, -6);
+		private static readonly float MIN_OCCURRENCE_DURATION = 1e-6f;
 
 
 		public static float GetCycleTime(float cycle)
@@ -202,17 +229,18 @@ namespace Koala
             Screen.SetResolution(resolution.width, resolution.height, fullScreenMode);
         }
 
-        public static MethodInfo MakeGenericMethod(MethodInfo method, params Type[] types)
+        public static MethodInfo MakeGenericMethod(MethodInfo methodInfo, params Type[] types)
         {
-            return method.MakeGenericMethod(types);
+            return methodInfo.MakeGenericMethod(types);
         }
 
-        public static MethodInfo MakeGenericMethod(Type classType, string methodName, params Type[] types)
-        {
-            return classType.GetMethod(methodName).MakeGenericMethod(types);
-        }
+		public static Delegate MakeGenericDelegate(Type delegateType, object caller, MethodInfo methodInfo, params Type[] types)
+		{
+			Type delegateGenericType = delegateType.MakeGenericType(types);
+			return Delegate.CreateDelegate(delegateGenericType, caller, methodInfo);
+		}
 
-        public static T GenericCast<T>(object o)
+		public static T GenericCast<T>(object o)
         {
             return (T)o;
         }
@@ -222,5 +250,5 @@ namespace Koala
             var castMethod = _genericCastMethodInfo.MakeGenericMethod(type);
             return castMethod.Invoke(null, new object[] { obj });
         }
-    }
+	}
 }

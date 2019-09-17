@@ -1,4 +1,4 @@
-﻿using DG.Tweening;
+using DG.Tweening;
 using System;
 using System.Collections.Generic;
 
@@ -32,9 +32,25 @@ namespace Koala
 
 		private SortedList<int, LinkedList<Occurrence>> _occurrences;
 		private int _occurrencesIndex;
+		private float _time;
+		private float _timeScale;
 
-		public float Time { get; private set; }
-		public float TimeScale { get; private set; }
+		public float Time
+		{
+			get { return _time; }
+			private set
+			{
+				_time = value;
+				Helper.GlobalBlackboard["Time"] = value;
+				Helper.GlobalBlackboard["Cycle"] = Cycle;
+			}
+		}
+		public float TimeScale
+		{
+			get { return _timeScale; }
+			private set { _timeScale = value; Helper.GlobalBlackboard["TimeScale"] = value; }
+		}
+		public float Cycle => Helper.CycleDuration == 0 ? 0 : Time / Helper.CycleDuration;
 
 		public void Reset()
 		{

@@ -44,6 +44,14 @@ index = int
 ##########################################################
 ##########################################################
 
+[LayerMask]
+_def = class
+masks_int = int
+masks_string = list<string>
+
+##########################################################
+##########################################################
+
 [BaseCreation]
 _def = class(BaseAction)
 parent_ref = int
@@ -485,18 +493,79 @@ sun_child_ref = string
 [EParadoxGraphType]
 _def = enum <byte>
 	{
-		Flow (0),
-		BehaviourTree (1),
-		FSM (2)
+		Flow,
+		BehaviourTree,
+		FSM
 	}
 
 [ChangeParadoxGraph]
 _def = class(BaseAction)
 type = EParadoxGraphType
-graphAsset = Asset
+graph_asset = Asset
 play = boolean
 stop = boolean
 restart = boolean
+
+##########################################################
+##########################################################
+
+[EParadoxBlackboardVariableType]
+_def = enum <byte>
+    {
+        Simple,
+        List,
+        Dictionary
+    }
+
+[EParadoxBlackboardOperationType]
+_def = enum <byte>
+    {
+        Edit,
+        Add,
+        Remove
+    }
+
+[EParadoxBlackboardValueType]
+_def = enum <byte>
+    {
+        Int,
+        Float,
+        Bool,
+        String,
+        GameObject,
+        Vector2,
+        Vector3,
+        Vector4,
+        Color,
+        LayerMask,
+		Asset
+    }
+
+[ChangeParadoxBlackboard]
+_def = class(BaseAction)
+var_name = string
+value_type = EParadoxBlackboardValueType
+
+var_type = EParadoxBlackboardVariableType
+op_type = EParadoxBlackboardOperationType
+list_index = int
+dictionary_key = string
+
+int_value = int
+float_value = float
+bool_value = boolean
+string_value = string
+
+game_object_ref = int
+game_object_child_ref = string
+
+vector_value = Vector4
+
+layer_mask_value = LayerMask
+
+# asset_type must be `TypeName, AssemblyName`
+asset_type = string
+asset_value = Asset
 
 ##########################################################
 ##########################################################

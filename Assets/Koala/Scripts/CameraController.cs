@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace Koala
@@ -75,7 +75,6 @@ namespace Koala
 		{
 			if (!Helper.GameStarted) return;
 
-			var rotation = transform.eulerAngles;
 			if (transform.hasChanged)
 			{
 				m_dummy.position = transform.position;
@@ -134,7 +133,7 @@ namespace Koala
 			else
 			{
 				_totalRun = Mathf.Clamp(_totalRun * 0.5f, 1f, MAX_SHIFT);
-				p = p * MAIN_SPEED;
+				p *= MAIN_SPEED;
 			}
 
 			if (p != Vector3.zero || _positionBoundryChanged)

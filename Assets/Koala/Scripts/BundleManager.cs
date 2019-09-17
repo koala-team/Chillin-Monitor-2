@@ -1,5 +1,6 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
 
@@ -28,6 +29,8 @@ namespace Koala
 			}
 		}
 		#endregion
+
+		public static readonly MethodInfo LOAD_ASSET_METHOD_INFO = typeof(BundleManager).GetMethod("LoadAsset");
 
 		public Dictionary<string, Dictionary<string, AssetBundle>> Bundles { get; private set; } = new Dictionary<string, Dictionary<string, AssetBundle>>();
 		public Dictionary<string, Dictionary<string, string>> Cache { get; private set; } = new Dictionary<string, Dictionary<string, string>>();
@@ -155,5 +158,12 @@ namespace Koala
 			}
 			return null;
 		}
-	}
+
+        public object DynamicLoadAsset(System.Type type, KS.SceneActions.Asset asset)
+        {
+            var loadAssetMethod = Helper.MakeGenericMethod(LOAD_ASSET_METHOD_INFO, type);
+            return loadAssetMethod.Invoke(Instance, new object[] { asset });
+        }
+
+    }
 }

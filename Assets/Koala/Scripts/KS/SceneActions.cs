@@ -497,6 +497,124 @@ namespace KS.SceneActions
 		}
 	}
 	
+	public partial class LayerMask : KSObject
+	{
+		public int? MasksInt { get; set; }
+		public List<string> MasksString { get; set; }
+		
+
+		public LayerMask()
+		{
+		}
+		
+		public new const string NameStatic = "LayerMask";
+		
+		public override string Name() => "LayerMask";
+		
+		public override byte[] Serialize()
+		{
+			List<byte> s = new List<byte>();
+			
+			// serialize MasksInt
+			s.Add((byte)((MasksInt == null) ? 0 : 1));
+			if (MasksInt != null)
+			{
+				s.AddRange(BitConverter.GetBytes((int)MasksInt));
+			}
+			
+			// serialize MasksString
+			s.Add((byte)((MasksString == null) ? 0 : 1));
+			if (MasksString != null)
+			{
+				List<byte> tmp28 = new List<byte>();
+				tmp28.AddRange(BitConverter.GetBytes((uint)MasksString.Count()));
+				while (tmp28.Count > 0 && tmp28.Last() == 0)
+					tmp28.RemoveAt(tmp28.Count - 1);
+				s.Add((byte)tmp28.Count);
+				s.AddRange(tmp28);
+				
+				foreach (var tmp29 in MasksString)
+				{
+					s.Add((byte)((tmp29 == null) ? 0 : 1));
+					if (tmp29 != null)
+					{
+						List<byte> tmp30 = new List<byte>();
+						tmp30.AddRange(BitConverter.GetBytes((uint)tmp29.Count()));
+						while (tmp30.Count > 0 && tmp30.Last() == 0)
+							tmp30.RemoveAt(tmp30.Count - 1);
+						s.Add((byte)tmp30.Count);
+						s.AddRange(tmp30);
+						
+						s.AddRange(System.Text.Encoding.GetEncoding("ISO-8859-1").GetBytes(tmp29));
+					}
+				}
+			}
+			
+			return s.ToArray();
+		}
+		
+		public override uint Deserialize(byte[] s, uint offset = 0)
+		{
+			// deserialize MasksInt
+			byte tmp31;
+			tmp31 = (byte)s[(int)offset];
+			offset += sizeof(byte);
+			if (tmp31 == 1)
+			{
+				MasksInt = BitConverter.ToInt32(s, (int)offset);
+				offset += sizeof(int);
+			}
+			else
+				MasksInt = null;
+			
+			// deserialize MasksString
+			byte tmp32;
+			tmp32 = (byte)s[(int)offset];
+			offset += sizeof(byte);
+			if (tmp32 == 1)
+			{
+				byte tmp33;
+				tmp33 = (byte)s[(int)offset];
+				offset += sizeof(byte);
+				byte[] tmp34 = new byte[sizeof(uint)];
+				Array.Copy(s, offset, tmp34, 0, tmp33);
+				offset += tmp33;
+				uint tmp35;
+				tmp35 = BitConverter.ToUInt32(tmp34, (int)0);
+				
+				MasksString = new List<string>();
+				for (uint tmp36 = 0; tmp36 < tmp35; tmp36++)
+				{
+					string tmp37;
+					byte tmp38;
+					tmp38 = (byte)s[(int)offset];
+					offset += sizeof(byte);
+					if (tmp38 == 1)
+					{
+						byte tmp39;
+						tmp39 = (byte)s[(int)offset];
+						offset += sizeof(byte);
+						byte[] tmp40 = new byte[sizeof(uint)];
+						Array.Copy(s, offset, tmp40, 0, tmp39);
+						offset += tmp39;
+						uint tmp41;
+						tmp41 = BitConverter.ToUInt32(tmp40, (int)0);
+						
+						tmp37 = System.Text.Encoding.GetEncoding("ISO-8859-1").GetString(s.Skip((int)offset).Take((int)tmp41).ToArray());
+						offset += tmp41;
+					}
+					else
+						tmp37 = null;
+					MasksString.Add(tmp37);
+				}
+			}
+			else
+				MasksString = null;
+			
+			return offset;
+		}
+	}
+	
 	public partial class BaseCreation : BaseAction
 	{
 		public int? ParentRef { get; set; }
@@ -529,12 +647,12 @@ namespace KS.SceneActions
 			s.Add((byte)((ParentChildRef == null) ? 0 : 1));
 			if (ParentChildRef != null)
 			{
-				List<byte> tmp28 = new List<byte>();
-				tmp28.AddRange(BitConverter.GetBytes((uint)ParentChildRef.Count()));
-				while (tmp28.Count > 0 && tmp28.Last() == 0)
-					tmp28.RemoveAt(tmp28.Count - 1);
-				s.Add((byte)tmp28.Count);
-				s.AddRange(tmp28);
+				List<byte> tmp42 = new List<byte>();
+				tmp42.AddRange(BitConverter.GetBytes((uint)ParentChildRef.Count()));
+				while (tmp42.Count > 0 && tmp42.Last() == 0)
+					tmp42.RemoveAt(tmp42.Count - 1);
+				s.Add((byte)tmp42.Count);
+				s.AddRange(tmp42);
 				
 				s.AddRange(System.Text.Encoding.GetEncoding("ISO-8859-1").GetBytes(ParentChildRef));
 			}
@@ -548,10 +666,10 @@ namespace KS.SceneActions
 			offset = base.Deserialize(s, offset);
 			
 			// deserialize ParentRef
-			byte tmp29;
-			tmp29 = (byte)s[(int)offset];
+			byte tmp43;
+			tmp43 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp29 == 1)
+			if (tmp43 == 1)
 			{
 				ParentRef = BitConverter.ToInt32(s, (int)offset);
 				offset += sizeof(int);
@@ -560,22 +678,22 @@ namespace KS.SceneActions
 				ParentRef = null;
 			
 			// deserialize ParentChildRef
-			byte tmp30;
-			tmp30 = (byte)s[(int)offset];
+			byte tmp44;
+			tmp44 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp30 == 1)
+			if (tmp44 == 1)
 			{
-				byte tmp31;
-				tmp31 = (byte)s[(int)offset];
+				byte tmp45;
+				tmp45 = (byte)s[(int)offset];
 				offset += sizeof(byte);
-				byte[] tmp32 = new byte[sizeof(uint)];
-				Array.Copy(s, offset, tmp32, 0, tmp31);
-				offset += tmp31;
-				uint tmp33;
-				tmp33 = BitConverter.ToUInt32(tmp32, (int)0);
+				byte[] tmp46 = new byte[sizeof(uint)];
+				Array.Copy(s, offset, tmp46, 0, tmp45);
+				offset += tmp45;
+				uint tmp47;
+				tmp47 = BitConverter.ToUInt32(tmp46, (int)0);
 				
-				ParentChildRef = System.Text.Encoding.GetEncoding("ISO-8859-1").GetString(s.Skip((int)offset).Take((int)tmp33).ToArray());
-				offset += tmp33;
+				ParentChildRef = System.Text.Encoding.GetEncoding("ISO-8859-1").GetString(s.Skip((int)offset).Take((int)tmp47).ToArray());
+				offset += tmp47;
 			}
 			else
 				ParentChildRef = null;
@@ -665,10 +783,10 @@ namespace KS.SceneActions
 			offset = base.Deserialize(s, offset);
 			
 			// deserialize Asset
-			byte tmp34;
-			tmp34 = (byte)s[(int)offset];
+			byte tmp48;
+			tmp48 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp34 == 1)
+			if (tmp48 == 1)
 			{
 				Asset = new Asset();
 				offset = Asset.Deserialize(s, offset);
@@ -677,15 +795,15 @@ namespace KS.SceneActions
 				Asset = null;
 			
 			// deserialize DefaultParent
-			byte tmp35;
-			tmp35 = (byte)s[(int)offset];
+			byte tmp49;
+			tmp49 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp35 == 1)
+			if (tmp49 == 1)
 			{
-				sbyte tmp36;
-				tmp36 = (sbyte)s[(int)offset];
+				sbyte tmp50;
+				tmp50 = (sbyte)s[(int)offset];
 				offset += sizeof(sbyte);
-				DefaultParent = (EDefaultParent)tmp36;
+				DefaultParent = (EDefaultParent)tmp50;
 			}
 			else
 				DefaultParent = null;
@@ -740,15 +858,15 @@ namespace KS.SceneActions
 			offset = base.Deserialize(s, offset);
 			
 			// deserialize Type
-			byte tmp37;
-			tmp37 = (byte)s[(int)offset];
+			byte tmp51;
+			tmp51 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp37 == 1)
+			if (tmp51 == 1)
 			{
-				sbyte tmp38;
-				tmp38 = (sbyte)s[(int)offset];
+				sbyte tmp52;
+				tmp52 = (sbyte)s[(int)offset];
 				offset += sizeof(sbyte);
-				Type = (EBasicObjectType)tmp38;
+				Type = (EBasicObjectType)tmp52;
 			}
 			else
 				Type = null;
@@ -803,15 +921,15 @@ namespace KS.SceneActions
 			offset = base.Deserialize(s, offset);
 			
 			// deserialize Type
-			byte tmp39;
-			tmp39 = (byte)s[(int)offset];
+			byte tmp53;
+			tmp53 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp39 == 1)
+			if (tmp53 == 1)
 			{
-				sbyte tmp40;
-				tmp40 = (sbyte)s[(int)offset];
+				sbyte tmp54;
+				tmp54 = (sbyte)s[(int)offset];
 				offset += sizeof(sbyte);
-				Type = (EUIElementType)tmp40;
+				Type = (EUIElementType)tmp54;
 			}
 			else
 				Type = null;
@@ -887,10 +1005,10 @@ namespace KS.SceneActions
 			offset = base.Deserialize(s, offset);
 			
 			// deserialize IsActive
-			byte tmp41;
-			tmp41 = (byte)s[(int)offset];
+			byte tmp55;
+			tmp55 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp41 == 1)
+			if (tmp55 == 1)
 			{
 				IsActive = BitConverter.ToBoolean(s, (int)offset);
 				offset += sizeof(bool);
@@ -938,10 +1056,10 @@ namespace KS.SceneActions
 			offset = base.Deserialize(s, offset);
 			
 			// deserialize IsVisible
-			byte tmp42;
-			tmp42 = (byte)s[(int)offset];
+			byte tmp56;
+			tmp56 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp42 == 1)
+			if (tmp56 == 1)
 			{
 				IsVisible = BitConverter.ToBoolean(s, (int)offset);
 				offset += sizeof(bool);
@@ -1013,10 +1131,10 @@ namespace KS.SceneActions
 			offset = base.Deserialize(s, offset);
 			
 			// deserialize Position
-			byte tmp43;
-			tmp43 = (byte)s[(int)offset];
+			byte tmp57;
+			tmp57 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp43 == 1)
+			if (tmp57 == 1)
 			{
 				Position = new Vector3();
 				offset = Position.Deserialize(s, offset);
@@ -1025,10 +1143,10 @@ namespace KS.SceneActions
 				Position = null;
 			
 			// deserialize Rotation
-			byte tmp44;
-			tmp44 = (byte)s[(int)offset];
+			byte tmp58;
+			tmp58 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp44 == 1)
+			if (tmp58 == 1)
 			{
 				Rotation = new Vector3();
 				offset = Rotation.Deserialize(s, offset);
@@ -1037,10 +1155,10 @@ namespace KS.SceneActions
 				Rotation = null;
 			
 			// deserialize Scale
-			byte tmp45;
-			tmp45 = (byte)s[(int)offset];
+			byte tmp59;
+			tmp59 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp45 == 1)
+			if (tmp59 == 1)
 			{
 				Scale = new Vector3();
 				offset = Scale.Deserialize(s, offset);
@@ -1049,10 +1167,10 @@ namespace KS.SceneActions
 				Scale = null;
 			
 			// deserialize ChangeLocal
-			byte tmp46;
-			tmp46 = (byte)s[(int)offset];
+			byte tmp60;
+			tmp60 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp46 == 1)
+			if (tmp60 == 1)
 			{
 				ChangeLocal = BitConverter.ToBoolean(s, (int)offset);
 				offset += sizeof(bool);
@@ -1100,12 +1218,12 @@ namespace KS.SceneActions
 			s.Add((byte)((VarName == null) ? 0 : 1));
 			if (VarName != null)
 			{
-				List<byte> tmp47 = new List<byte>();
-				tmp47.AddRange(BitConverter.GetBytes((uint)VarName.Count()));
-				while (tmp47.Count > 0 && tmp47.Last() == 0)
-					tmp47.RemoveAt(tmp47.Count - 1);
-				s.Add((byte)tmp47.Count);
-				s.AddRange(tmp47);
+				List<byte> tmp61 = new List<byte>();
+				tmp61.AddRange(BitConverter.GetBytes((uint)VarName.Count()));
+				while (tmp61.Count > 0 && tmp61.Last() == 0)
+					tmp61.RemoveAt(tmp61.Count - 1);
+				s.Add((byte)tmp61.Count);
+				s.AddRange(tmp61);
 				
 				s.AddRange(System.Text.Encoding.GetEncoding("ISO-8859-1").GetBytes(VarName));
 			}
@@ -1147,45 +1265,45 @@ namespace KS.SceneActions
 			offset = base.Deserialize(s, offset);
 			
 			// deserialize VarName
-			byte tmp48;
-			tmp48 = (byte)s[(int)offset];
+			byte tmp62;
+			tmp62 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp48 == 1)
+			if (tmp62 == 1)
 			{
-				byte tmp49;
-				tmp49 = (byte)s[(int)offset];
+				byte tmp63;
+				tmp63 = (byte)s[(int)offset];
 				offset += sizeof(byte);
-				byte[] tmp50 = new byte[sizeof(uint)];
-				Array.Copy(s, offset, tmp50, 0, tmp49);
-				offset += tmp49;
-				uint tmp51;
-				tmp51 = BitConverter.ToUInt32(tmp50, (int)0);
+				byte[] tmp64 = new byte[sizeof(uint)];
+				Array.Copy(s, offset, tmp64, 0, tmp63);
+				offset += tmp63;
+				uint tmp65;
+				tmp65 = BitConverter.ToUInt32(tmp64, (int)0);
 				
-				VarName = System.Text.Encoding.GetEncoding("ISO-8859-1").GetString(s.Skip((int)offset).Take((int)tmp51).ToArray());
-				offset += tmp51;
+				VarName = System.Text.Encoding.GetEncoding("ISO-8859-1").GetString(s.Skip((int)offset).Take((int)tmp65).ToArray());
+				offset += tmp65;
 			}
 			else
 				VarName = null;
 			
 			// deserialize VarType
-			byte tmp52;
-			tmp52 = (byte)s[(int)offset];
+			byte tmp66;
+			tmp66 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp52 == 1)
+			if (tmp66 == 1)
 			{
-				sbyte tmp53;
-				tmp53 = (sbyte)s[(int)offset];
+				sbyte tmp67;
+				tmp67 = (sbyte)s[(int)offset];
 				offset += sizeof(sbyte);
-				VarType = (EAnimatorVariableType)tmp53;
+				VarType = (EAnimatorVariableType)tmp67;
 			}
 			else
 				VarType = null;
 			
 			// deserialize IntValue
-			byte tmp54;
-			tmp54 = (byte)s[(int)offset];
+			byte tmp68;
+			tmp68 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp54 == 1)
+			if (tmp68 == 1)
 			{
 				IntValue = BitConverter.ToInt32(s, (int)offset);
 				offset += sizeof(int);
@@ -1194,10 +1312,10 @@ namespace KS.SceneActions
 				IntValue = null;
 			
 			// deserialize FloatValue
-			byte tmp55;
-			tmp55 = (byte)s[(int)offset];
+			byte tmp69;
+			tmp69 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp55 == 1)
+			if (tmp69 == 1)
 			{
 				FloatValue = BitConverter.ToSingle(s, (int)offset);
 				offset += sizeof(float);
@@ -1206,10 +1324,10 @@ namespace KS.SceneActions
 				FloatValue = null;
 			
 			// deserialize BoolValue
-			byte tmp56;
-			tmp56 = (byte)s[(int)offset];
+			byte tmp70;
+			tmp70 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp56 == 1)
+			if (tmp70 == 1)
 			{
 				BoolValue = BitConverter.ToBoolean(s, (int)offset);
 				offset += sizeof(bool);
@@ -1247,12 +1365,12 @@ namespace KS.SceneActions
 			s.Add((byte)((StateName == null) ? 0 : 1));
 			if (StateName != null)
 			{
-				List<byte> tmp57 = new List<byte>();
-				tmp57.AddRange(BitConverter.GetBytes((uint)StateName.Count()));
-				while (tmp57.Count > 0 && tmp57.Last() == 0)
-					tmp57.RemoveAt(tmp57.Count - 1);
-				s.Add((byte)tmp57.Count);
-				s.AddRange(tmp57);
+				List<byte> tmp71 = new List<byte>();
+				tmp71.AddRange(BitConverter.GetBytes((uint)StateName.Count()));
+				while (tmp71.Count > 0 && tmp71.Last() == 0)
+					tmp71.RemoveAt(tmp71.Count - 1);
+				s.Add((byte)tmp71.Count);
+				s.AddRange(tmp71);
 				
 				s.AddRange(System.Text.Encoding.GetEncoding("ISO-8859-1").GetBytes(StateName));
 			}
@@ -1280,31 +1398,31 @@ namespace KS.SceneActions
 			offset = base.Deserialize(s, offset);
 			
 			// deserialize StateName
-			byte tmp58;
-			tmp58 = (byte)s[(int)offset];
+			byte tmp72;
+			tmp72 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp58 == 1)
+			if (tmp72 == 1)
 			{
-				byte tmp59;
-				tmp59 = (byte)s[(int)offset];
+				byte tmp73;
+				tmp73 = (byte)s[(int)offset];
 				offset += sizeof(byte);
-				byte[] tmp60 = new byte[sizeof(uint)];
-				Array.Copy(s, offset, tmp60, 0, tmp59);
-				offset += tmp59;
-				uint tmp61;
-				tmp61 = BitConverter.ToUInt32(tmp60, (int)0);
+				byte[] tmp74 = new byte[sizeof(uint)];
+				Array.Copy(s, offset, tmp74, 0, tmp73);
+				offset += tmp73;
+				uint tmp75;
+				tmp75 = BitConverter.ToUInt32(tmp74, (int)0);
 				
-				StateName = System.Text.Encoding.GetEncoding("ISO-8859-1").GetString(s.Skip((int)offset).Take((int)tmp61).ToArray());
-				offset += tmp61;
+				StateName = System.Text.Encoding.GetEncoding("ISO-8859-1").GetString(s.Skip((int)offset).Take((int)tmp75).ToArray());
+				offset += tmp75;
 			}
 			else
 				StateName = null;
 			
 			// deserialize Layer
-			byte tmp62;
-			tmp62 = (byte)s[(int)offset];
+			byte tmp76;
+			tmp76 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp62 == 1)
+			if (tmp76 == 1)
 			{
 				Layer = BitConverter.ToInt32(s, (int)offset);
 				offset += sizeof(int);
@@ -1313,10 +1431,10 @@ namespace KS.SceneActions
 				Layer = null;
 			
 			// deserialize NormalizedTime
-			byte tmp63;
-			tmp63 = (byte)s[(int)offset];
+			byte tmp77;
+			tmp77 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp63 == 1)
+			if (tmp77 == 1)
 			{
 				NormalizedTime = BitConverter.ToSingle(s, (int)offset);
 				offset += sizeof(float);
@@ -1428,10 +1546,10 @@ namespace KS.SceneActions
 			offset = base.Deserialize(s, offset);
 			
 			// deserialize AudioClipAsset
-			byte tmp64;
-			tmp64 = (byte)s[(int)offset];
+			byte tmp78;
+			tmp78 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp64 == 1)
+			if (tmp78 == 1)
 			{
 				AudioClipAsset = new Asset();
 				offset = AudioClipAsset.Deserialize(s, offset);
@@ -1440,10 +1558,10 @@ namespace KS.SceneActions
 				AudioClipAsset = null;
 			
 			// deserialize Time
-			byte tmp65;
-			tmp65 = (byte)s[(int)offset];
+			byte tmp79;
+			tmp79 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp65 == 1)
+			if (tmp79 == 1)
 			{
 				Time = BitConverter.ToSingle(s, (int)offset);
 				offset += sizeof(float);
@@ -1452,10 +1570,10 @@ namespace KS.SceneActions
 				Time = null;
 			
 			// deserialize Mute
-			byte tmp66;
-			tmp66 = (byte)s[(int)offset];
+			byte tmp80;
+			tmp80 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp66 == 1)
+			if (tmp80 == 1)
 			{
 				Mute = BitConverter.ToBoolean(s, (int)offset);
 				offset += sizeof(bool);
@@ -1464,10 +1582,10 @@ namespace KS.SceneActions
 				Mute = null;
 			
 			// deserialize Loop
-			byte tmp67;
-			tmp67 = (byte)s[(int)offset];
+			byte tmp81;
+			tmp81 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp67 == 1)
+			if (tmp81 == 1)
 			{
 				Loop = BitConverter.ToBoolean(s, (int)offset);
 				offset += sizeof(bool);
@@ -1476,10 +1594,10 @@ namespace KS.SceneActions
 				Loop = null;
 			
 			// deserialize Priority
-			byte tmp68;
-			tmp68 = (byte)s[(int)offset];
+			byte tmp82;
+			tmp82 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp68 == 1)
+			if (tmp82 == 1)
 			{
 				Priority = BitConverter.ToInt32(s, (int)offset);
 				offset += sizeof(int);
@@ -1488,10 +1606,10 @@ namespace KS.SceneActions
 				Priority = null;
 			
 			// deserialize Volume
-			byte tmp69;
-			tmp69 = (byte)s[(int)offset];
+			byte tmp83;
+			tmp83 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp69 == 1)
+			if (tmp83 == 1)
 			{
 				Volume = BitConverter.ToSingle(s, (int)offset);
 				offset += sizeof(float);
@@ -1500,10 +1618,10 @@ namespace KS.SceneActions
 				Volume = null;
 			
 			// deserialize SpatialBlend
-			byte tmp70;
-			tmp70 = (byte)s[(int)offset];
+			byte tmp84;
+			tmp84 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp70 == 1)
+			if (tmp84 == 1)
 			{
 				SpatialBlend = BitConverter.ToSingle(s, (int)offset);
 				offset += sizeof(float);
@@ -1512,10 +1630,10 @@ namespace KS.SceneActions
 				SpatialBlend = null;
 			
 			// deserialize Play
-			byte tmp71;
-			tmp71 = (byte)s[(int)offset];
+			byte tmp85;
+			tmp85 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp71 == 1)
+			if (tmp85 == 1)
 			{
 				Play = BitConverter.ToBoolean(s, (int)offset);
 				offset += sizeof(bool);
@@ -1524,10 +1642,10 @@ namespace KS.SceneActions
 				Play = null;
 			
 			// deserialize Stop
-			byte tmp72;
-			tmp72 = (byte)s[(int)offset];
+			byte tmp86;
+			tmp86 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp72 == 1)
+			if (tmp86 == 1)
 			{
 				Stop = BitConverter.ToBoolean(s, (int)offset);
 				offset += sizeof(bool);
@@ -1623,10 +1741,10 @@ namespace KS.SceneActions
 			offset = base.Deserialize(s, offset);
 			
 			// deserialize Position
-			byte tmp73;
-			tmp73 = (byte)s[(int)offset];
+			byte tmp87;
+			tmp87 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp73 == 1)
+			if (tmp87 == 1)
 			{
 				Position = new Vector3();
 				offset = Position.Deserialize(s, offset);
@@ -1635,10 +1753,10 @@ namespace KS.SceneActions
 				Position = null;
 			
 			// deserialize Rotation
-			byte tmp74;
-			tmp74 = (byte)s[(int)offset];
+			byte tmp88;
+			tmp88 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp74 == 1)
+			if (tmp88 == 1)
 			{
 				Rotation = new Vector3();
 				offset = Rotation.Deserialize(s, offset);
@@ -1647,10 +1765,10 @@ namespace KS.SceneActions
 				Rotation = null;
 			
 			// deserialize Scale
-			byte tmp75;
-			tmp75 = (byte)s[(int)offset];
+			byte tmp89;
+			tmp89 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp75 == 1)
+			if (tmp89 == 1)
 			{
 				Scale = new Vector3();
 				offset = Scale.Deserialize(s, offset);
@@ -1659,10 +1777,10 @@ namespace KS.SceneActions
 				Scale = null;
 			
 			// deserialize Pivot
-			byte tmp76;
-			tmp76 = (byte)s[(int)offset];
+			byte tmp90;
+			tmp90 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp76 == 1)
+			if (tmp90 == 1)
 			{
 				Pivot = new Vector2();
 				offset = Pivot.Deserialize(s, offset);
@@ -1671,10 +1789,10 @@ namespace KS.SceneActions
 				Pivot = null;
 			
 			// deserialize AnchorMin
-			byte tmp77;
-			tmp77 = (byte)s[(int)offset];
+			byte tmp91;
+			tmp91 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp77 == 1)
+			if (tmp91 == 1)
 			{
 				AnchorMin = new Vector2();
 				offset = AnchorMin.Deserialize(s, offset);
@@ -1683,10 +1801,10 @@ namespace KS.SceneActions
 				AnchorMin = null;
 			
 			// deserialize AnchorMax
-			byte tmp78;
-			tmp78 = (byte)s[(int)offset];
+			byte tmp92;
+			tmp92 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp78 == 1)
+			if (tmp92 == 1)
 			{
 				AnchorMax = new Vector2();
 				offset = AnchorMax.Deserialize(s, offset);
@@ -1695,10 +1813,10 @@ namespace KS.SceneActions
 				AnchorMax = null;
 			
 			// deserialize Size
-			byte tmp79;
-			tmp79 = (byte)s[(int)offset];
+			byte tmp93;
+			tmp93 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp79 == 1)
+			if (tmp93 == 1)
 			{
 				Size = new Vector2();
 				offset = Size.Deserialize(s, offset);
@@ -1786,12 +1904,12 @@ namespace KS.SceneActions
 			s.Add((byte)((FontName == null) ? 0 : 1));
 			if (FontName != null)
 			{
-				List<byte> tmp80 = new List<byte>();
-				tmp80.AddRange(BitConverter.GetBytes((uint)FontName.Count()));
-				while (tmp80.Count > 0 && tmp80.Last() == 0)
-					tmp80.RemoveAt(tmp80.Count - 1);
-				s.Add((byte)tmp80.Count);
-				s.AddRange(tmp80);
+				List<byte> tmp94 = new List<byte>();
+				tmp94.AddRange(BitConverter.GetBytes((uint)FontName.Count()));
+				while (tmp94.Count > 0 && tmp94.Last() == 0)
+					tmp94.RemoveAt(tmp94.Count - 1);
+				s.Add((byte)tmp94.Count);
+				s.AddRange(tmp94);
 				
 				s.AddRange(System.Text.Encoding.GetEncoding("ISO-8859-1").GetBytes(FontName));
 			}
@@ -1800,12 +1918,12 @@ namespace KS.SceneActions
 			s.Add((byte)((Text == null) ? 0 : 1));
 			if (Text != null)
 			{
-				List<byte> tmp81 = new List<byte>();
-				tmp81.AddRange(BitConverter.GetBytes((uint)Text.Count()));
-				while (tmp81.Count > 0 && tmp81.Last() == 0)
-					tmp81.RemoveAt(tmp81.Count - 1);
-				s.Add((byte)tmp81.Count);
-				s.AddRange(tmp81);
+				List<byte> tmp95 = new List<byte>();
+				tmp95.AddRange(BitConverter.GetBytes((uint)Text.Count()));
+				while (tmp95.Count > 0 && tmp95.Last() == 0)
+					tmp95.RemoveAt(tmp95.Count - 1);
+				s.Add((byte)tmp95.Count);
+				s.AddRange(tmp95);
 				
 				s.AddRange(System.Text.Encoding.GetEncoding("ISO-8859-1").GetBytes(Text));
 			}
@@ -1840,10 +1958,10 @@ namespace KS.SceneActions
 			offset = base.Deserialize(s, offset);
 			
 			// deserialize FontAsset
-			byte tmp82;
-			tmp82 = (byte)s[(int)offset];
+			byte tmp96;
+			tmp96 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp82 == 1)
+			if (tmp96 == 1)
 			{
 				FontAsset = new Asset();
 				offset = FontAsset.Deserialize(s, offset);
@@ -1852,52 +1970,52 @@ namespace KS.SceneActions
 				FontAsset = null;
 			
 			// deserialize FontName
-			byte tmp83;
-			tmp83 = (byte)s[(int)offset];
+			byte tmp97;
+			tmp97 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp83 == 1)
+			if (tmp97 == 1)
 			{
-				byte tmp84;
-				tmp84 = (byte)s[(int)offset];
+				byte tmp98;
+				tmp98 = (byte)s[(int)offset];
 				offset += sizeof(byte);
-				byte[] tmp85 = new byte[sizeof(uint)];
-				Array.Copy(s, offset, tmp85, 0, tmp84);
-				offset += tmp84;
-				uint tmp86;
-				tmp86 = BitConverter.ToUInt32(tmp85, (int)0);
+				byte[] tmp99 = new byte[sizeof(uint)];
+				Array.Copy(s, offset, tmp99, 0, tmp98);
+				offset += tmp98;
+				uint tmp100;
+				tmp100 = BitConverter.ToUInt32(tmp99, (int)0);
 				
-				FontName = System.Text.Encoding.GetEncoding("ISO-8859-1").GetString(s.Skip((int)offset).Take((int)tmp86).ToArray());
-				offset += tmp86;
+				FontName = System.Text.Encoding.GetEncoding("ISO-8859-1").GetString(s.Skip((int)offset).Take((int)tmp100).ToArray());
+				offset += tmp100;
 			}
 			else
 				FontName = null;
 			
 			// deserialize Text
-			byte tmp87;
-			tmp87 = (byte)s[(int)offset];
+			byte tmp101;
+			tmp101 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp87 == 1)
+			if (tmp101 == 1)
 			{
-				byte tmp88;
-				tmp88 = (byte)s[(int)offset];
+				byte tmp102;
+				tmp102 = (byte)s[(int)offset];
 				offset += sizeof(byte);
-				byte[] tmp89 = new byte[sizeof(uint)];
-				Array.Copy(s, offset, tmp89, 0, tmp88);
-				offset += tmp88;
-				uint tmp90;
-				tmp90 = BitConverter.ToUInt32(tmp89, (int)0);
+				byte[] tmp103 = new byte[sizeof(uint)];
+				Array.Copy(s, offset, tmp103, 0, tmp102);
+				offset += tmp102;
+				uint tmp104;
+				tmp104 = BitConverter.ToUInt32(tmp103, (int)0);
 				
-				Text = System.Text.Encoding.GetEncoding("ISO-8859-1").GetString(s.Skip((int)offset).Take((int)tmp90).ToArray());
-				offset += tmp90;
+				Text = System.Text.Encoding.GetEncoding("ISO-8859-1").GetString(s.Skip((int)offset).Take((int)tmp104).ToArray());
+				offset += tmp104;
 			}
 			else
 				Text = null;
 			
 			// deserialize FontSize
-			byte tmp91;
-			tmp91 = (byte)s[(int)offset];
+			byte tmp105;
+			tmp105 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp91 == 1)
+			if (tmp105 == 1)
 			{
 				FontSize = BitConverter.ToSingle(s, (int)offset);
 				offset += sizeof(float);
@@ -1906,24 +2024,24 @@ namespace KS.SceneActions
 				FontSize = null;
 			
 			// deserialize Alignment
-			byte tmp92;
-			tmp92 = (byte)s[(int)offset];
+			byte tmp106;
+			tmp106 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp92 == 1)
+			if (tmp106 == 1)
 			{
-				short tmp93;
-				tmp93 = BitConverter.ToInt16(s, (int)offset);
+				short tmp107;
+				tmp107 = BitConverter.ToInt16(s, (int)offset);
 				offset += sizeof(short);
-				Alignment = (ETextAlignmentOption)tmp93;
+				Alignment = (ETextAlignmentOption)tmp107;
 			}
 			else
 				Alignment = null;
 			
 			// deserialize WordWrappingRatios
-			byte tmp94;
-			tmp94 = (byte)s[(int)offset];
+			byte tmp108;
+			tmp108 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp94 == 1)
+			if (tmp108 == 1)
 			{
 				WordWrappingRatios = BitConverter.ToSingle(s, (int)offset);
 				offset += sizeof(float);
@@ -2019,10 +2137,10 @@ namespace KS.SceneActions
 			offset = base.Deserialize(s, offset);
 			
 			// deserialize Value
-			byte tmp95;
-			tmp95 = (byte)s[(int)offset];
+			byte tmp109;
+			tmp109 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp95 == 1)
+			if (tmp109 == 1)
 			{
 				Value = BitConverter.ToSingle(s, (int)offset);
 				offset += sizeof(float);
@@ -2031,10 +2149,10 @@ namespace KS.SceneActions
 				Value = null;
 			
 			// deserialize MaxValue
-			byte tmp96;
-			tmp96 = (byte)s[(int)offset];
+			byte tmp110;
+			tmp110 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp96 == 1)
+			if (tmp110 == 1)
 			{
 				MaxValue = BitConverter.ToSingle(s, (int)offset);
 				offset += sizeof(float);
@@ -2043,10 +2161,10 @@ namespace KS.SceneActions
 				MaxValue = null;
 			
 			// deserialize MinValue
-			byte tmp97;
-			tmp97 = (byte)s[(int)offset];
+			byte tmp111;
+			tmp111 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp97 == 1)
+			if (tmp111 == 1)
 			{
 				MinValue = BitConverter.ToSingle(s, (int)offset);
 				offset += sizeof(float);
@@ -2055,24 +2173,24 @@ namespace KS.SceneActions
 				MinValue = null;
 			
 			// deserialize Direction
-			byte tmp98;
-			tmp98 = (byte)s[(int)offset];
+			byte tmp112;
+			tmp112 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp98 == 1)
+			if (tmp112 == 1)
 			{
-				short tmp99;
-				tmp99 = BitConverter.ToInt16(s, (int)offset);
+				short tmp113;
+				tmp113 = BitConverter.ToInt16(s, (int)offset);
 				offset += sizeof(short);
-				Direction = (ESliderDirection)tmp99;
+				Direction = (ESliderDirection)tmp113;
 			}
 			else
 				Direction = null;
 			
 			// deserialize BackgroundColor
-			byte tmp100;
-			tmp100 = (byte)s[(int)offset];
+			byte tmp114;
+			tmp114 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp100 == 1)
+			if (tmp114 == 1)
 			{
 				BackgroundColor = new Vector4();
 				offset = BackgroundColor.Deserialize(s, offset);
@@ -2081,10 +2199,10 @@ namespace KS.SceneActions
 				BackgroundColor = null;
 			
 			// deserialize FillColor
-			byte tmp101;
-			tmp101 = (byte)s[(int)offset];
+			byte tmp115;
+			tmp115 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp101 == 1)
+			if (tmp115 == 1)
 			{
 				FillColor = new Vector4();
 				offset = FillColor.Deserialize(s, offset);
@@ -2148,10 +2266,10 @@ namespace KS.SceneActions
 			offset = base.Deserialize(s, offset);
 			
 			// deserialize SpriteAsset
-			byte tmp102;
-			tmp102 = (byte)s[(int)offset];
+			byte tmp116;
+			tmp116 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp102 == 1)
+			if (tmp116 == 1)
 			{
 				SpriteAsset = new Asset();
 				offset = SpriteAsset.Deserialize(s, offset);
@@ -2160,10 +2278,10 @@ namespace KS.SceneActions
 				SpriteAsset = null;
 			
 			// deserialize Color
-			byte tmp103;
-			tmp103 = (byte)s[(int)offset];
+			byte tmp117;
+			tmp117 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp103 == 1)
+			if (tmp117 == 1)
 			{
 				Color = new Vector4();
 				offset = Color.Deserialize(s, offset);
@@ -2172,10 +2290,10 @@ namespace KS.SceneActions
 				Color = null;
 			
 			// deserialize MaterialAsset
-			byte tmp104;
-			tmp104 = (byte)s[(int)offset];
+			byte tmp118;
+			tmp118 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp104 == 1)
+			if (tmp118 == 1)
 			{
 				MaterialAsset = new Asset();
 				offset = MaterialAsset.Deserialize(s, offset);
@@ -2247,10 +2365,10 @@ namespace KS.SceneActions
 			offset = base.Deserialize(s, offset);
 			
 			// deserialize TextureAsset
-			byte tmp105;
-			tmp105 = (byte)s[(int)offset];
+			byte tmp119;
+			tmp119 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp105 == 1)
+			if (tmp119 == 1)
 			{
 				TextureAsset = new Asset();
 				offset = TextureAsset.Deserialize(s, offset);
@@ -2259,10 +2377,10 @@ namespace KS.SceneActions
 				TextureAsset = null;
 			
 			// deserialize MaterialAsset
-			byte tmp106;
-			tmp106 = (byte)s[(int)offset];
+			byte tmp120;
+			tmp120 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp106 == 1)
+			if (tmp120 == 1)
 			{
 				MaterialAsset = new Asset();
 				offset = MaterialAsset.Deserialize(s, offset);
@@ -2271,10 +2389,10 @@ namespace KS.SceneActions
 				MaterialAsset = null;
 			
 			// deserialize Color
-			byte tmp107;
-			tmp107 = (byte)s[(int)offset];
+			byte tmp121;
+			tmp121 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp107 == 1)
+			if (tmp121 == 1)
 			{
 				Color = new Vector4();
 				offset = Color.Deserialize(s, offset);
@@ -2283,10 +2401,10 @@ namespace KS.SceneActions
 				Color = null;
 			
 			// deserialize UvRect
-			byte tmp108;
-			tmp108 = (byte)s[(int)offset];
+			byte tmp122;
+			tmp122 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp108 == 1)
+			if (tmp122 == 1)
 			{
 				UvRect = new Vector4();
 				offset = UvRect.Deserialize(s, offset);
@@ -2354,12 +2472,12 @@ namespace KS.SceneActions
 			s.Add((byte)((SiblingRefAsBaseIndex == null) ? 0 : 1));
 			if (SiblingRefAsBaseIndex != null)
 			{
-				List<byte> tmp109 = new List<byte>();
-				tmp109.AddRange(BitConverter.GetBytes((uint)SiblingRefAsBaseIndex.Count()));
-				while (tmp109.Count > 0 && tmp109.Last() == 0)
-					tmp109.RemoveAt(tmp109.Count - 1);
-				s.Add((byte)tmp109.Count);
-				s.AddRange(tmp109);
+				List<byte> tmp123 = new List<byte>();
+				tmp123.AddRange(BitConverter.GetBytes((uint)SiblingRefAsBaseIndex.Count()));
+				while (tmp123.Count > 0 && tmp123.Last() == 0)
+					tmp123.RemoveAt(tmp123.Count - 1);
+				s.Add((byte)tmp123.Count);
+				s.AddRange(tmp123);
 				
 				s.AddRange(System.Text.Encoding.GetEncoding("ISO-8859-1").GetBytes(SiblingRefAsBaseIndex));
 			}
@@ -2373,10 +2491,10 @@ namespace KS.SceneActions
 			offset = base.Deserialize(s, offset);
 			
 			// deserialize NewIndex
-			byte tmp110;
-			tmp110 = (byte)s[(int)offset];
+			byte tmp124;
+			tmp124 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp110 == 1)
+			if (tmp124 == 1)
 			{
 				NewIndex = BitConverter.ToInt32(s, (int)offset);
 				offset += sizeof(int);
@@ -2385,10 +2503,10 @@ namespace KS.SceneActions
 				NewIndex = null;
 			
 			// deserialize GotoFirst
-			byte tmp111;
-			tmp111 = (byte)s[(int)offset];
+			byte tmp125;
+			tmp125 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp111 == 1)
+			if (tmp125 == 1)
 			{
 				GotoFirst = BitConverter.ToBoolean(s, (int)offset);
 				offset += sizeof(bool);
@@ -2397,10 +2515,10 @@ namespace KS.SceneActions
 				GotoFirst = null;
 			
 			// deserialize GotoLast
-			byte tmp112;
-			tmp112 = (byte)s[(int)offset];
+			byte tmp126;
+			tmp126 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp112 == 1)
+			if (tmp126 == 1)
 			{
 				GotoLast = BitConverter.ToBoolean(s, (int)offset);
 				offset += sizeof(bool);
@@ -2409,10 +2527,10 @@ namespace KS.SceneActions
 				GotoLast = null;
 			
 			// deserialize ChangeIndex
-			byte tmp113;
-			tmp113 = (byte)s[(int)offset];
+			byte tmp127;
+			tmp127 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp113 == 1)
+			if (tmp127 == 1)
 			{
 				ChangeIndex = BitConverter.ToInt32(s, (int)offset);
 				offset += sizeof(int);
@@ -2421,22 +2539,22 @@ namespace KS.SceneActions
 				ChangeIndex = null;
 			
 			// deserialize SiblingRefAsBaseIndex
-			byte tmp114;
-			tmp114 = (byte)s[(int)offset];
+			byte tmp128;
+			tmp128 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp114 == 1)
+			if (tmp128 == 1)
 			{
-				byte tmp115;
-				tmp115 = (byte)s[(int)offset];
+				byte tmp129;
+				tmp129 = (byte)s[(int)offset];
 				offset += sizeof(byte);
-				byte[] tmp116 = new byte[sizeof(uint)];
-				Array.Copy(s, offset, tmp116, 0, tmp115);
-				offset += tmp115;
-				uint tmp117;
-				tmp117 = BitConverter.ToUInt32(tmp116, (int)0);
+				byte[] tmp130 = new byte[sizeof(uint)];
+				Array.Copy(s, offset, tmp130, 0, tmp129);
+				offset += tmp129;
+				uint tmp131;
+				tmp131 = BitConverter.ToUInt32(tmp130, (int)0);
 				
-				SiblingRefAsBaseIndex = System.Text.Encoding.GetEncoding("ISO-8859-1").GetString(s.Skip((int)offset).Take((int)tmp117).ToArray());
-				offset += tmp117;
+				SiblingRefAsBaseIndex = System.Text.Encoding.GetEncoding("ISO-8859-1").GetString(s.Skip((int)offset).Take((int)tmp131).ToArray());
+				offset += tmp131;
 			}
 			else
 				SiblingRefAsBaseIndex = null;
@@ -2471,12 +2589,12 @@ namespace KS.SceneActions
 			s.Add((byte)((Type == null) ? 0 : 1));
 			if (Type != null)
 			{
-				List<byte> tmp118 = new List<byte>();
-				tmp118.AddRange(BitConverter.GetBytes((uint)Type.Count()));
-				while (tmp118.Count > 0 && tmp118.Last() == 0)
-					tmp118.RemoveAt(tmp118.Count - 1);
-				s.Add((byte)tmp118.Count);
-				s.AddRange(tmp118);
+				List<byte> tmp132 = new List<byte>();
+				tmp132.AddRange(BitConverter.GetBytes((uint)Type.Count()));
+				while (tmp132.Count > 0 && tmp132.Last() == 0)
+					tmp132.RemoveAt(tmp132.Count - 1);
+				s.Add((byte)tmp132.Count);
+				s.AddRange(tmp132);
 				
 				s.AddRange(System.Text.Encoding.GetEncoding("ISO-8859-1").GetBytes(Type));
 			}
@@ -2504,31 +2622,31 @@ namespace KS.SceneActions
 			offset = base.Deserialize(s, offset);
 			
 			// deserialize Type
-			byte tmp119;
-			tmp119 = (byte)s[(int)offset];
+			byte tmp133;
+			tmp133 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp119 == 1)
+			if (tmp133 == 1)
 			{
-				byte tmp120;
-				tmp120 = (byte)s[(int)offset];
+				byte tmp134;
+				tmp134 = (byte)s[(int)offset];
 				offset += sizeof(byte);
-				byte[] tmp121 = new byte[sizeof(uint)];
-				Array.Copy(s, offset, tmp121, 0, tmp120);
-				offset += tmp120;
-				uint tmp122;
-				tmp122 = BitConverter.ToUInt32(tmp121, (int)0);
+				byte[] tmp135 = new byte[sizeof(uint)];
+				Array.Copy(s, offset, tmp135, 0, tmp134);
+				offset += tmp134;
+				uint tmp136;
+				tmp136 = BitConverter.ToUInt32(tmp135, (int)0);
 				
-				Type = System.Text.Encoding.GetEncoding("ISO-8859-1").GetString(s.Skip((int)offset).Take((int)tmp122).ToArray());
-				offset += tmp122;
+				Type = System.Text.Encoding.GetEncoding("ISO-8859-1").GetString(s.Skip((int)offset).Take((int)tmp136).ToArray());
+				offset += tmp136;
 			}
 			else
 				Type = null;
 			
 			// deserialize Add
-			byte tmp123;
-			tmp123 = (byte)s[(int)offset];
+			byte tmp137;
+			tmp137 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp123 == 1)
+			if (tmp137 == 1)
 			{
 				Add = BitConverter.ToBoolean(s, (int)offset);
 				offset += sizeof(bool);
@@ -2537,10 +2655,10 @@ namespace KS.SceneActions
 				Add = null;
 			
 			// deserialize IsActive
-			byte tmp124;
-			tmp124 = (byte)s[(int)offset];
+			byte tmp138;
+			tmp138 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp124 == 1)
+			if (tmp138 == 1)
 			{
 				IsActive = BitConverter.ToBoolean(s, (int)offset);
 				offset += sizeof(bool);
@@ -2620,10 +2738,10 @@ namespace KS.SceneActions
 			offset = base.Deserialize(s, offset);
 			
 			// deserialize SpriteAsset
-			byte tmp125;
-			tmp125 = (byte)s[(int)offset];
+			byte tmp139;
+			tmp139 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp125 == 1)
+			if (tmp139 == 1)
 			{
 				SpriteAsset = new Asset();
 				offset = SpriteAsset.Deserialize(s, offset);
@@ -2632,10 +2750,10 @@ namespace KS.SceneActions
 				SpriteAsset = null;
 			
 			// deserialize Color
-			byte tmp126;
-			tmp126 = (byte)s[(int)offset];
+			byte tmp140;
+			tmp140 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp126 == 1)
+			if (tmp140 == 1)
 			{
 				Color = new Vector4();
 				offset = Color.Deserialize(s, offset);
@@ -2644,10 +2762,10 @@ namespace KS.SceneActions
 				Color = null;
 			
 			// deserialize FlipX
-			byte tmp127;
-			tmp127 = (byte)s[(int)offset];
+			byte tmp141;
+			tmp141 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp127 == 1)
+			if (tmp141 == 1)
 			{
 				FlipX = BitConverter.ToBoolean(s, (int)offset);
 				offset += sizeof(bool);
@@ -2656,10 +2774,10 @@ namespace KS.SceneActions
 				FlipX = null;
 			
 			// deserialize FlipY
-			byte tmp128;
-			tmp128 = (byte)s[(int)offset];
+			byte tmp142;
+			tmp142 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp128 == 1)
+			if (tmp142 == 1)
 			{
 				FlipY = BitConverter.ToBoolean(s, (int)offset);
 				offset += sizeof(bool);
@@ -2668,10 +2786,10 @@ namespace KS.SceneActions
 				FlipY = null;
 			
 			// deserialize Order
-			byte tmp129;
-			tmp129 = (byte)s[(int)offset];
+			byte tmp143;
+			tmp143 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp129 == 1)
+			if (tmp143 == 1)
 			{
 				Order = BitConverter.ToInt32(s, (int)offset);
 				offset += sizeof(int);
@@ -2727,10 +2845,10 @@ namespace KS.SceneActions
 			offset = base.Deserialize(s, offset);
 			
 			// deserialize MaterialAsset
-			byte tmp130;
-			tmp130 = (byte)s[(int)offset];
+			byte tmp144;
+			tmp144 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp130 == 1)
+			if (tmp144 == 1)
 			{
 				MaterialAsset = new Asset();
 				offset = MaterialAsset.Deserialize(s, offset);
@@ -2739,10 +2857,10 @@ namespace KS.SceneActions
 				MaterialAsset = null;
 			
 			// deserialize Index
-			byte tmp131;
-			tmp131 = (byte)s[(int)offset];
+			byte tmp145;
+			tmp145 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp131 == 1)
+			if (tmp145 == 1)
 			{
 				Index = BitConverter.ToInt32(s, (int)offset);
 				offset += sizeof(int);
@@ -2806,10 +2924,10 @@ namespace KS.SceneActions
 			offset = base.Deserialize(s, offset);
 			
 			// deserialize FillColor
-			byte tmp132;
-			tmp132 = (byte)s[(int)offset];
+			byte tmp146;
+			tmp146 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp132 == 1)
+			if (tmp146 == 1)
 			{
 				FillColor = new Vector4();
 				offset = FillColor.Deserialize(s, offset);
@@ -2818,10 +2936,10 @@ namespace KS.SceneActions
 				FillColor = null;
 			
 			// deserialize XRadius
-			byte tmp133;
-			tmp133 = (byte)s[(int)offset];
+			byte tmp147;
+			tmp147 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp133 == 1)
+			if (tmp147 == 1)
 			{
 				XRadius = BitConverter.ToSingle(s, (int)offset);
 				offset += sizeof(float);
@@ -2830,10 +2948,10 @@ namespace KS.SceneActions
 				XRadius = null;
 			
 			// deserialize YRadius
-			byte tmp134;
-			tmp134 = (byte)s[(int)offset];
+			byte tmp148;
+			tmp148 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp134 == 1)
+			if (tmp148 == 1)
 			{
 				YRadius = BitConverter.ToSingle(s, (int)offset);
 				offset += sizeof(float);
@@ -2877,19 +2995,19 @@ namespace KS.SceneActions
 			s.Add((byte)((Vertices == null) ? 0 : 1));
 			if (Vertices != null)
 			{
-				List<byte> tmp135 = new List<byte>();
-				tmp135.AddRange(BitConverter.GetBytes((uint)Vertices.Count()));
-				while (tmp135.Count > 0 && tmp135.Last() == 0)
-					tmp135.RemoveAt(tmp135.Count - 1);
-				s.Add((byte)tmp135.Count);
-				s.AddRange(tmp135);
+				List<byte> tmp149 = new List<byte>();
+				tmp149.AddRange(BitConverter.GetBytes((uint)Vertices.Count()));
+				while (tmp149.Count > 0 && tmp149.Last() == 0)
+					tmp149.RemoveAt(tmp149.Count - 1);
+				s.Add((byte)tmp149.Count);
+				s.AddRange(tmp149);
 				
-				foreach (var tmp136 in Vertices)
+				foreach (var tmp150 in Vertices)
 				{
-					s.Add((byte)((tmp136 == null) ? 0 : 1));
-					if (tmp136 != null)
+					s.Add((byte)((tmp150 == null) ? 0 : 1));
+					if (tmp150 != null)
 					{
-						s.AddRange(tmp136.Serialize());
+						s.AddRange(tmp150.Serialize());
 					}
 				}
 			}
@@ -2903,10 +3021,10 @@ namespace KS.SceneActions
 			offset = base.Deserialize(s, offset);
 			
 			// deserialize FillColor
-			byte tmp137;
-			tmp137 = (byte)s[(int)offset];
+			byte tmp151;
+			tmp151 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp137 == 1)
+			if (tmp151 == 1)
 			{
 				FillColor = new Vector4();
 				offset = FillColor.Deserialize(s, offset);
@@ -2915,35 +3033,35 @@ namespace KS.SceneActions
 				FillColor = null;
 			
 			// deserialize Vertices
-			byte tmp138;
-			tmp138 = (byte)s[(int)offset];
+			byte tmp152;
+			tmp152 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp138 == 1)
+			if (tmp152 == 1)
 			{
-				byte tmp139;
-				tmp139 = (byte)s[(int)offset];
+				byte tmp153;
+				tmp153 = (byte)s[(int)offset];
 				offset += sizeof(byte);
-				byte[] tmp140 = new byte[sizeof(uint)];
-				Array.Copy(s, offset, tmp140, 0, tmp139);
-				offset += tmp139;
-				uint tmp141;
-				tmp141 = BitConverter.ToUInt32(tmp140, (int)0);
+				byte[] tmp154 = new byte[sizeof(uint)];
+				Array.Copy(s, offset, tmp154, 0, tmp153);
+				offset += tmp153;
+				uint tmp155;
+				tmp155 = BitConverter.ToUInt32(tmp154, (int)0);
 				
 				Vertices = new List<Vector2>();
-				for (uint tmp142 = 0; tmp142 < tmp141; tmp142++)
+				for (uint tmp156 = 0; tmp156 < tmp155; tmp156++)
 				{
-					Vector2 tmp143;
-					byte tmp144;
-					tmp144 = (byte)s[(int)offset];
+					Vector2 tmp157;
+					byte tmp158;
+					tmp158 = (byte)s[(int)offset];
 					offset += sizeof(byte);
-					if (tmp144 == 1)
+					if (tmp158 == 1)
 					{
-						tmp143 = new Vector2();
-						offset = tmp143.Deserialize(s, offset);
+						tmp157 = new Vector2();
+						offset = tmp157.Deserialize(s, offset);
 					}
 					else
-						tmp143 = null;
-					Vertices.Add(tmp143);
+						tmp157 = null;
+					Vertices.Add(tmp157);
 				}
 			}
 			else
@@ -2989,19 +3107,19 @@ namespace KS.SceneActions
 			s.Add((byte)((Vertices == null) ? 0 : 1));
 			if (Vertices != null)
 			{
-				List<byte> tmp145 = new List<byte>();
-				tmp145.AddRange(BitConverter.GetBytes((uint)Vertices.Count()));
-				while (tmp145.Count > 0 && tmp145.Last() == 0)
-					tmp145.RemoveAt(tmp145.Count - 1);
-				s.Add((byte)tmp145.Count);
-				s.AddRange(tmp145);
+				List<byte> tmp159 = new List<byte>();
+				tmp159.AddRange(BitConverter.GetBytes((uint)Vertices.Count()));
+				while (tmp159.Count > 0 && tmp159.Last() == 0)
+					tmp159.RemoveAt(tmp159.Count - 1);
+				s.Add((byte)tmp159.Count);
+				s.AddRange(tmp159);
 				
-				foreach (var tmp146 in Vertices)
+				foreach (var tmp160 in Vertices)
 				{
-					s.Add((byte)((tmp146 == null) ? 0 : 1));
-					if (tmp146 != null)
+					s.Add((byte)((tmp160 == null) ? 0 : 1));
+					if (tmp160 != null)
 					{
-						s.AddRange(tmp146.Serialize());
+						s.AddRange(tmp160.Serialize());
 					}
 				}
 			}
@@ -3043,10 +3161,10 @@ namespace KS.SceneActions
 			offset = base.Deserialize(s, offset);
 			
 			// deserialize FillColor
-			byte tmp147;
-			tmp147 = (byte)s[(int)offset];
+			byte tmp161;
+			tmp161 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp147 == 1)
+			if (tmp161 == 1)
 			{
 				FillColor = new Vector4();
 				offset = FillColor.Deserialize(s, offset);
@@ -3055,45 +3173,45 @@ namespace KS.SceneActions
 				FillColor = null;
 			
 			// deserialize Vertices
-			byte tmp148;
-			tmp148 = (byte)s[(int)offset];
+			byte tmp162;
+			tmp162 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp148 == 1)
+			if (tmp162 == 1)
 			{
-				byte tmp149;
-				tmp149 = (byte)s[(int)offset];
+				byte tmp163;
+				tmp163 = (byte)s[(int)offset];
 				offset += sizeof(byte);
-				byte[] tmp150 = new byte[sizeof(uint)];
-				Array.Copy(s, offset, tmp150, 0, tmp149);
-				offset += tmp149;
-				uint tmp151;
-				tmp151 = BitConverter.ToUInt32(tmp150, (int)0);
+				byte[] tmp164 = new byte[sizeof(uint)];
+				Array.Copy(s, offset, tmp164, 0, tmp163);
+				offset += tmp163;
+				uint tmp165;
+				tmp165 = BitConverter.ToUInt32(tmp164, (int)0);
 				
 				Vertices = new List<Vector2>();
-				for (uint tmp152 = 0; tmp152 < tmp151; tmp152++)
+				for (uint tmp166 = 0; tmp166 < tmp165; tmp166++)
 				{
-					Vector2 tmp153;
-					byte tmp154;
-					tmp154 = (byte)s[(int)offset];
+					Vector2 tmp167;
+					byte tmp168;
+					tmp168 = (byte)s[(int)offset];
 					offset += sizeof(byte);
-					if (tmp154 == 1)
+					if (tmp168 == 1)
 					{
-						tmp153 = new Vector2();
-						offset = tmp153.Deserialize(s, offset);
+						tmp167 = new Vector2();
+						offset = tmp167.Deserialize(s, offset);
 					}
 					else
-						tmp153 = null;
-					Vertices.Add(tmp153);
+						tmp167 = null;
+					Vertices.Add(tmp167);
 				}
 			}
 			else
 				Vertices = null;
 			
 			// deserialize Width
-			byte tmp155;
-			tmp155 = (byte)s[(int)offset];
+			byte tmp169;
+			tmp169 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp155 == 1)
+			if (tmp169 == 1)
 			{
 				Width = BitConverter.ToSingle(s, (int)offset);
 				offset += sizeof(float);
@@ -3102,10 +3220,10 @@ namespace KS.SceneActions
 				Width = null;
 			
 			// deserialize CornerVertices
-			byte tmp156;
-			tmp156 = (byte)s[(int)offset];
+			byte tmp170;
+			tmp170 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp156 == 1)
+			if (tmp170 == 1)
 			{
 				CornerVertices = BitConverter.ToInt32(s, (int)offset);
 				offset += sizeof(int);
@@ -3114,10 +3232,10 @@ namespace KS.SceneActions
 				CornerVertices = null;
 			
 			// deserialize EndCapVertices
-			byte tmp157;
-			tmp157 = (byte)s[(int)offset];
+			byte tmp171;
+			tmp171 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp157 == 1)
+			if (tmp171 == 1)
 			{
 				EndCapVertices = BitConverter.ToInt32(s, (int)offset);
 				offset += sizeof(int);
@@ -3126,10 +3244,10 @@ namespace KS.SceneActions
 				EndCapVertices = null;
 			
 			// deserialize Loop
-			byte tmp158;
-			tmp158 = (byte)s[(int)offset];
+			byte tmp172;
+			tmp172 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp158 == 1)
+			if (tmp172 == 1)
 			{
 				Loop = BitConverter.ToBoolean(s, (int)offset);
 				offset += sizeof(bool);
@@ -3295,24 +3413,24 @@ namespace KS.SceneActions
 			offset = base.Deserialize(s, offset);
 			
 			// deserialize Type
-			byte tmp159;
-			tmp159 = (byte)s[(int)offset];
+			byte tmp173;
+			tmp173 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp159 == 1)
+			if (tmp173 == 1)
 			{
-				sbyte tmp160;
-				tmp160 = (sbyte)s[(int)offset];
+				sbyte tmp174;
+				tmp174 = (sbyte)s[(int)offset];
 				offset += sizeof(sbyte);
-				Type = (ELightType)tmp160;
+				Type = (ELightType)tmp174;
 			}
 			else
 				Type = null;
 			
 			// deserialize Range
-			byte tmp161;
-			tmp161 = (byte)s[(int)offset];
+			byte tmp175;
+			tmp175 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp161 == 1)
+			if (tmp175 == 1)
 			{
 				Range = BitConverter.ToSingle(s, (int)offset);
 				offset += sizeof(float);
@@ -3321,10 +3439,10 @@ namespace KS.SceneActions
 				Range = null;
 			
 			// deserialize SpotAngle
-			byte tmp162;
-			tmp162 = (byte)s[(int)offset];
+			byte tmp176;
+			tmp176 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp162 == 1)
+			if (tmp176 == 1)
 			{
 				SpotAngle = BitConverter.ToSingle(s, (int)offset);
 				offset += sizeof(float);
@@ -3333,10 +3451,10 @@ namespace KS.SceneActions
 				SpotAngle = null;
 			
 			// deserialize Color
-			byte tmp163;
-			tmp163 = (byte)s[(int)offset];
+			byte tmp177;
+			tmp177 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp163 == 1)
+			if (tmp177 == 1)
 			{
 				Color = new Vector4();
 				offset = Color.Deserialize(s, offset);
@@ -3345,10 +3463,10 @@ namespace KS.SceneActions
 				Color = null;
 			
 			// deserialize Intensity
-			byte tmp164;
-			tmp164 = (byte)s[(int)offset];
+			byte tmp178;
+			tmp178 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp164 == 1)
+			if (tmp178 == 1)
 			{
 				Intensity = BitConverter.ToSingle(s, (int)offset);
 				offset += sizeof(float);
@@ -3357,10 +3475,10 @@ namespace KS.SceneActions
 				Intensity = null;
 			
 			// deserialize IndirectMultiplier
-			byte tmp165;
-			tmp165 = (byte)s[(int)offset];
+			byte tmp179;
+			tmp179 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp165 == 1)
+			if (tmp179 == 1)
 			{
 				IndirectMultiplier = BitConverter.ToSingle(s, (int)offset);
 				offset += sizeof(float);
@@ -3369,24 +3487,24 @@ namespace KS.SceneActions
 				IndirectMultiplier = null;
 			
 			// deserialize ShadowType
-			byte tmp166;
-			tmp166 = (byte)s[(int)offset];
+			byte tmp180;
+			tmp180 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp166 == 1)
+			if (tmp180 == 1)
 			{
-				sbyte tmp167;
-				tmp167 = (sbyte)s[(int)offset];
+				sbyte tmp181;
+				tmp181 = (sbyte)s[(int)offset];
 				offset += sizeof(sbyte);
-				ShadowType = (ELightShadowType)tmp167;
+				ShadowType = (ELightShadowType)tmp181;
 			}
 			else
 				ShadowType = null;
 			
 			// deserialize ShadowStrength
-			byte tmp168;
-			tmp168 = (byte)s[(int)offset];
+			byte tmp182;
+			tmp182 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp168 == 1)
+			if (tmp182 == 1)
 			{
 				ShadowStrength = BitConverter.ToSingle(s, (int)offset);
 				offset += sizeof(float);
@@ -3395,10 +3513,10 @@ namespace KS.SceneActions
 				ShadowStrength = null;
 			
 			// deserialize ShadowBias
-			byte tmp169;
-			tmp169 = (byte)s[(int)offset];
+			byte tmp183;
+			tmp183 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp169 == 1)
+			if (tmp183 == 1)
 			{
 				ShadowBias = BitConverter.ToSingle(s, (int)offset);
 				offset += sizeof(float);
@@ -3407,10 +3525,10 @@ namespace KS.SceneActions
 				ShadowBias = null;
 			
 			// deserialize ShadowNormalBias
-			byte tmp170;
-			tmp170 = (byte)s[(int)offset];
+			byte tmp184;
+			tmp184 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp170 == 1)
+			if (tmp184 == 1)
 			{
 				ShadowNormalBias = BitConverter.ToSingle(s, (int)offset);
 				offset += sizeof(float);
@@ -3419,10 +3537,10 @@ namespace KS.SceneActions
 				ShadowNormalBias = null;
 			
 			// deserialize ShadowNearPlane
-			byte tmp171;
-			tmp171 = (byte)s[(int)offset];
+			byte tmp185;
+			tmp185 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp171 == 1)
+			if (tmp185 == 1)
 			{
 				ShadowNearPlane = BitConverter.ToSingle(s, (int)offset);
 				offset += sizeof(float);
@@ -3431,10 +3549,10 @@ namespace KS.SceneActions
 				ShadowNearPlane = null;
 			
 			// deserialize CookieAsset
-			byte tmp172;
-			tmp172 = (byte)s[(int)offset];
+			byte tmp186;
+			tmp186 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp172 == 1)
+			if (tmp186 == 1)
 			{
 				CookieAsset = new Asset();
 				offset = CookieAsset.Deserialize(s, offset);
@@ -3443,10 +3561,10 @@ namespace KS.SceneActions
 				CookieAsset = null;
 			
 			// deserialize CookieSize
-			byte tmp173;
-			tmp173 = (byte)s[(int)offset];
+			byte tmp187;
+			tmp187 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp173 == 1)
+			if (tmp187 == 1)
 			{
 				CookieSize = BitConverter.ToSingle(s, (int)offset);
 				offset += sizeof(float);
@@ -3455,10 +3573,10 @@ namespace KS.SceneActions
 				CookieSize = null;
 			
 			// deserialize FlareAsset
-			byte tmp174;
-			tmp174 = (byte)s[(int)offset];
+			byte tmp188;
+			tmp188 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp174 == 1)
+			if (tmp188 == 1)
 			{
 				FlareAsset = new Asset();
 				offset = FlareAsset.Deserialize(s, offset);
@@ -3618,24 +3736,24 @@ namespace KS.SceneActions
 			offset = base.Deserialize(s, offset);
 			
 			// deserialize ClearFlag
-			byte tmp175;
-			tmp175 = (byte)s[(int)offset];
+			byte tmp189;
+			tmp189 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp175 == 1)
+			if (tmp189 == 1)
 			{
-				sbyte tmp176;
-				tmp176 = (sbyte)s[(int)offset];
+				sbyte tmp190;
+				tmp190 = (sbyte)s[(int)offset];
 				offset += sizeof(sbyte);
-				ClearFlag = (ECameraClearFlag)tmp176;
+				ClearFlag = (ECameraClearFlag)tmp190;
 			}
 			else
 				ClearFlag = null;
 			
 			// deserialize BackgroundColor
-			byte tmp177;
-			tmp177 = (byte)s[(int)offset];
+			byte tmp191;
+			tmp191 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp177 == 1)
+			if (tmp191 == 1)
 			{
 				BackgroundColor = new Vector4();
 				offset = BackgroundColor.Deserialize(s, offset);
@@ -3644,10 +3762,10 @@ namespace KS.SceneActions
 				BackgroundColor = null;
 			
 			// deserialize IsOrthographic
-			byte tmp178;
-			tmp178 = (byte)s[(int)offset];
+			byte tmp192;
+			tmp192 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp178 == 1)
+			if (tmp192 == 1)
 			{
 				IsOrthographic = BitConverter.ToBoolean(s, (int)offset);
 				offset += sizeof(bool);
@@ -3656,10 +3774,10 @@ namespace KS.SceneActions
 				IsOrthographic = null;
 			
 			// deserialize OrthographicSize
-			byte tmp179;
-			tmp179 = (byte)s[(int)offset];
+			byte tmp193;
+			tmp193 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp179 == 1)
+			if (tmp193 == 1)
 			{
 				OrthographicSize = BitConverter.ToSingle(s, (int)offset);
 				offset += sizeof(float);
@@ -3668,10 +3786,10 @@ namespace KS.SceneActions
 				OrthographicSize = null;
 			
 			// deserialize FieldOfView
-			byte tmp180;
-			tmp180 = (byte)s[(int)offset];
+			byte tmp194;
+			tmp194 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp180 == 1)
+			if (tmp194 == 1)
 			{
 				FieldOfView = BitConverter.ToSingle(s, (int)offset);
 				offset += sizeof(float);
@@ -3680,10 +3798,10 @@ namespace KS.SceneActions
 				FieldOfView = null;
 			
 			// deserialize NearClipPlane
-			byte tmp181;
-			tmp181 = (byte)s[(int)offset];
+			byte tmp195;
+			tmp195 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp181 == 1)
+			if (tmp195 == 1)
 			{
 				NearClipPlane = BitConverter.ToSingle(s, (int)offset);
 				offset += sizeof(float);
@@ -3692,10 +3810,10 @@ namespace KS.SceneActions
 				NearClipPlane = null;
 			
 			// deserialize FarClipPlane
-			byte tmp182;
-			tmp182 = (byte)s[(int)offset];
+			byte tmp196;
+			tmp196 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp182 == 1)
+			if (tmp196 == 1)
 			{
 				FarClipPlane = BitConverter.ToSingle(s, (int)offset);
 				offset += sizeof(float);
@@ -3704,10 +3822,10 @@ namespace KS.SceneActions
 				FarClipPlane = null;
 			
 			// deserialize MinPosition
-			byte tmp183;
-			tmp183 = (byte)s[(int)offset];
+			byte tmp197;
+			tmp197 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp183 == 1)
+			if (tmp197 == 1)
 			{
 				MinPosition = new Vector3();
 				offset = MinPosition.Deserialize(s, offset);
@@ -3716,10 +3834,10 @@ namespace KS.SceneActions
 				MinPosition = null;
 			
 			// deserialize MaxPosition
-			byte tmp184;
-			tmp184 = (byte)s[(int)offset];
+			byte tmp198;
+			tmp198 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp184 == 1)
+			if (tmp198 == 1)
 			{
 				MaxPosition = new Vector3();
 				offset = MaxPosition.Deserialize(s, offset);
@@ -3728,10 +3846,10 @@ namespace KS.SceneActions
 				MaxPosition = null;
 			
 			// deserialize MinRotation
-			byte tmp185;
-			tmp185 = (byte)s[(int)offset];
+			byte tmp199;
+			tmp199 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp185 == 1)
+			if (tmp199 == 1)
 			{
 				MinRotation = new Vector2();
 				offset = MinRotation.Deserialize(s, offset);
@@ -3740,10 +3858,10 @@ namespace KS.SceneActions
 				MinRotation = null;
 			
 			// deserialize MaxRotation
-			byte tmp186;
-			tmp186 = (byte)s[(int)offset];
+			byte tmp200;
+			tmp200 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp186 == 1)
+			if (tmp200 == 1)
 			{
 				MaxRotation = new Vector2();
 				offset = MaxRotation.Deserialize(s, offset);
@@ -3752,10 +3870,10 @@ namespace KS.SceneActions
 				MaxRotation = null;
 			
 			// deserialize MinZoom
-			byte tmp187;
-			tmp187 = (byte)s[(int)offset];
+			byte tmp201;
+			tmp201 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp187 == 1)
+			if (tmp201 == 1)
 			{
 				MinZoom = BitConverter.ToSingle(s, (int)offset);
 				offset += sizeof(float);
@@ -3764,10 +3882,10 @@ namespace KS.SceneActions
 				MinZoom = null;
 			
 			// deserialize MaxZoom
-			byte tmp188;
-			tmp188 = (byte)s[(int)offset];
+			byte tmp202;
+			tmp202 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp188 == 1)
+			if (tmp202 == 1)
 			{
 				MaxZoom = BitConverter.ToSingle(s, (int)offset);
 				offset += sizeof(float);
@@ -3776,10 +3894,10 @@ namespace KS.SceneActions
 				MaxZoom = null;
 			
 			// deserialize PostProcessProfileAsset
-			byte tmp189;
-			tmp189 = (byte)s[(int)offset];
+			byte tmp203;
+			tmp203 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp189 == 1)
+			if (tmp203 == 1)
 			{
 				PostProcessProfileAsset = new Asset();
 				offset = PostProcessProfileAsset.Deserialize(s, offset);
@@ -4048,12 +4166,12 @@ namespace KS.SceneActions
 			s.Add((byte)((SunChildRef == null) ? 0 : 1));
 			if (SunChildRef != null)
 			{
-				List<byte> tmp190 = new List<byte>();
-				tmp190.AddRange(BitConverter.GetBytes((uint)SunChildRef.Count()));
-				while (tmp190.Count > 0 && tmp190.Last() == 0)
-					tmp190.RemoveAt(tmp190.Count - 1);
-				s.Add((byte)tmp190.Count);
-				s.AddRange(tmp190);
+				List<byte> tmp204 = new List<byte>();
+				tmp204.AddRange(BitConverter.GetBytes((uint)SunChildRef.Count()));
+				while (tmp204.Count > 0 && tmp204.Last() == 0)
+					tmp204.RemoveAt(tmp204.Count - 1);
+				s.Add((byte)tmp204.Count);
+				s.AddRange(tmp204);
 				
 				s.AddRange(System.Text.Encoding.GetEncoding("ISO-8859-1").GetBytes(SunChildRef));
 			}
@@ -4064,10 +4182,10 @@ namespace KS.SceneActions
 		public override uint Deserialize(byte[] s, uint offset = 0)
 		{
 			// deserialize AmbientEquatorColor
-			byte tmp191;
-			tmp191 = (byte)s[(int)offset];
+			byte tmp205;
+			tmp205 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp191 == 1)
+			if (tmp205 == 1)
 			{
 				AmbientEquatorColor = new Vector4();
 				offset = AmbientEquatorColor.Deserialize(s, offset);
@@ -4076,10 +4194,10 @@ namespace KS.SceneActions
 				AmbientEquatorColor = null;
 			
 			// deserialize AmbientGroundColor
-			byte tmp192;
-			tmp192 = (byte)s[(int)offset];
+			byte tmp206;
+			tmp206 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp192 == 1)
+			if (tmp206 == 1)
 			{
 				AmbientGroundColor = new Vector4();
 				offset = AmbientGroundColor.Deserialize(s, offset);
@@ -4088,10 +4206,10 @@ namespace KS.SceneActions
 				AmbientGroundColor = null;
 			
 			// deserialize AmbientIntensity
-			byte tmp193;
-			tmp193 = (byte)s[(int)offset];
+			byte tmp207;
+			tmp207 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp193 == 1)
+			if (tmp207 == 1)
 			{
 				AmbientIntensity = BitConverter.ToSingle(s, (int)offset);
 				offset += sizeof(float);
@@ -4100,10 +4218,10 @@ namespace KS.SceneActions
 				AmbientIntensity = null;
 			
 			// deserialize AmbientLight
-			byte tmp194;
-			tmp194 = (byte)s[(int)offset];
+			byte tmp208;
+			tmp208 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp194 == 1)
+			if (tmp208 == 1)
 			{
 				AmbientLight = new Vector4();
 				offset = AmbientLight.Deserialize(s, offset);
@@ -4112,24 +4230,24 @@ namespace KS.SceneActions
 				AmbientLight = null;
 			
 			// deserialize AmbientMode
-			byte tmp195;
-			tmp195 = (byte)s[(int)offset];
+			byte tmp209;
+			tmp209 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp195 == 1)
+			if (tmp209 == 1)
 			{
-				sbyte tmp196;
-				tmp196 = (sbyte)s[(int)offset];
+				sbyte tmp210;
+				tmp210 = (sbyte)s[(int)offset];
 				offset += sizeof(sbyte);
-				AmbientMode = (EAmbientMode)tmp196;
+				AmbientMode = (EAmbientMode)tmp210;
 			}
 			else
 				AmbientMode = null;
 			
 			// deserialize AmbientSkyColor
-			byte tmp197;
-			tmp197 = (byte)s[(int)offset];
+			byte tmp211;
+			tmp211 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp197 == 1)
+			if (tmp211 == 1)
 			{
 				AmbientSkyColor = new Vector4();
 				offset = AmbientSkyColor.Deserialize(s, offset);
@@ -4138,10 +4256,10 @@ namespace KS.SceneActions
 				AmbientSkyColor = null;
 			
 			// deserialize CustomReflectionAsset
-			byte tmp198;
-			tmp198 = (byte)s[(int)offset];
+			byte tmp212;
+			tmp212 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp198 == 1)
+			if (tmp212 == 1)
 			{
 				CustomReflectionAsset = new Asset();
 				offset = CustomReflectionAsset.Deserialize(s, offset);
@@ -4150,24 +4268,24 @@ namespace KS.SceneActions
 				CustomReflectionAsset = null;
 			
 			// deserialize DefaultReflectionMode
-			byte tmp199;
-			tmp199 = (byte)s[(int)offset];
+			byte tmp213;
+			tmp213 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp199 == 1)
+			if (tmp213 == 1)
 			{
-				sbyte tmp200;
-				tmp200 = (sbyte)s[(int)offset];
+				sbyte tmp214;
+				tmp214 = (sbyte)s[(int)offset];
 				offset += sizeof(sbyte);
-				DefaultReflectionMode = (EDefaultReflectionMode)tmp200;
+				DefaultReflectionMode = (EDefaultReflectionMode)tmp214;
 			}
 			else
 				DefaultReflectionMode = null;
 			
 			// deserialize DefaultReflectionResolution
-			byte tmp201;
-			tmp201 = (byte)s[(int)offset];
+			byte tmp215;
+			tmp215 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp201 == 1)
+			if (tmp215 == 1)
 			{
 				DefaultReflectionResolution = BitConverter.ToInt32(s, (int)offset);
 				offset += sizeof(int);
@@ -4176,10 +4294,10 @@ namespace KS.SceneActions
 				DefaultReflectionResolution = null;
 			
 			// deserialize FlareFadeSpeed
-			byte tmp202;
-			tmp202 = (byte)s[(int)offset];
+			byte tmp216;
+			tmp216 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp202 == 1)
+			if (tmp216 == 1)
 			{
 				FlareFadeSpeed = BitConverter.ToSingle(s, (int)offset);
 				offset += sizeof(float);
@@ -4188,10 +4306,10 @@ namespace KS.SceneActions
 				FlareFadeSpeed = null;
 			
 			// deserialize FlareStrength
-			byte tmp203;
-			tmp203 = (byte)s[(int)offset];
+			byte tmp217;
+			tmp217 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp203 == 1)
+			if (tmp217 == 1)
 			{
 				FlareStrength = BitConverter.ToSingle(s, (int)offset);
 				offset += sizeof(float);
@@ -4200,10 +4318,10 @@ namespace KS.SceneActions
 				FlareStrength = null;
 			
 			// deserialize HasFog
-			byte tmp204;
-			tmp204 = (byte)s[(int)offset];
+			byte tmp218;
+			tmp218 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp204 == 1)
+			if (tmp218 == 1)
 			{
 				HasFog = BitConverter.ToBoolean(s, (int)offset);
 				offset += sizeof(bool);
@@ -4212,24 +4330,24 @@ namespace KS.SceneActions
 				HasFog = null;
 			
 			// deserialize FogMode
-			byte tmp205;
-			tmp205 = (byte)s[(int)offset];
+			byte tmp219;
+			tmp219 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp205 == 1)
+			if (tmp219 == 1)
 			{
-				sbyte tmp206;
-				tmp206 = (sbyte)s[(int)offset];
+				sbyte tmp220;
+				tmp220 = (sbyte)s[(int)offset];
 				offset += sizeof(sbyte);
-				FogMode = (EFogMode)tmp206;
+				FogMode = (EFogMode)tmp220;
 			}
 			else
 				FogMode = null;
 			
 			// deserialize FogColor
-			byte tmp207;
-			tmp207 = (byte)s[(int)offset];
+			byte tmp221;
+			tmp221 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp207 == 1)
+			if (tmp221 == 1)
 			{
 				FogColor = new Vector4();
 				offset = FogColor.Deserialize(s, offset);
@@ -4238,10 +4356,10 @@ namespace KS.SceneActions
 				FogColor = null;
 			
 			// deserialize FogDensity
-			byte tmp208;
-			tmp208 = (byte)s[(int)offset];
+			byte tmp222;
+			tmp222 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp208 == 1)
+			if (tmp222 == 1)
 			{
 				FogDensity = BitConverter.ToSingle(s, (int)offset);
 				offset += sizeof(float);
@@ -4250,10 +4368,10 @@ namespace KS.SceneActions
 				FogDensity = null;
 			
 			// deserialize FogStartDistance
-			byte tmp209;
-			tmp209 = (byte)s[(int)offset];
+			byte tmp223;
+			tmp223 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp209 == 1)
+			if (tmp223 == 1)
 			{
 				FogStartDistance = BitConverter.ToSingle(s, (int)offset);
 				offset += sizeof(float);
@@ -4262,10 +4380,10 @@ namespace KS.SceneActions
 				FogStartDistance = null;
 			
 			// deserialize FogEndDistance
-			byte tmp210;
-			tmp210 = (byte)s[(int)offset];
+			byte tmp224;
+			tmp224 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp210 == 1)
+			if (tmp224 == 1)
 			{
 				FogEndDistance = BitConverter.ToSingle(s, (int)offset);
 				offset += sizeof(float);
@@ -4274,10 +4392,10 @@ namespace KS.SceneActions
 				FogEndDistance = null;
 			
 			// deserialize HaloStrength
-			byte tmp211;
-			tmp211 = (byte)s[(int)offset];
+			byte tmp225;
+			tmp225 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp211 == 1)
+			if (tmp225 == 1)
 			{
 				HaloStrength = BitConverter.ToSingle(s, (int)offset);
 				offset += sizeof(float);
@@ -4286,10 +4404,10 @@ namespace KS.SceneActions
 				HaloStrength = null;
 			
 			// deserialize ReflectionBounces
-			byte tmp212;
-			tmp212 = (byte)s[(int)offset];
+			byte tmp226;
+			tmp226 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp212 == 1)
+			if (tmp226 == 1)
 			{
 				ReflectionBounces = BitConverter.ToInt32(s, (int)offset);
 				offset += sizeof(int);
@@ -4298,10 +4416,10 @@ namespace KS.SceneActions
 				ReflectionBounces = null;
 			
 			// deserialize ReflectionIntensity
-			byte tmp213;
-			tmp213 = (byte)s[(int)offset];
+			byte tmp227;
+			tmp227 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp213 == 1)
+			if (tmp227 == 1)
 			{
 				ReflectionIntensity = BitConverter.ToSingle(s, (int)offset);
 				offset += sizeof(float);
@@ -4310,10 +4428,10 @@ namespace KS.SceneActions
 				ReflectionIntensity = null;
 			
 			// deserialize SkyboxAsset
-			byte tmp214;
-			tmp214 = (byte)s[(int)offset];
+			byte tmp228;
+			tmp228 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp214 == 1)
+			if (tmp228 == 1)
 			{
 				SkyboxAsset = new Asset();
 				offset = SkyboxAsset.Deserialize(s, offset);
@@ -4322,10 +4440,10 @@ namespace KS.SceneActions
 				SkyboxAsset = null;
 			
 			// deserialize SubtractiveShadowColor
-			byte tmp215;
-			tmp215 = (byte)s[(int)offset];
+			byte tmp229;
+			tmp229 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp215 == 1)
+			if (tmp229 == 1)
 			{
 				SubtractiveShadowColor = new Vector4();
 				offset = SubtractiveShadowColor.Deserialize(s, offset);
@@ -4334,10 +4452,10 @@ namespace KS.SceneActions
 				SubtractiveShadowColor = null;
 			
 			// deserialize SunRef
-			byte tmp216;
-			tmp216 = (byte)s[(int)offset];
+			byte tmp230;
+			tmp230 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp216 == 1)
+			if (tmp230 == 1)
 			{
 				SunRef = BitConverter.ToInt32(s, (int)offset);
 				offset += sizeof(int);
@@ -4346,22 +4464,22 @@ namespace KS.SceneActions
 				SunRef = null;
 			
 			// deserialize SunChildRef
-			byte tmp217;
-			tmp217 = (byte)s[(int)offset];
+			byte tmp231;
+			tmp231 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp217 == 1)
+			if (tmp231 == 1)
 			{
-				byte tmp218;
-				tmp218 = (byte)s[(int)offset];
+				byte tmp232;
+				tmp232 = (byte)s[(int)offset];
 				offset += sizeof(byte);
-				byte[] tmp219 = new byte[sizeof(uint)];
-				Array.Copy(s, offset, tmp219, 0, tmp218);
-				offset += tmp218;
-				uint tmp220;
-				tmp220 = BitConverter.ToUInt32(tmp219, (int)0);
+				byte[] tmp233 = new byte[sizeof(uint)];
+				Array.Copy(s, offset, tmp233, 0, tmp232);
+				offset += tmp232;
+				uint tmp234;
+				tmp234 = BitConverter.ToUInt32(tmp233, (int)0);
 				
-				SunChildRef = System.Text.Encoding.GetEncoding("ISO-8859-1").GetString(s.Skip((int)offset).Take((int)tmp220).ToArray());
-				offset += tmp220;
+				SunChildRef = System.Text.Encoding.GetEncoding("ISO-8859-1").GetString(s.Skip((int)offset).Take((int)tmp234).ToArray());
+				offset += tmp234;
 			}
 			else
 				SunChildRef = null;
@@ -4445,24 +4563,24 @@ namespace KS.SceneActions
 			offset = base.Deserialize(s, offset);
 			
 			// deserialize Type
-			byte tmp221;
-			tmp221 = (byte)s[(int)offset];
+			byte tmp235;
+			tmp235 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp221 == 1)
+			if (tmp235 == 1)
 			{
-				sbyte tmp222;
-				tmp222 = (sbyte)s[(int)offset];
+				sbyte tmp236;
+				tmp236 = (sbyte)s[(int)offset];
 				offset += sizeof(sbyte);
-				Type = (EParadoxGraphType)tmp222;
+				Type = (EParadoxGraphType)tmp236;
 			}
 			else
 				Type = null;
 			
 			// deserialize GraphAsset
-			byte tmp223;
-			tmp223 = (byte)s[(int)offset];
+			byte tmp237;
+			tmp237 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp223 == 1)
+			if (tmp237 == 1)
 			{
 				GraphAsset = new Asset();
 				offset = GraphAsset.Deserialize(s, offset);
@@ -4471,10 +4589,10 @@ namespace KS.SceneActions
 				GraphAsset = null;
 			
 			// deserialize Play
-			byte tmp224;
-			tmp224 = (byte)s[(int)offset];
+			byte tmp238;
+			tmp238 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp224 == 1)
+			if (tmp238 == 1)
 			{
 				Play = BitConverter.ToBoolean(s, (int)offset);
 				offset += sizeof(bool);
@@ -4483,10 +4601,10 @@ namespace KS.SceneActions
 				Play = null;
 			
 			// deserialize Stop
-			byte tmp225;
-			tmp225 = (byte)s[(int)offset];
+			byte tmp239;
+			tmp239 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp225 == 1)
+			if (tmp239 == 1)
 			{
 				Stop = BitConverter.ToBoolean(s, (int)offset);
 				offset += sizeof(bool);
@@ -4495,16 +4613,482 @@ namespace KS.SceneActions
 				Stop = null;
 			
 			// deserialize Restart
-			byte tmp226;
-			tmp226 = (byte)s[(int)offset];
+			byte tmp240;
+			tmp240 = (byte)s[(int)offset];
 			offset += sizeof(byte);
-			if (tmp226 == 1)
+			if (tmp240 == 1)
 			{
 				Restart = BitConverter.ToBoolean(s, (int)offset);
 				offset += sizeof(bool);
 			}
 			else
 				Restart = null;
+			
+			return offset;
+		}
+	}
+	
+	public enum EParadoxBlackboardVariableType
+	{
+		Simple = 0,
+		List = 1,
+		Dictionary = 2,
+	}
+	
+	public enum EParadoxBlackboardOperationType
+	{
+		Edit = 0,
+		Add = 1,
+		Remove = 2,
+	}
+	
+	public enum EParadoxBlackboardValueType
+	{
+		Int = 0,
+		Float = 1,
+		Bool = 2,
+		String = 3,
+		GameObject = 4,
+		Vector2 = 5,
+		Vector3 = 6,
+		Vector4 = 7,
+		Color = 8,
+		LayerMask = 9,
+		Asset = 10,
+	}
+	
+	public partial class ChangeParadoxBlackboard : BaseAction
+	{
+		public string VarName { get; set; }
+		public EParadoxBlackboardValueType? ValueType { get; set; }
+		public EParadoxBlackboardVariableType? VarType { get; set; }
+		public EParadoxBlackboardOperationType? OpType { get; set; }
+		public int? ListIndex { get; set; }
+		public string DictionaryKey { get; set; }
+		public int? IntValue { get; set; }
+		public float? FloatValue { get; set; }
+		public bool? BoolValue { get; set; }
+		public string StringValue { get; set; }
+		public int? GameObjectRef { get; set; }
+		public string GameObjectChildRef { get; set; }
+		public Vector4 VectorValue { get; set; }
+		public LayerMask LayerMaskValue { get; set; }
+		public string AssetType { get; set; }
+		public Asset AssetValue { get; set; }
+		
+
+		public ChangeParadoxBlackboard()
+		{
+		}
+		
+		public new const string NameStatic = "ChangeParadoxBlackboard";
+		
+		public override string Name() => "ChangeParadoxBlackboard";
+		
+		public override byte[] Serialize()
+		{
+			List<byte> s = new List<byte>();
+			
+			// serialize parents
+			s.AddRange(base.Serialize());
+			
+			// serialize VarName
+			s.Add((byte)((VarName == null) ? 0 : 1));
+			if (VarName != null)
+			{
+				List<byte> tmp241 = new List<byte>();
+				tmp241.AddRange(BitConverter.GetBytes((uint)VarName.Count()));
+				while (tmp241.Count > 0 && tmp241.Last() == 0)
+					tmp241.RemoveAt(tmp241.Count - 1);
+				s.Add((byte)tmp241.Count);
+				s.AddRange(tmp241);
+				
+				s.AddRange(System.Text.Encoding.GetEncoding("ISO-8859-1").GetBytes(VarName));
+			}
+			
+			// serialize ValueType
+			s.Add((byte)((ValueType == null) ? 0 : 1));
+			if (ValueType != null)
+			{
+				s.Add((byte)((sbyte)ValueType));
+			}
+			
+			// serialize VarType
+			s.Add((byte)((VarType == null) ? 0 : 1));
+			if (VarType != null)
+			{
+				s.Add((byte)((sbyte)VarType));
+			}
+			
+			// serialize OpType
+			s.Add((byte)((OpType == null) ? 0 : 1));
+			if (OpType != null)
+			{
+				s.Add((byte)((sbyte)OpType));
+			}
+			
+			// serialize ListIndex
+			s.Add((byte)((ListIndex == null) ? 0 : 1));
+			if (ListIndex != null)
+			{
+				s.AddRange(BitConverter.GetBytes((int)ListIndex));
+			}
+			
+			// serialize DictionaryKey
+			s.Add((byte)((DictionaryKey == null) ? 0 : 1));
+			if (DictionaryKey != null)
+			{
+				List<byte> tmp242 = new List<byte>();
+				tmp242.AddRange(BitConverter.GetBytes((uint)DictionaryKey.Count()));
+				while (tmp242.Count > 0 && tmp242.Last() == 0)
+					tmp242.RemoveAt(tmp242.Count - 1);
+				s.Add((byte)tmp242.Count);
+				s.AddRange(tmp242);
+				
+				s.AddRange(System.Text.Encoding.GetEncoding("ISO-8859-1").GetBytes(DictionaryKey));
+			}
+			
+			// serialize IntValue
+			s.Add((byte)((IntValue == null) ? 0 : 1));
+			if (IntValue != null)
+			{
+				s.AddRange(BitConverter.GetBytes((int)IntValue));
+			}
+			
+			// serialize FloatValue
+			s.Add((byte)((FloatValue == null) ? 0 : 1));
+			if (FloatValue != null)
+			{
+				s.AddRange(BitConverter.GetBytes((float)FloatValue));
+			}
+			
+			// serialize BoolValue
+			s.Add((byte)((BoolValue == null) ? 0 : 1));
+			if (BoolValue != null)
+			{
+				s.AddRange(BitConverter.GetBytes((bool)BoolValue));
+			}
+			
+			// serialize StringValue
+			s.Add((byte)((StringValue == null) ? 0 : 1));
+			if (StringValue != null)
+			{
+				List<byte> tmp243 = new List<byte>();
+				tmp243.AddRange(BitConverter.GetBytes((uint)StringValue.Count()));
+				while (tmp243.Count > 0 && tmp243.Last() == 0)
+					tmp243.RemoveAt(tmp243.Count - 1);
+				s.Add((byte)tmp243.Count);
+				s.AddRange(tmp243);
+				
+				s.AddRange(System.Text.Encoding.GetEncoding("ISO-8859-1").GetBytes(StringValue));
+			}
+			
+			// serialize GameObjectRef
+			s.Add((byte)((GameObjectRef == null) ? 0 : 1));
+			if (GameObjectRef != null)
+			{
+				s.AddRange(BitConverter.GetBytes((int)GameObjectRef));
+			}
+			
+			// serialize GameObjectChildRef
+			s.Add((byte)((GameObjectChildRef == null) ? 0 : 1));
+			if (GameObjectChildRef != null)
+			{
+				List<byte> tmp244 = new List<byte>();
+				tmp244.AddRange(BitConverter.GetBytes((uint)GameObjectChildRef.Count()));
+				while (tmp244.Count > 0 && tmp244.Last() == 0)
+					tmp244.RemoveAt(tmp244.Count - 1);
+				s.Add((byte)tmp244.Count);
+				s.AddRange(tmp244);
+				
+				s.AddRange(System.Text.Encoding.GetEncoding("ISO-8859-1").GetBytes(GameObjectChildRef));
+			}
+			
+			// serialize VectorValue
+			s.Add((byte)((VectorValue == null) ? 0 : 1));
+			if (VectorValue != null)
+			{
+				s.AddRange(VectorValue.Serialize());
+			}
+			
+			// serialize LayerMaskValue
+			s.Add((byte)((LayerMaskValue == null) ? 0 : 1));
+			if (LayerMaskValue != null)
+			{
+				s.AddRange(LayerMaskValue.Serialize());
+			}
+			
+			// serialize AssetType
+			s.Add((byte)((AssetType == null) ? 0 : 1));
+			if (AssetType != null)
+			{
+				List<byte> tmp245 = new List<byte>();
+				tmp245.AddRange(BitConverter.GetBytes((uint)AssetType.Count()));
+				while (tmp245.Count > 0 && tmp245.Last() == 0)
+					tmp245.RemoveAt(tmp245.Count - 1);
+				s.Add((byte)tmp245.Count);
+				s.AddRange(tmp245);
+				
+				s.AddRange(System.Text.Encoding.GetEncoding("ISO-8859-1").GetBytes(AssetType));
+			}
+			
+			// serialize AssetValue
+			s.Add((byte)((AssetValue == null) ? 0 : 1));
+			if (AssetValue != null)
+			{
+				s.AddRange(AssetValue.Serialize());
+			}
+			
+			return s.ToArray();
+		}
+		
+		public override uint Deserialize(byte[] s, uint offset = 0)
+		{
+			// deserialize parents
+			offset = base.Deserialize(s, offset);
+			
+			// deserialize VarName
+			byte tmp246;
+			tmp246 = (byte)s[(int)offset];
+			offset += sizeof(byte);
+			if (tmp246 == 1)
+			{
+				byte tmp247;
+				tmp247 = (byte)s[(int)offset];
+				offset += sizeof(byte);
+				byte[] tmp248 = new byte[sizeof(uint)];
+				Array.Copy(s, offset, tmp248, 0, tmp247);
+				offset += tmp247;
+				uint tmp249;
+				tmp249 = BitConverter.ToUInt32(tmp248, (int)0);
+				
+				VarName = System.Text.Encoding.GetEncoding("ISO-8859-1").GetString(s.Skip((int)offset).Take((int)tmp249).ToArray());
+				offset += tmp249;
+			}
+			else
+				VarName = null;
+			
+			// deserialize ValueType
+			byte tmp250;
+			tmp250 = (byte)s[(int)offset];
+			offset += sizeof(byte);
+			if (tmp250 == 1)
+			{
+				sbyte tmp251;
+				tmp251 = (sbyte)s[(int)offset];
+				offset += sizeof(sbyte);
+				ValueType = (EParadoxBlackboardValueType)tmp251;
+			}
+			else
+				ValueType = null;
+			
+			// deserialize VarType
+			byte tmp252;
+			tmp252 = (byte)s[(int)offset];
+			offset += sizeof(byte);
+			if (tmp252 == 1)
+			{
+				sbyte tmp253;
+				tmp253 = (sbyte)s[(int)offset];
+				offset += sizeof(sbyte);
+				VarType = (EParadoxBlackboardVariableType)tmp253;
+			}
+			else
+				VarType = null;
+			
+			// deserialize OpType
+			byte tmp254;
+			tmp254 = (byte)s[(int)offset];
+			offset += sizeof(byte);
+			if (tmp254 == 1)
+			{
+				sbyte tmp255;
+				tmp255 = (sbyte)s[(int)offset];
+				offset += sizeof(sbyte);
+				OpType = (EParadoxBlackboardOperationType)tmp255;
+			}
+			else
+				OpType = null;
+			
+			// deserialize ListIndex
+			byte tmp256;
+			tmp256 = (byte)s[(int)offset];
+			offset += sizeof(byte);
+			if (tmp256 == 1)
+			{
+				ListIndex = BitConverter.ToInt32(s, (int)offset);
+				offset += sizeof(int);
+			}
+			else
+				ListIndex = null;
+			
+			// deserialize DictionaryKey
+			byte tmp257;
+			tmp257 = (byte)s[(int)offset];
+			offset += sizeof(byte);
+			if (tmp257 == 1)
+			{
+				byte tmp258;
+				tmp258 = (byte)s[(int)offset];
+				offset += sizeof(byte);
+				byte[] tmp259 = new byte[sizeof(uint)];
+				Array.Copy(s, offset, tmp259, 0, tmp258);
+				offset += tmp258;
+				uint tmp260;
+				tmp260 = BitConverter.ToUInt32(tmp259, (int)0);
+				
+				DictionaryKey = System.Text.Encoding.GetEncoding("ISO-8859-1").GetString(s.Skip((int)offset).Take((int)tmp260).ToArray());
+				offset += tmp260;
+			}
+			else
+				DictionaryKey = null;
+			
+			// deserialize IntValue
+			byte tmp261;
+			tmp261 = (byte)s[(int)offset];
+			offset += sizeof(byte);
+			if (tmp261 == 1)
+			{
+				IntValue = BitConverter.ToInt32(s, (int)offset);
+				offset += sizeof(int);
+			}
+			else
+				IntValue = null;
+			
+			// deserialize FloatValue
+			byte tmp262;
+			tmp262 = (byte)s[(int)offset];
+			offset += sizeof(byte);
+			if (tmp262 == 1)
+			{
+				FloatValue = BitConverter.ToSingle(s, (int)offset);
+				offset += sizeof(float);
+			}
+			else
+				FloatValue = null;
+			
+			// deserialize BoolValue
+			byte tmp263;
+			tmp263 = (byte)s[(int)offset];
+			offset += sizeof(byte);
+			if (tmp263 == 1)
+			{
+				BoolValue = BitConverter.ToBoolean(s, (int)offset);
+				offset += sizeof(bool);
+			}
+			else
+				BoolValue = null;
+			
+			// deserialize StringValue
+			byte tmp264;
+			tmp264 = (byte)s[(int)offset];
+			offset += sizeof(byte);
+			if (tmp264 == 1)
+			{
+				byte tmp265;
+				tmp265 = (byte)s[(int)offset];
+				offset += sizeof(byte);
+				byte[] tmp266 = new byte[sizeof(uint)];
+				Array.Copy(s, offset, tmp266, 0, tmp265);
+				offset += tmp265;
+				uint tmp267;
+				tmp267 = BitConverter.ToUInt32(tmp266, (int)0);
+				
+				StringValue = System.Text.Encoding.GetEncoding("ISO-8859-1").GetString(s.Skip((int)offset).Take((int)tmp267).ToArray());
+				offset += tmp267;
+			}
+			else
+				StringValue = null;
+			
+			// deserialize GameObjectRef
+			byte tmp268;
+			tmp268 = (byte)s[(int)offset];
+			offset += sizeof(byte);
+			if (tmp268 == 1)
+			{
+				GameObjectRef = BitConverter.ToInt32(s, (int)offset);
+				offset += sizeof(int);
+			}
+			else
+				GameObjectRef = null;
+			
+			// deserialize GameObjectChildRef
+			byte tmp269;
+			tmp269 = (byte)s[(int)offset];
+			offset += sizeof(byte);
+			if (tmp269 == 1)
+			{
+				byte tmp270;
+				tmp270 = (byte)s[(int)offset];
+				offset += sizeof(byte);
+				byte[] tmp271 = new byte[sizeof(uint)];
+				Array.Copy(s, offset, tmp271, 0, tmp270);
+				offset += tmp270;
+				uint tmp272;
+				tmp272 = BitConverter.ToUInt32(tmp271, (int)0);
+				
+				GameObjectChildRef = System.Text.Encoding.GetEncoding("ISO-8859-1").GetString(s.Skip((int)offset).Take((int)tmp272).ToArray());
+				offset += tmp272;
+			}
+			else
+				GameObjectChildRef = null;
+			
+			// deserialize VectorValue
+			byte tmp273;
+			tmp273 = (byte)s[(int)offset];
+			offset += sizeof(byte);
+			if (tmp273 == 1)
+			{
+				VectorValue = new Vector4();
+				offset = VectorValue.Deserialize(s, offset);
+			}
+			else
+				VectorValue = null;
+			
+			// deserialize LayerMaskValue
+			byte tmp274;
+			tmp274 = (byte)s[(int)offset];
+			offset += sizeof(byte);
+			if (tmp274 == 1)
+			{
+				LayerMaskValue = new LayerMask();
+				offset = LayerMaskValue.Deserialize(s, offset);
+			}
+			else
+				LayerMaskValue = null;
+			
+			// deserialize AssetType
+			byte tmp275;
+			tmp275 = (byte)s[(int)offset];
+			offset += sizeof(byte);
+			if (tmp275 == 1)
+			{
+				byte tmp276;
+				tmp276 = (byte)s[(int)offset];
+				offset += sizeof(byte);
+				byte[] tmp277 = new byte[sizeof(uint)];
+				Array.Copy(s, offset, tmp277, 0, tmp276);
+				offset += tmp276;
+				uint tmp278;
+				tmp278 = BitConverter.ToUInt32(tmp277, (int)0);
+				
+				AssetType = System.Text.Encoding.GetEncoding("ISO-8859-1").GetString(s.Skip((int)offset).Take((int)tmp278).ToArray());
+				offset += tmp278;
+			}
+			else
+				AssetType = null;
+			
+			// deserialize AssetValue
+			byte tmp279;
+			tmp279 = (byte)s[(int)offset];
+			offset += sizeof(byte);
+			if (tmp279 == 1)
+			{
+				AssetValue = new Asset();
+				offset = AssetValue.Deserialize(s, offset);
+			}
+			else
+				AssetValue = null;
 			
 			return offset;
 		}

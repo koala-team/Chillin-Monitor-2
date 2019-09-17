@@ -1,4 +1,4 @@
-﻿using DG.Tweening;
+using DG.Tweening;
 using System;
 using System.IO;
 using System.Text;
@@ -45,6 +45,16 @@ namespace Koala
 		}
 
 		#region KSVectors
+		public static Vector4 ApplyKSVector4(this Vector4 v, KS.SceneActions.Vector4 config)
+		{
+			v.x = config.X ?? v.x;
+			v.y = config.Y ?? v.y;
+			v.z = config.Z ?? v.z;
+			v.w = config.W ?? v.w;
+
+			return v;
+		}
+
 		public static Color ApplyKSVector4(this Color c, KS.SceneActions.Vector4 config)
 		{
 			if (config.X.HasValue)

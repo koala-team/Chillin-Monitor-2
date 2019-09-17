@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -17,26 +19,47 @@ namespace Koala
 
 		public void Init(Dictionary<string, List<string>> sides, Dictionary<string, string> sideColors)
 		{
+			Dictionary<string, Color> bgColors = new Dictionary<string, Color>();
+			Dictionary<string, Color> contrastColors = new Dictionary<string, Color>();
+
+			foreach (var side in sides.Keys)
+			{
+				Color bgColor = Color.red;
+				ColorUtility.TryParseHtmlString(sideColors[side], out bgColor);
+
+				bgColors[side] = bgColor;
+				contrastColors[side] = bgColor.ContrastColor();
+
+				string varName = $"{side}NamesTeam";
+				Helper.GlobalBlackboard.AddVariable(varName, typeof(Dictionary<string, string>));
+				Helper.GlobalBlackboard[varName] = new Dictionary<string, string>();
+				foreach (var name in sides[side])
+					(Helper.GlobalBlackboard[varName] as IDictionary)[name] = "-";
+			}
+
+			Helper.GlobalBlackboard["Sides"] = sides.Keys.ToList();
+			Helper.GlobalBlackboard["SidesColor"] = bgColors;
+			Helper.GlobalBlackboard["SidesContrastColor"] = contrastColors;
+
 			bool showNameColumn = false;
 
 			foreach (var side in sides.Keys)
 			{
 				var names = sides[side];
+				Color bgColor = bgColors[side];
+				Color contrastColor = contrastColors[side];
 
 				if (names.Count > 1) showNameColumn = true;
 
 				foreach (var name in names)
 				{
-					Color bgColor = Color.red;
-					ColorUtility.TryParseHtmlString(sideColors[side], out bgColor);
-
 					var agent = new Agent
 					{
 						Team = "-",
 						Side = side,
 						Name = name,
 						BackgroundColor = bgColor,
-						TextColor = bgColor.ContrastColor(),
+						TextColor = contrastColor,
 					};
 					agent.Draw(this);
 					_agents.Add(agent);
@@ -88,6 +111,8 @@ namespace Koala
 
 			public void ChangeAgentTeam(string team)
 			{
+				(Helper.GlobalBlackboard[$"{Side}NamesTeam"] as IDictionary)[Name] = team;
+
 				EditCell(_teamCell, team);
 			}
 

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
@@ -88,6 +88,14 @@ namespace Koala
 				Debug.LogError(e.Message);
 				return null;
 			}
+		}
+
+		public static string GetFullRef(int? reference, string childRef)
+		{
+			if (!reference.HasValue)
+				return null;
+
+			return reference.ToString() + (childRef != null ? "/" + childRef : "");
 		}
 	}
 }

@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -29,10 +29,18 @@ namespace Koala
         public float m_assetBundlesListMaxHeight;
         public GameObject m_assetBundlesGame;
 		public GameObject m_assetBundlesItem;
+		public GameObject m_globalBlackboard;
+
 
 		void Awake()
 		{
 			QualitySettings.vSyncCount = 0;
+
+			if (Helper.GlobalBlackboard == null)
+			{
+				Helper.GlobalBlackboard = Instantiate(m_globalBlackboard).GetComponent<NodeCanvas.Framework.Blackboard>();
+				DontDestroyOnLoad(Helper.GlobalBlackboard);
+			}
 		}
 
 		public void Start()

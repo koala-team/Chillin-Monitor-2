@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using TMPro;
 using DG.Tweening;
@@ -66,6 +66,10 @@ namespace Koala
 			Helper.MaxEndTime = 0;
 			Helper.GameName = null;
 
+			// Set Global Blackboard values
+			Helper.GlobalBlackboard["MainCamera"] = m_mainCamera;
+			Helper.GlobalBlackboard["MainCameraDummy"] = m_mainCamera.GetComponent<CameraController>().m_dummy;
+
 			// Config Tweens
 			TweensManager.Instance.Reset();
 			DOTween.Init();
@@ -81,7 +85,7 @@ namespace Koala
 				StartCoroutine(HandleOnlineMessages());
 		}
 
-		void OnDestroy()
+        void OnDestroy()
 		{
 			DOTween.KillAll(false);
 		}
@@ -107,10 +111,9 @@ namespace Koala
 		public void Update()
 		{
 			// Update Cycle UI
-			float cycle = Helper.CycleDuration == 0 ? 0 : Timeline.Instance.Time / Helper.CycleDuration;
 			m_cycleSlider.maxValue = Helper.MaxCycle;
-			m_cycleSlider.value = cycle;
-			m_cycleText.text = string.Format("{0} / {1} @{2}X", cycle.TruncateDecimal(1).ToString("0.0"), (int)Helper.MaxCycle, Timeline.Instance.TimeScale);
+			m_cycleSlider.value = Timeline.Instance.Cycle;
+			m_cycleText.text = string.Format("{0} / {1} @{2}X", Timeline.Instance.Cycle.TruncateDecimal(1).ToString("0.0"), (int)Helper.MaxCycle, Timeline.Instance.TimeScale);
 
 			ControlTime();
 		}

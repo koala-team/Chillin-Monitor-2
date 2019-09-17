@@ -3260,6 +3260,8 @@ MonoBehaviour:
     type: 3}
   m_assetBundlesItem: {fileID: 7370895527658429234, guid: 73f763ebaee2153419502c18ed774bed,
     type: 3}
+  m_globalBlackboard: {fileID: 214246262401915378, guid: 5eeeaa06f85bfaa4eba726e5db525e86,
+    type: 3}
 --- !u!1 &1863934523
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,6 +1,7 @@
-﻿using KS.SceneActions;
+using KS.SceneActions;
 using NodeCanvas.Framework;
 using NodeCanvas.StateMachines;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Koala
@@ -28,8 +29,8 @@ namespace Koala
             if (_newConfig.Play.HasValue || _newConfig.Stop.HasValue || _newConfig.Restart.HasValue)
                 oldConfig.Play = graphOwner.isRunning;
 
-            if (_newConfig.Type == EParadoxGraphType.FSM && (_newConfig.Stop.HasValue || _newConfig.Restart.HasValue))
-                oldConfig.FSMState = (graphOwner as FSMOwner).GetCurrentState();
+			if (_newConfig.Type == EParadoxGraphType.FSM && (_newConfig.Stop.HasValue || _newConfig.Restart.HasValue))
+				SaveFSMStates(graphOwner, oldConfig);
 
             return oldConfig;
         }
@@ -63,11 +64,50 @@ namespace Koala
             if (config.Restart.HasValue && config.Restart.Value)
                 graphOwner.RestartBehaviour();
 
-            if (config.FSMState != null)
-                (graphOwner as FSMOwner).TriggerState(config.FSMState.name);
+			if (config.FSMStates != null)
+				LoadFSMStates(graphOwner, config);
         }
 
-        private GameObject GetGameObject()
+		private void SaveFSMStates(GraphOwner graphOwner, ChangeParadoxGraph config)
+		{
+			if (graphOwner.graph == null)
+				return;
+
+			config.FSMStates = new List<FSMState>();
+			FSM fsm = graphOwner.graph as FSM;
+
+			var current = fsm.currentState;
+			config.FSMStates.Add(current);
+
+			while (current is NestedFSMState)
+			{
+				var subState = (NestedFSMState)current;
+				current = subState.nestedFSM != null ? subState.nestedFSM.currentState : null;
+
+				if (current != null)
+					config.FSMStates.Add(current);
+			}
+		}
+
+		private void LoadFSMStates(GraphOwner graphOwner, ChangeParadoxGraph config)
+		{
+			if (graphOwner.graph == null)
+				return;
+
+			FSM fsm = graphOwner.graph as FSM;
+			foreach (var state in config.FSMStates)
+			{
+				fsm.EnterState(state);
+
+				if (fsm.currentState is NestedFSMState)
+				{
+					var subState = (NestedFSMState)fsm.currentState;
+					fsm = subState.nestedFSM != null ? subState.nestedFSM : null;
+				}
+			}
+		}
+
+		private GameObject GetGameObject()
         {
             if (_gameObject == null)
                 _gameObject = References.Instance.GetGameObject(_reference);
