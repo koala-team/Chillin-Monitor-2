@@ -51,6 +51,7 @@ namespace Koala
 			private set { _timeScale = value; Helper.GlobalBlackboard["TimeScale"] = value; }
 		}
 		public float Cycle => Helper.CycleDuration == 0 ? 0 : Time / Helper.CycleDuration;
+		private bool TimeScaleChanged { get; set; }
 
 		public void Reset()
 		{
@@ -64,6 +65,7 @@ namespace Koala
 
 			Time = -0.00001f;
 			TimeScale = 1;
+			TimeScaleChanged = true;
 		}
 
 		public void Schedule(float time, Occurrence occurrence)
@@ -84,6 +86,13 @@ namespace Koala
 			{
 				ChangeTimeScale(-TimeScale);
 				return true;
+			}
+
+			if (TimeScaleChanged)
+			{
+				TimeScaleChanged = false;
+				Helper.SetAnimatorsTimeScale(Helper.RootGameObject);
+				Helper.SetAudioSourcesTimeScale(Helper.RootGameObject);
 			}
 
 			float deltaTime = unscaledDeltaTime * TimeScale;
@@ -129,9 +138,7 @@ namespace Koala
 		public void ChangeTimeScale(float amount)
 		{
 			TimeScale += amount;
-
-			Helper.SetAnimatorsTimeScale(Helper.RootGameObject);
-			Helper.SetAudioSourcesTimeScale(Helper.RootGameObject);
+			TimeScaleChanged = true;
 		}
 
 		private bool CheckIsTimeBetween(int prevTime, int checkTime, int newTime)
