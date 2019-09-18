@@ -98,10 +98,6 @@ namespace Koala
 				case EndCycle.NameStatic:
 					Helper.MaxCycle += 1;
 					return;
-
-				case ChangeRenderSettings.NameStatic:
-					((ChangeRenderSettings)action).DoAction();
-					return;
 			}
 
 			// Defaults

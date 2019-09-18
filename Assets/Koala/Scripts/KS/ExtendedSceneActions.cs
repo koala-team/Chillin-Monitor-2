@@ -366,81 +366,18 @@ namespace KS.SceneActions
 
 	public partial class ChangeRenderSettings
 	{
-		public void DoAction()
+		public Light Sun { get; set; }
+		public Cubemap CustomReflection { get; set; }
+		public Material Skybox { get; set; }
+
+
+		public override void Prepare()
 		{
-			if (AmbientEquatorColor != null)
-				RenderSettings.ambientEquatorColor = RenderSettings.ambientEquatorColor.ApplyKSVector4(AmbientEquatorColor);
+			base.Prepare();
 
-			if (AmbientGroundColor != null)
-				RenderSettings.ambientGroundColor = RenderSettings.ambientGroundColor.ApplyKSVector4(AmbientGroundColor);
-
-			if (AmbientIntensity.HasValue)
-				RenderSettings.ambientIntensity = AmbientIntensity.Value;
-
-			if (AmbientLight != null)
-				RenderSettings.ambientLight = RenderSettings.ambientLight.ApplyKSVector4(AmbientLight);
-
-			if (AmbientMode.HasValue)
-				RenderSettings.ambientMode = (UnityEngine.Rendering.AmbientMode)AmbientMode.Value;
-
-			if (AmbientSkyColor != null)
-				RenderSettings.ambientSkyColor = RenderSettings.ambientSkyColor.ApplyKSVector4(AmbientSkyColor);
-
-			Cubemap customReflection = BundleManager.Instance.LoadAsset<Cubemap>(CustomReflectionAsset);
-			if (customReflection != null)
-				RenderSettings.customReflection = customReflection;
-
-			if (DefaultReflectionMode.HasValue)
-				RenderSettings.defaultReflectionMode = (UnityEngine.Rendering.DefaultReflectionMode)DefaultReflectionMode.Value;
-
-			if (DefaultReflectionResolution.HasValue)
-				RenderSettings.defaultReflectionResolution = DefaultReflectionResolution.Value;
-
-			if (FlareFadeSpeed.HasValue)
-				RenderSettings.flareFadeSpeed = FlareFadeSpeed.Value;
-
-			if (FlareStrength.HasValue)
-				RenderSettings.flareStrength = FlareStrength.Value;
-
-			if (HasFog.HasValue)
-				RenderSettings.fog = HasFog.Value;
-
-			if (FogMode.HasValue)
-				RenderSettings.fogMode = (FogMode)FogMode.Value;
-
-			if (FogColor != null)
-				RenderSettings.fogColor = RenderSettings.fogColor.ApplyKSVector4(FogColor);
-
-			if (FogDensity.HasValue)
-				RenderSettings.fogDensity = FogDensity.Value;
-
-			if (FogStartDistance.HasValue)
-				RenderSettings.fogStartDistance = FogStartDistance.Value;
-
-			if (FogEndDistance.HasValue)
-				RenderSettings.fogEndDistance = FogEndDistance.Value;
-
-			if (HaloStrength.HasValue)
-				RenderSettings.haloStrength = HaloStrength.Value;
-
-			if (ReflectionBounces.HasValue)
-				RenderSettings.reflectionBounces = ReflectionBounces.Value;
-
-			if (ReflectionIntensity.HasValue)
-				RenderSettings.reflectionIntensity = ReflectionIntensity.Value;
-
-			Material skybox = BundleManager.Instance.LoadAsset<Material>(SkyboxAsset);
-			if (skybox != null)
-				RenderSettings.skybox = skybox;
-
-			if (SubtractiveShadowColor != null)
-				RenderSettings.subtractiveShadowColor = RenderSettings.subtractiveShadowColor.ApplyKSVector4(SubtractiveShadowColor);
-
-			if (SunRef.HasValue)
-			{
-				string fullRef = References.GetFullRef(SunRef, SunChildRef);
-				RenderSettings.sun = References.Instance.GetGameObject(fullRef).GetComponent<Light>();
-			}
+			BackwardChanges = BackwardChanges ?? false;
+			CustomReflection = BundleManager.Instance.LoadAsset<Cubemap>(CustomReflectionAsset);
+			Skybox = BundleManager.Instance.LoadAsset<Material>(SkyboxAsset);
 		}
 	}
 

@@ -461,7 +461,8 @@ _def = enum <byte>
 	}
 
 [ChangeRenderSettings]
-_def = class
+_def = class(BaseAction)
+backward_changes = boolean
 ambient_equator_color = Vector4
 ambient_ground_color = Vector4
 ambient_intensity = float
