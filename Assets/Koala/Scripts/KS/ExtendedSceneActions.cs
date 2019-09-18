@@ -446,21 +446,14 @@ namespace KS.SceneActions
 
     public partial class ChangeParadoxGraph
     {
-        private static readonly Dictionary<EParadoxGraphType, string> COMPONENT_TYPE_NAME = new Dictionary<EParadoxGraphType, string>()
+        private static readonly Dictionary<EParadoxGraphType, Type> COMPONENT_TYPE = new Dictionary<EParadoxGraphType, Type>()
         {
-            { EParadoxGraphType.Flow, "FlowCanvas.FlowScriptController" },
-            { EParadoxGraphType.BehaviourTree, "NodeCanvas.BehaviourTrees.BehaviourTreeOwner" },
-            { EParadoxGraphType.FSM, "NodeCanvas.StateMachines.FSMOwner" },
-        };
-        private static readonly Dictionary<EParadoxGraphType, string> GRAPH_TYPE_NAME = new Dictionary<EParadoxGraphType, string>()
-        {
-            { EParadoxGraphType.Flow, "FlowCanvas.FlowScript" },
-            { EParadoxGraphType.BehaviourTree, "NodeCanvas.BehaviourTrees.BehaviourTree" },
-            { EParadoxGraphType.FSM, "NodeCanvas.StateMachines.FSM" },
+            { EParadoxGraphType.Flow, typeof(FlowCanvas.FlowScriptController) },
+            { EParadoxGraphType.BehaviourTree, typeof(NodeCanvas.BehaviourTrees.BehaviourTreeOwner) },
+            { EParadoxGraphType.FSM, typeof(NodeCanvas.StateMachines.FSMOwner) },
         };
 
-        public Type ComponentType => Helper.Assembly.GetType(COMPONENT_TYPE_NAME[Type.Value]);
-        public Type GraphType => Helper.Assembly.GetType(GRAPH_TYPE_NAME[Type.Value]);
+        public Type ComponentType => COMPONENT_TYPE[Type.Value];
 
         public Graph Graph { get; set; }
         public List<FSMState> FSMStates { get; set; }
@@ -473,6 +466,11 @@ namespace KS.SceneActions
             Graph = BundleManager.Instance.LoadAsset<Graph>(GraphAsset);
         }
     }
+
+	public partial class ChangeParadoxFSM
+	{
+		public List<FSMState> States { get; set; }
+	}
 
 	public partial class ChangeParadoxBlackboard
 	{

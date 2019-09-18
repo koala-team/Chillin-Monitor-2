@@ -1,5 +1,7 @@
 using DG.Tweening;
+using NodeCanvas.StateMachines;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -334,6 +336,45 @@ namespace Koala
 		public static Vector3 Clamp(this Vector3 v, Vector3 min, Vector3 max)
 		{
 			return Vector3.Min(max, Vector3.Max(min, v));
+		}
+
+		public static List<FSMState> SaveFSMStates(this NodeCanvas.Framework.GraphOwner graphOwner)
+		{
+			FSM fsm = graphOwner.graph as FSM;
+
+			if (fsm == null)
+				return null;
+
+			var states = new List<FSMState>();
+
+			var current = fsm.currentState;
+			states.Add(current);
+
+			while (current is NestedFSMState subState)
+			{
+				current = subState.nestedFSM?.currentState;
+
+				if (current != null)
+					states.Add(current);
+			}
+
+			return states;
+		}
+
+		public static void LoadFSMStates(this NodeCanvas.Framework.GraphOwner graphOwner, List<FSMState> states)
+		{
+			FSM fsm = graphOwner.graph as FSM;
+
+			if (fsm == null)
+				return;
+
+			foreach (var state in states)
+			{
+				fsm.EnterState(state);
+
+				if (fsm.currentState is NestedFSMState subState)
+					fsm = subState.nestedFSM ?? null;
+			}
 		}
 	}
 }

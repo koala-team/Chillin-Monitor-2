@@ -30,7 +30,7 @@ namespace Koala
                 oldConfig.Play = graphOwner.isRunning;
 
 			if (_newConfig.Type == EParadoxGraphType.FSM && (_newConfig.Stop.HasValue || _newConfig.Restart.HasValue))
-				SaveFSMStates(graphOwner, oldConfig);
+				oldConfig.FSMStates = graphOwner.SaveFSMStates();
 
             return oldConfig;
         }
@@ -65,47 +65,8 @@ namespace Koala
                 graphOwner.RestartBehaviour();
 
 			if (config.FSMStates != null)
-				LoadFSMStates(graphOwner, config);
+				graphOwner.LoadFSMStates(config.FSMStates);
         }
-
-		private void SaveFSMStates(GraphOwner graphOwner, ChangeParadoxGraph config)
-		{
-			if (graphOwner.graph == null)
-				return;
-
-			config.FSMStates = new List<FSMState>();
-			FSM fsm = graphOwner.graph as FSM;
-
-			var current = fsm.currentState;
-			config.FSMStates.Add(current);
-
-			while (current is NestedFSMState)
-			{
-				var subState = (NestedFSMState)current;
-				current = subState.nestedFSM != null ? subState.nestedFSM.currentState : null;
-
-				if (current != null)
-					config.FSMStates.Add(current);
-			}
-		}
-
-		private void LoadFSMStates(GraphOwner graphOwner, ChangeParadoxGraph config)
-		{
-			if (graphOwner.graph == null)
-				return;
-
-			FSM fsm = graphOwner.graph as FSM;
-			foreach (var state in config.FSMStates)
-			{
-				fsm.EnterState(state);
-
-				if (fsm.currentState is NestedFSMState)
-				{
-					var subState = (NestedFSMState)fsm.currentState;
-					fsm = subState.nestedFSM != null ? subState.nestedFSM : null;
-				}
-			}
-		}
 
 		private GameObject GetGameObject()
         {

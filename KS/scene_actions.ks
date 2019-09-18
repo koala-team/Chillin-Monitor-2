@@ -509,6 +509,22 @@ restart = boolean
 ##########################################################
 ##########################################################
 
+[ChangeParadoxBehaviourTree]
+_def = class(BaseAction)
+repeat = boolean
+update_interval = float
+
+##########################################################
+##########################################################
+
+[ChangeParadoxFSM]
+_def = class(BaseAction)
+trigger_states_name = list<string>
+hard_trigger = list<boolean>
+
+##########################################################
+##########################################################
+
 [EParadoxBlackboardVariableType]
 _def = enum <byte>
     {
