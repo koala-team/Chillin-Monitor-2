@@ -309,7 +309,7 @@ namespace KS.SceneActions
 		}
 	}
 
-	public partial class ChangeMaterial
+	public partial class ChangeRenderer
 	{
 		public Material Material { get; set; }
 
@@ -318,8 +318,8 @@ namespace KS.SceneActions
 		{
 			base.Prepare();
 
-			Index = Index ?? 0;
 			Material = BundleManager.Instance.LoadAsset<Material>(MaterialAsset);
+			MaterialIndex = MaterialIndex ?? 0;
 		}
 	}
 

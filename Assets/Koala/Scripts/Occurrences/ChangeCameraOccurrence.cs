@@ -1,4 +1,4 @@
-﻿using DG.Tweening;
+using DG.Tweening;
 using UnityEngine;
 using KS.SceneActions;
 using UnityEngine.Rendering.PostProcessing;
@@ -7,9 +7,11 @@ namespace Koala
 {
 	public class ChangeCameraOccurrence : BaseOccurrence<ChangeCameraOccurrence, ChangeCamera>
 	{
+		private GameObject _gameObject;
 		private Camera _camera;
 		private CameraController _cameraController;
 		private PostProcessVolume _postProcessVolume;
+		private PostProcessLayer _postProcessLayer;
 
 
 		public ChangeCameraOccurrence() { }
@@ -18,12 +20,10 @@ namespace Koala
 		{
 			var camera = GetCamera();
 			var cameraController = GetCameraController();
-			var postProcessVolume = GetPostProcessVolume();
 
 			var oldConfig = new ChangeCamera
 			{
 				PostProcessProfileAsset = _newConfig.PostProcessProfileAsset,
-				PostProcessProfile = postProcessVolume.profile,
 			};
 
 			if (_newConfig.ClearFlag.HasValue)
@@ -31,6 +31,9 @@ namespace Koala
 
 			if (_newConfig.BackgroundColor != null)
 				oldConfig.BackgroundColor = camera.backgroundColor.ToKSVector4();
+
+			if (_newConfig.CullingMask != null)
+				oldConfig.CullingMask = new KS.SceneActions.LayerMask() { MasksInt = camera.cullingMask };
 
 			if (_newConfig.IsOrthographic.HasValue)
 				oldConfig.IsOrthographic = camera.orthographic;
@@ -66,7 +69,10 @@ namespace Koala
 				oldConfig.MaxZoom = cameraController.MaxZoom;
 
 			if (_newConfig.PostProcessProfileAsset != null)
-				oldConfig.PostProcessProfile = postProcessVolume.profile;
+				oldConfig.PostProcessProfile = GetPostProcessVolume().profile;
+
+			if (_newConfig.PostProcessLayers != null)
+				oldConfig.PostProcessLayers = new KS.SceneActions.LayerMask() { MasksInt = GetPostProcessLayer().volumeLayer };
 
 			return oldConfig;
 		}
@@ -179,37 +185,56 @@ namespace Koala
 		protected override void ManageSuddenChanges(ChangeCamera config, bool isForward)
 		{
 			var camera = GetCamera();
-			var postProcessVolume = GetPostProcessVolume();
 
 			if (config.ClearFlag.HasValue)
 				camera.clearFlags = (CameraClearFlags)config.ClearFlag.Value;
-			
+
+			if (config.CullingMask != null)
+				camera.cullingMask = config.CullingMask.Mask;
+
 			if (config.IsOrthographic.HasValue)
 				camera.orthographic = config.IsOrthographic.Value;
 
 			if (config.PostProcessProfileAsset != null)
-				postProcessVolume.profile = config.PostProcessProfile;
+				GetPostProcessVolume().profile = config.PostProcessProfile;
+
+			if (config.PostProcessLayers != null)
+				GetPostProcessLayer().volumeLayer = config.PostProcessLayers.Mask;
+		}
+
+		private GameObject GetGameObject()
+		{
+			if (_gameObject == null)
+				_gameObject = References.Instance.GetGameObject(_reference);
+			return _gameObject;
 		}
 
 		private Camera GetCamera()
 		{
 			if (_camera == null)
-				_camera = References.Instance.GetGameObject(_reference).GetComponent<Camera>();
+				_camera = GetGameObject().GetComponent<Camera>();
 			return _camera;
 		}
 
 		private CameraController GetCameraController()
 		{
 			if (_cameraController == null)
-				_cameraController = References.Instance.GetGameObject(_reference).GetComponent<CameraController>();
+				_cameraController = GetGameObject().GetComponent<CameraController>();
 			return _cameraController;
 		}
 
 		private PostProcessVolume GetPostProcessVolume()
 		{
 			if (_postProcessVolume == null)
-				_postProcessVolume = References.Instance.GetGameObject(_reference).GetComponent<PostProcessVolume>();
+				_postProcessVolume = GetGameObject().GetComponent<PostProcessVolume>();
 			return _postProcessVolume;
+		}
+
+		private PostProcessLayer GetPostProcessLayer()
+		{
+			if (_postProcessLayer == null)
+				_postProcessLayer = GetGameObject().GetComponent<PostProcessLayer>();
+			return _postProcessLayer;
 		}
 	}
 }

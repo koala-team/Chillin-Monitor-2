@@ -1,4 +1,4 @@
-﻿using DG.Tweening;
+using DG.Tweening;
 using UnityEngine;
 using KS.SceneActions;
 
@@ -58,6 +58,9 @@ namespace Koala
 
 			if (_newConfig.Flare != null)
 				oldConfig.Flare = light.flare;
+
+			if (_newConfig.CullingMask != null)
+				oldConfig.CullingMask = new KS.SceneActions.LayerMask() { MasksInt = light.cullingMask };
 
 			return oldConfig;
 		}
@@ -166,6 +169,9 @@ namespace Koala
 
 			if (config.Flare != null)
 				light.flare = config.Flare;
+
+			if (config.CullingMask != null)
+				light.cullingMask = config.CullingMask.Mask;
 		}
 
 		private Light GetLight()

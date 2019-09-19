@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using DG.Tweening;
 using KS.SceneActions;
 
@@ -6,7 +6,8 @@ namespace Koala
 {
 	public class ChangeSpriteOccurrence : BaseOccurrence<ChangeSpriteOccurrence, ChangeSprite>
 	{
-		private SpriteRenderer _spriteRenderer = null;
+		private GameObject _gameObject;
+		private SpriteRenderer _spriteRenderer;
 
 
 		public ChangeSpriteOccurrence() { }
@@ -17,9 +18,11 @@ namespace Koala
 			
 			var oldConfig = new ChangeSprite
 			{
-				Sprite = spriteRenderer.sprite,
 				SpriteAsset = _newConfig.SpriteAsset,
 			};
+
+			if (_newConfig.SpriteAsset != null)
+				oldConfig.Sprite = spriteRenderer.sprite;
 
 			if (_newConfig.Color != null)
 				oldConfig.Color = spriteRenderer.color.ToKSVector4();
@@ -29,9 +32,6 @@ namespace Koala
 
 			if (_newConfig.FlipY.HasValue)
 				oldConfig.FlipY = spriteRenderer.flipY;
-
-			if (_newConfig.Order.HasValue)
-				oldConfig.Order = spriteRenderer.sortingOrder;
 
 			return oldConfig;
 		}
@@ -62,15 +62,19 @@ namespace Koala
 
 			if (config.FlipY.HasValue)
 				spriteRenderer.flipY = config.FlipY.Value;
+		}
 
-			if (config.Order.HasValue)
-				spriteRenderer.sortingOrder = config.Order.Value;
+		private GameObject GetGameObject()
+		{
+			if (_gameObject == null)
+				_gameObject = References.Instance.GetGameObject(_reference);
+			return _gameObject;
 		}
 
 		private SpriteRenderer GetSpriteRenderer()
 		{
 			if (_spriteRenderer == null)
-				_spriteRenderer = References.Instance.GetGameObject(_reference).GetComponent<SpriteRenderer>();
+				_spriteRenderer = GetGameObject().GetComponent<SpriteRenderer>();
 			return _spriteRenderer;
 		}
 	}

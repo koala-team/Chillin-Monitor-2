@@ -323,15 +323,19 @@ sprite_asset = Asset
 color = Vector4
 flip_x = boolean
 flip_y = boolean
-order = int
 
 ##########################################################
 ##########################################################
 
-[ChangeMaterial]
+[ChangeRenderer]
 _def = class(BaseAction)
+enabled = boolean
 material_asset = Asset
-index = int
+material_index = int
+rendering_layer_mask = uint
+sorting_layer_id = int
+sorting_order = int
+renderer_priority = int
 
 ##########################################################
 ##########################################################
@@ -397,6 +401,7 @@ shadow_near_plane = float
 cookie_asset = Asset
 cookie_size = float
 flare_asset = Asset
+culling_mask = LayerMask
 
 ##########################################################
 ##########################################################
@@ -414,6 +419,7 @@ _def = enum <byte>
 _def = class(BaseAction)
 clear_flag = ECameraClearFlag
 background_color = Vector4
+culling_mask = LayerMask
 is_orthographic = boolean
 orthographic_size = float
 field_of_view = float
@@ -426,6 +432,7 @@ max_rotation = Vector2
 min_zoom = float
 max_zoom = float
 post_process_profile_asset = Asset
+post_process_layers = LayerMask
 
 ##########################################################
 ##########################################################

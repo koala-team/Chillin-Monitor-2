@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Net.Security;
 using System.Net.Sockets;
 using System.Security.Cryptography.X509Certificates;
@@ -9,7 +9,7 @@ namespace Koala
 {
 	public class Network
 	{
-		private const int MAX_TIMEOUT = 2147483647;
+		public const int MAX_TIMEOUT = 4000;
 
 		private TcpClient _client;
 		private SslStream _stream;

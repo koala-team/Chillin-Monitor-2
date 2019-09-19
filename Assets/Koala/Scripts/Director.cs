@@ -35,7 +35,7 @@ namespace Koala
 				{ ChangeSiblingOrder.NameStatic,         true },
 				{ ManageComponent.NameStatic,            true },
 				{ ChangeSprite.NameStatic,               false },
-				{ ChangeMaterial.NameStatic,             true },
+				{ ChangeRenderer.NameStatic,             true },
 				{ ChangeEllipse2D.NameStatic,            false },
 				{ ChangePolygon2D.NameStatic,            false },
 				{ ChangeLine.NameStatic,                 false },

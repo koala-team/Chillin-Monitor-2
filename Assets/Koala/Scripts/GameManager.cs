@@ -22,6 +22,7 @@ namespace Koala
 		private MemoryStream ReplayStream { get; set; }
 		private bool ForcePause { get; set; } = false;
 		private float LastTimeScale { get; set; } = 0;
+		private bool HasNewMessage { get; set; } = true;
 
 		public GameObject m_rootGameObject;
 		public GameObject m_rootDestroyedGameObject;
@@ -84,6 +85,9 @@ namespace Koala
         void OnDestroy()
 		{
 			DOTween.KillAll(false);
+
+			if (!Helper.ReplayMode && Helper.Protocol.Network.IsConnected)
+				Helper.Protocol.Network.Disconnect();
 		}
 
 		public void FixedUpdate()
@@ -189,14 +193,30 @@ namespace Koala
 			m_pauseButton.gameObject.SetActive(isPlaying);
 		}
 
+		private IEnumerator CheckNetworkTimeout()
+		{
+			yield return null;
+
+			while (HasNewMessage)
+			{
+				HasNewMessage = false;
+				yield return new WaitForSecondsRealtime(Network.MAX_TIMEOUT / 1000f);
+			}
+
+			if (Helper.Protocol.Network.IsConnected)
+				Helper.Protocol.Network.Disconnect();
+		}
+
 		private IEnumerator HandleOnlineMessages()
 		{
+			StartCoroutine(CheckNetworkTimeout());
 			Task<KS.KSObject> recvTask;
 
 			while (!GameEnded && Helper.Protocol.Network.IsConnected)
 			{
 				recvTask = Helper.Protocol.RecvMessage();
 				yield return recvTask.WaitUntilComplete();
+				HasNewMessage = true;
 
 				if (!GameEnded)
 					ParseMessage(recvTask.Result);

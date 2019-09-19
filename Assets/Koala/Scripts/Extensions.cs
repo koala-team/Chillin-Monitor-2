@@ -226,6 +226,9 @@ namespace Koala
 			}
 			catch
 			{
+#if !UNITY_WEBGL || UNITY_EDITOR
+				await new WaitForMainThread();
+#endif
 				return null;
 			}
 		}
@@ -248,7 +251,9 @@ namespace Koala
 #if !UNITY_WEBGL || UNITY_EDITOR
 				await new WaitForMainThread();
 #endif
-				Debug.LogError(e.Message);
+				if (!(e is ObjectDisposedException))
+					Debug.LogError(e.Message);
+
 				return null;
 			}
 		}

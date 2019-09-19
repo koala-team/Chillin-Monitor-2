@@ -2532,8 +2532,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1100095216}
-  - component: {fileID: 1100095214}
   - component: {fileID: 1100095215}
+  - component: {fileID: 1100095214}
   m_Layer: 5
   m_Name: UserCanvas
   m_TagString: Untagged
