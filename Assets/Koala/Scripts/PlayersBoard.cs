@@ -31,7 +31,8 @@ namespace Koala
 				contrastColors[side] = bgColor.ContrastColor();
 
 				string varName = $"{side}NamesTeam";
-				Helper.GlobalBlackboard.AddVariable(varName, typeof(Dictionary<string, string>));
+				if (Helper.GlobalBlackboard[varName] == null)
+					Helper.GlobalBlackboard.AddVariable(varName, typeof(Dictionary<string, string>));
 				Helper.GlobalBlackboard[varName] = new Dictionary<string, string>();
 				foreach (var name in sides[side])
 					(Helper.GlobalBlackboard[varName] as IDictionary)[name] = "-";

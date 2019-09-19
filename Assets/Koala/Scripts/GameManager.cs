@@ -44,6 +44,9 @@ namespace Koala
 
 		public void Awake()
 		{
+			if (Helper.ReplayMode)
+				m_startGamePanel.SetActive(false);
+
 			// Setup timeline
 			Timeline.Instance.Reset();
 
@@ -370,6 +373,13 @@ namespace Koala
 
 		private IEnumerator StartGameCounter(int startTime)
 		{
+			if (Helper.ReplayMode)
+			{
+				Helper.GameStarted = true;
+				Destroy(m_startGamePanel);
+				yield break;
+			}
+
 			yield return null;
 
 			TextMeshProUGUI text = m_startGamePanel.GetComponentInChildren<TextMeshProUGUI>();
