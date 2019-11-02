@@ -3,7 +3,23 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Tag0
+  - Tag1
+  - Tag2
+  - Tag3
+  - Tag4
+  - Tag5
+  - Tag6
+  - Tag7
+  - Tag8
+  - Tag9
+  - Tag10
+  - Tag11
+  - Tag12
+  - Tag13
+  - Tag14
+  - Tag15
   layers:
   - Default
   - TransparentFX
@@ -13,31 +29,79 @@ TagManager:
   - UI
   - 
   - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  - UserLayer0
+  - UserLayer1
+  - UserLayer2
+  - UserLayer3
+  - UserLayer4
+  - UserLayer5
+  - UserLayer6
+  - UserLayer7
+  - UserLayer8
+  - UserLayer9
+  - UserLayer10
+  - UserLayer11
+  - UserLayer12
+  - UserLayer13
+  - UserLayer14
+  - UserLayer15
+  - UserLayer16
+  - UserLayer17
+  - UserLayer18
+  - UserLayer19
+  - UserLayer20
+  - UserLayer21
+  - UserLayer22
+  - UserLayer23
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: SortingLayer0
+    uniqueID: 1883827583
+    locked: 0
+  - name: SortingLayer1
+    uniqueID: 377964745
+    locked: 0
+  - name: SortingLayer2
+    uniqueID: 1487784353
+    locked: 0
+  - name: SortingLayer3
+    uniqueID: 3928069873
+    locked: 0
+  - name: SortingLayer4
+    uniqueID: 1355812135
+    locked: 0
+  - name: SortingLayer5
+    uniqueID: 3660066807
+    locked: 0
+  - name: SortingLayer6
+    uniqueID: 746306393
+    locked: 0
+  - name: SortingLayer7
+    uniqueID: 3975632851
+    locked: 0
+  - name: SortingLayer8
+    uniqueID: 3282485165
+    locked: 0
+  - name: SortingLayer9
+    uniqueID: 160467071
+    locked: 0
+  - name: SortingLayer10
+    uniqueID: 3087205835
+    locked: 0
+  - name: SortingLayer11
+    uniqueID: 2646091061
+    locked: 0
+  - name: SortingLayer12
+    uniqueID: 3893897377
+    locked: 0
+  - name: SortingLayer13
+    uniqueID: 2315260233
+    locked: 0
+  - name: SortingLayer14
+    uniqueID: 780849395
+    locked: 0
+  - name: SortingLayer15
+    uniqueID: 3434282613
     locked: 0
