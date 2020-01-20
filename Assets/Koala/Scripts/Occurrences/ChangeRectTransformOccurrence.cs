@@ -4,12 +4,12 @@ using KS.SceneActions;
 
 namespace Koala
 {
-	public class ChangeUIElementOccurrence : BaseOccurrence<ChangeUIElementOccurrence, ChangeRectTransform>
+	public class ChangeRectTransformOccurrence : BaseOccurrence<ChangeRectTransformOccurrence, ChangeRectTransform>
 	{
 		private RectTransform _rect = null;
 
 
-		public ChangeUIElementOccurrence() { }
+		public ChangeRectTransformOccurrence() { }
 
 		protected override ChangeRectTransform CreateOldConfig()
 		{

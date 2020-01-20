@@ -41,6 +41,7 @@ namespace Koala
 
 					Helper.KeepAnimatorControllerStateOnDisable(_createdGO);
 					Helper.AddParticleSystemManager(_createdGO);
+					Helper.AddSliderParts(_createdGO);
 				}
 				else
 				{

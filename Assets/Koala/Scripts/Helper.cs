@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Rendering.PostProcessing;
+using UnityEngine.UI;
 
 namespace Koala
 {
@@ -57,9 +58,9 @@ namespace Koala
 
 		private static readonly Assembly _asm = Assembly.GetExecutingAssembly();
 		public static Assembly Assembly => _asm;
-        private static readonly MethodInfo _genericCastMethodInfo = typeof(Helper).GetMethod("GenericCast");
+		private static readonly MethodInfo _genericCastMethodInfo = typeof(Helper).GetMethod("GenericCast");
 
-        public static int MainCameraRef => 0;
+		public static int MainCameraRef => 0;
 
 		private static readonly float MIN_OCCURRENCE_DURATION = 1e-6f;
 
@@ -94,40 +95,40 @@ namespace Koala
 
 		public static void KeepAnimatorControllerStateOnDisable(GameObject root)
 		{
-            Queue<bool> activeStatues = new Queue<bool>(); ;
+			Queue<bool> activeStatues = new Queue<bool>(); ;
 
 			foreach (var animator in root.GetComponentsInChildren<Animator>(true))
-		    {
-                // TODO: Remove this when the error fixed
-                // https://trello.com/c/bLipTCpr
-                bool activeInHierarchy = animator.gameObject.activeInHierarchy;
-                if (!activeInHierarchy)
-                {
-                    // Active all parents til this object become active
-                    activeStatues = new Queue<bool>();
-                    GameObject go = animator.gameObject;
-                    while (!go.activeInHierarchy)
-                    {
-                        activeStatues.Enqueue(go.activeSelf);
-                        go.SetActive(true);
-                        go = go.transform.parent.gameObject;
-                    }
-                }
+			{
+				// TODO: Remove this when the error fixed
+				// https://trello.com/c/bLipTCpr
+				bool activeInHierarchy = animator.gameObject.activeInHierarchy;
+				if (!activeInHierarchy)
+				{
+					// Active all parents til this object become active
+					activeStatues = new Queue<bool>();
+					GameObject go = animator.gameObject;
+					while (!go.activeInHierarchy)
+					{
+						activeStatues.Enqueue(go.activeSelf);
+						go.SetActive(true);
+						go = go.transform.parent.gameObject;
+					}
+				}
 
-                animator.keepAnimatorControllerStateOnDisable = true;
+				animator.keepAnimatorControllerStateOnDisable = true;
 
-                // Restore active statuses
-                if (!activeInHierarchy)
-                {
-                    GameObject go = animator.gameObject;
-                    while (activeStatues.Count > 0)
-                    {
-                        bool activeStatus = activeStatues.Dequeue();
-                        go.SetActive(activeStatus);
-                        go = go.transform.parent.gameObject;
-                    }
-                }
-            }
+				// Restore active statuses
+				if (!activeInHierarchy)
+				{
+					GameObject go = animator.gameObject;
+					while (activeStatues.Count > 0)
+					{
+						bool activeStatus = activeStatues.Dequeue();
+						go.SetActive(activeStatus);
+						go = go.transform.parent.gameObject;
+					}
+				}
+			}
 		}
 
 		public static void SetAudioSourcesTimeScale(GameObject root)
@@ -141,10 +142,18 @@ namespace Koala
 
 		public static void AddParticleSystemManager(GameObject go)
 		{
-            foreach (var component in go.GetComponentsInChildren<ParticleSystem>(true))
-            {
-                component.gameObject.AddComponent<ParticleSystemManager>();
-            }
+			foreach (var component in go.GetComponentsInChildren<ParticleSystem>(true))
+			{
+				component.gameObject.AddComponent<ParticleSystemManager>();
+			}
+		}
+
+		public static void AddSliderParts(GameObject go)
+		{
+			foreach (var component in go.GetComponentsInChildren<Slider>(true))
+			{
+				component.gameObject.AddComponent<SliderParts>();
+			}
 		}
 
 		public static TMP_FontAsset GetFont(string name)
@@ -201,38 +210,38 @@ namespace Koala
 			return new Vector3(WrapAngle(v.x), WrapAngle(v.y), WrapAngle(v.z));
 		}
 
-        public static void UpdatePostProcessState()
-        {
-            try
-            {
-                var volume = GameObject.Find("Main Camera").GetComponent<PostProcessVolume>();
-                volume.enabled = PlayerConfigs.IsPostProcessActive;
-            }
-            catch { }
-        }
+		public static void UpdatePostProcessState()
+		{
+			try
+			{
+				var volume = GameObject.Find("Main Camera").GetComponent<PostProcessVolume>();
+				volume.enabled = PlayerConfigs.IsPostProcessActive;
+			}
+			catch { }
+		}
 
-        public static string SplitOnCapitalLetters(string s)
-        {
-            var words =
-                Regex.Matches(s, @"([A-Z][a-z]+)")
-                .Cast<Match>()
-                .Select(m => m.Value);
+		public static string SplitOnCapitalLetters(string s)
+		{
+			var words =
+				Regex.Matches(s, @"([A-Z][a-z]+)")
+				.Cast<Match>()
+				.Select(m => m.Value);
 
-            return string.Join(" ", words);
-        }
+			return string.Join(" ", words);
+		}
 
-        public static void UpdateScreenResolution()
-        {
-            var resolution = Screen.resolutions[PlayerConfigs.ResolutionIndex];
-            var fullScreenMode = PlayerConfigs.FullScreenMode;
+		public static void UpdateScreenResolution()
+		{
+			var resolution = Screen.resolutions[PlayerConfigs.ResolutionIndex];
+			var fullScreenMode = PlayerConfigs.FullScreenMode;
 
-            Screen.SetResolution(resolution.width, resolution.height, fullScreenMode);
-        }
+			Screen.SetResolution(resolution.width, resolution.height, fullScreenMode);
+		}
 
-        public static MethodInfo MakeGenericMethod(MethodInfo methodInfo, params Type[] types)
-        {
-            return methodInfo.MakeGenericMethod(types);
-        }
+		public static MethodInfo MakeGenericMethod(MethodInfo methodInfo, params Type[] types)
+		{
+			return methodInfo.MakeGenericMethod(types);
+		}
 
 		public static Delegate MakeGenericDelegate(Type delegateType, object caller, MethodInfo methodInfo, params Type[] types)
 		{
@@ -241,14 +250,14 @@ namespace Koala
 		}
 
 		public static T GenericCast<T>(object o)
-        {
-            return (T)o;
-        }
+		{
+			return (T)o;
+		}
 
-        public static object DynamicCast(object obj, Type type)
-        {
-            var castMethod = _genericCastMethodInfo.MakeGenericMethod(type);
-            return castMethod.Invoke(null, new object[] { obj });
-        }
+		public static object DynamicCast(object obj, Type type)
+		{
+			var castMethod = _genericCastMethodInfo.MakeGenericMethod(type);
+			return castMethod.Invoke(null, new object[] { obj });
+		}
 	}
 }

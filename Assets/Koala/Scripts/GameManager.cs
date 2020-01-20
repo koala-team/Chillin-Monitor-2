@@ -237,14 +237,14 @@ namespace Koala
 				{
 					var recvTask = ReplayStream.Receive();
 					yield return recvTask.WaitUntilComplete();
-					
+
 					var processTask = Helper.ProcessBuffer(recvTask.Result);
 					yield return processTask.WaitUntilComplete();
-					
+
 					ParseMessage(processTask.Result);
 				}
 			}
-			
+
 			Helper.ReplayBytes = new byte[0];
 		}
 
@@ -298,14 +298,12 @@ namespace Koala
 					FillEndGamePanel(endGame.WinnerSidename, endGame.Details);
 					Director.Action(new KS.SceneActions.EndGame
 					{
-						Cycle = 1f - 0.01f,
+						Cycle = 0.001f,
 						EndGamePanel = m_endGamePanel,
 					});
 
-					// Ensure everythings showed
-					while (Helper.MaxCycle * Helper.CycleDuration < Helper.MaxEndTime)
-						Helper.MaxCycle += 1;
-					Helper.MaxCycle += 1;
+					Helper.MaxCycle += 0.002f;
+					Helper.MaxCycle = Timeline.Instance.GetFirstEmptyCycle(Helper.MaxCycle);
 
 					GameEnded = true;
 					break;
@@ -327,7 +325,7 @@ namespace Koala
 			if (winnerSidename == null)
 			{
 				winnerText.text = "Draw";
-				winnerText.color = Color.white;
+				winnerText.color = Color.black;
 			}
 			else
 			{
@@ -348,7 +346,7 @@ namespace Koala
 					if (firstProperty)
 					{
 						// Add Headers
-						
+
 						CreateDetailCell("", TextAlignmentOptions.Center, detailsTransform);
 						foreach (var side in details[property].Keys)
 							CreateDetailCell(side, TextAlignmentOptions.Center, detailsTransform);

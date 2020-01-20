@@ -31,6 +31,7 @@ namespace Koala
 				{ ChangeRectTransform.NameStatic,        false },
 				{ ChangeText.NameStatic,                 false },
 				{ ChangeSlider.NameStatic,               false },
+				{ ChangeImage.NameStatic,                false },
 				{ ChangeRawImage.NameStatic,             false },
 				{ ChangeSiblingOrder.NameStatic,         true },
 				{ ManageComponent.NameStatic,            true },

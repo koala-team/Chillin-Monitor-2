@@ -141,6 +141,20 @@ namespace Koala
 			TimeScaleChanged = true;
 		}
 
+		public float GetFirstEmptyCycle(float after_cycle)
+		{
+			float cycle = after_cycle;
+			float step = (float)Math.Pow(10, -TIME_TRUNCATE_DECIMALS);
+
+			while (true) {
+				cycle += step;
+				int convertedTime = ConvertTime(cycle);
+
+				if (!_occurrences.ContainsKey(convertedTime))
+					return cycle;
+			}
+		}
+
 		private bool CheckIsTimeBetween(int prevTime, int checkTime, int newTime)
 		{
 			return TimeScale > 0
