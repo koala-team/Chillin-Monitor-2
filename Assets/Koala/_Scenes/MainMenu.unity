@@ -2311,7 +2311,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: V2.1
+  m_text: V2.2
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8cbb861586a97b54ba6027adc93c1b1a, type: 2}
   m_sharedMaterial: {fileID: 21346957541595438, guid: 8cbb861586a97b54ba6027adc93c1b1a,
@@ -2378,7 +2378,7 @@ MonoBehaviour:
   m_firstVisibleCharacter: 0
   m_useMaxVisibleDescender: 0
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 10, w: 5}
+  m_margin: {x: 0, y: 0, z: 10, w: 10}
   m_textInfo:
     textComponent: {fileID: 1121711480}
     characterCount: 4

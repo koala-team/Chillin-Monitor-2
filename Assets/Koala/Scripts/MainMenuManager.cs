@@ -26,8 +26,8 @@ namespace Koala
 		public GameObject m_loadReplayProgress;
 		public Button m_addAssetBundleButton;
 		public GameObject m_assetBundlesList;
-        public float m_assetBundlesListMaxHeight;
-        public GameObject m_assetBundlesGame;
+		public float m_assetBundlesListMaxHeight;
+		public GameObject m_assetBundlesGame;
 		public GameObject m_assetBundlesItem;
 		public GameObject m_globalBlackboard;
 
@@ -62,26 +62,26 @@ namespace Koala
 			}
 #endif
 
-            StartCoroutine(SetupPage());
+			StartCoroutine(SetupPage());
 		}
 
-        private IEnumerator SetupPage()
-        {
-            yield return new WaitForEndOfFrame();
+		private IEnumerator SetupPage()
+		{
+			yield return new WaitForEndOfFrame();
 
-            RerenderAssetBundlesPanel();
+			RerenderAssetBundlesPanel();
 
-            m_ipInputText.text = PlayerConfigs.IP;
-            m_portInputText.text = PlayerConfigs.Port.ToString();
+			m_ipInputText.text = PlayerConfigs.IP;
+			m_portInputText.text = PlayerConfigs.Port.ToString();
 
 #if UNITY_WEBGL && !UNITY_EDITOR
 			m_ipInputText.gameObject.SetActive(false);
 			m_portInputText.gameObject.SetActive(false);
 			m_connectButton.gameObject.SetActive(false);
 #endif
-        }
+		}
 
-        public void Connect()
+		public void Connect()
 		{
 			StartCoroutine(TryConnectCoroutine());
 		}
@@ -162,14 +162,14 @@ namespace Koala
 
 		private IEnumerator ShowReplayDialog()
 		{
-            FileBrowser.SetFilters(false, CHILLIN_REPLAY_EXTENSTIONS);
-            yield return FileBrowser.WaitForLoadDialog(false, PlayerConfigs.LastFileBrowsed, "Load Replay", "Load");
-            string uri = FileBrowser.Result;
+			FileBrowser.SetFilters(false, CHILLIN_REPLAY_EXTENSTIONS);
+			yield return FileBrowser.WaitForLoadDialog(false, PlayerConfigs.LastFileBrowsed, "Load Replay", "Load");
+			string uri = FileBrowser.Result;
 
-            if (FileBrowser.Success)
-                PlayerConfigs.LastFileBrowsed = uri;
+			if (FileBrowser.Success)
+				PlayerConfigs.LastFileBrowsed = uri;
 
-            StartCoroutine(DownloadReplay(uri));
+			StartCoroutine(DownloadReplay(uri));
 
 			yield return null;
 		}
@@ -180,15 +180,15 @@ namespace Koala
 			{
 				SetConnectButtonIsActive(false);
 				m_loadReplayButton.gameObject.SetActive(false);
-                m_loadReplayProgress.gameObject.SetActive(true);
+				m_loadReplayProgress.gameObject.SetActive(true);
 
 #pragma warning disable CS0618 // Type or member is obsolete
 				var req = new WWW("file://" + uri);
 #pragma warning restore CS0618 // Type or member is obsolete
 
-                yield return new WaitUntil(() => req.isDone);
+				yield return new WaitUntil(() => req.isDone);
 
-                if (req.error != null && req.error.Length > 0)
+				if (req.error != null && req.error.Length > 0)
 				{
 					Debug.LogError(req.error);
 				}
@@ -216,14 +216,14 @@ namespace Koala
 		{
 			m_addAssetBundleButton.gameObject.SetActive(true);
 
-            FileBrowser.SetFilters(false, CHILLIN_BUNDLE_EXTENSTIONS);
-            yield return FileBrowser.WaitForLoadDialog(false, PlayerConfigs.LastFileBrowsed, "Load Bundle", "Load");
-            string uri = FileBrowser.Result;
+			FileBrowser.SetFilters(false, CHILLIN_BUNDLE_EXTENSTIONS);
+			yield return FileBrowser.WaitForLoadDialog(false, PlayerConfigs.LastFileBrowsed, "Load Bundle", "Load");
+			string uri = FileBrowser.Result;
 
-            if (FileBrowser.Success)
-                PlayerConfigs.LastFileBrowsed = uri;
+			if (FileBrowser.Success)
+				PlayerConfigs.LastFileBrowsed = uri;
 
-            StartCoroutine(DownloadAssetBundle(uri));
+			StartCoroutine(DownloadAssetBundle(uri));
 
 			yield return null;
 		}
@@ -293,8 +293,8 @@ namespace Koala
 				var newGame = GameObject.Instantiate(m_assetBundlesGame, m_assetBundlesList.transform, false);
 				newGame.transform.Find("GameName").GetComponent<TextMeshProUGUI>().text = gameName;
 
-                Transform bundlesParent = newGame.transform.Find("Bundles");
-                foreach (string bundleName in BundleManager.Instance.Bundles[gameName].Keys)
+				Transform bundlesParent = newGame.transform.Find("Bundles");
+				foreach (string bundleName in BundleManager.Instance.Bundles[gameName].Keys)
 				{
 					var newBundle = GameObject.Instantiate(m_assetBundlesItem, bundlesParent, false);
 					newBundle.transform.Find("BundleName").GetComponent<TextMeshProUGUI>().text = bundleName;
@@ -309,17 +309,17 @@ namespace Koala
 
 		private IEnumerator FixAssetBundlesPanel()
 		{
-            RectTransform listRect = m_assetBundlesList.GetComponent<RectTransform>();
-            RectTransform parentRect = m_assetBundlesList.transform.parent.GetComponent<RectTransform>();
+			RectTransform listRect = m_assetBundlesList.GetComponent<RectTransform>();
+			RectTransform parentRect = m_assetBundlesList.transform.parent.GetComponent<RectTransform>();
 
-            LayoutRebuilder.ForceRebuildLayoutImmediate(listRect);
+			LayoutRebuilder.ForceRebuildLayoutImmediate(listRect);
 
-            yield return new WaitForEndOfFrame();
-            LayoutRebuilder.ForceRebuildLayoutImmediate(parentRect);
-            yield return new WaitForEndOfFrame();
+			yield return new WaitForEndOfFrame();
+			LayoutRebuilder.ForceRebuildLayoutImmediate(parentRect);
+			yield return new WaitForEndOfFrame();
 
-            parentRect.sizeDelta = new Vector2(parentRect.sizeDelta.x, Mathf.Min(listRect.sizeDelta.y, m_assetBundlesListMaxHeight));
-        }
+			parentRect.sizeDelta = new Vector2(parentRect.sizeDelta.x, Mathf.Min(listRect.sizeDelta.y, m_assetBundlesListMaxHeight));
+		}
 
 		public void Quit()
 		{
