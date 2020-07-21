@@ -22,6 +22,7 @@ namespace Koala
 			await new WaitForBackgroundThread();
 
 			byte[] buffer = await _network.Receive();
+
 			if (buffer == null) return null;
 
 			return await Helper.ProcessBuffer(buffer);

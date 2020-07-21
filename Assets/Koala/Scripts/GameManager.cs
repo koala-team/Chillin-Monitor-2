@@ -203,7 +203,8 @@ namespace Koala
 			while (HasNewMessage)
 			{
 				HasNewMessage = false;
-				yield return new WaitForSecondsRealtime(Network.MAX_TIMEOUT / 1000f);
+				// TODO: better check for timeout
+				yield return new WaitForSecondsRealtime(Network.NO_MESSAGE_TIMEOUT / 1000f);
 			}
 
 			if (Helper.Protocol.Network.IsConnected)
@@ -212,7 +213,6 @@ namespace Koala
 
 		private IEnumerator HandleOnlineMessages()
 		{
-			StartCoroutine(CheckNetworkTimeout());
 			Task<KS.KSObject> recvTask;
 
 			while (!GameEnded && Helper.Protocol.Network.IsConnected)
@@ -290,6 +290,8 @@ namespace Koala
 				case StartGame.NameStatic:
 					var startGame = (StartGame)message;
 					StartCoroutine(StartGameCounter((int)startGame.StartTime.Value));
+					if (!Helper.ReplayMode)
+						StartCoroutine(CheckNetworkTimeout());
 					break;
 
 				case EndGame.NameStatic:

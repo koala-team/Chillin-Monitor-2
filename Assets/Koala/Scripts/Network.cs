@@ -10,6 +10,7 @@ namespace Koala
 	public class Network
 	{
 		public const int MAX_TIMEOUT = 4000;
+		public const int NO_MESSAGE_TIMEOUT = 15 * 1000;
 
 		private TcpClient _client;
 		private SslStream _stream;
@@ -48,6 +49,9 @@ namespace Koala
 
 				_stream.ReadTimeout = _timeout;
 				_stream.WriteTimeout = _timeout;
+
+				await new WaitForMainThread();
+				Debug.Log("Connected to server!");
 			}
 			catch (Exception e)
 			{
@@ -62,6 +66,8 @@ namespace Koala
 				_stream.Close();
 			if (_client != null)
 				_client.Close();
+
+			Debug.Log("Disconnected from server!");
 		}
 
 		public async Task<byte[]> Receive()
